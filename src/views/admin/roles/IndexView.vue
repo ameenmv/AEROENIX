@@ -12,14 +12,7 @@ import { useRoles } from '@/composables'
 const { t } = useI18n()
 const router = useRouter()
 
-const {
-  filterConfig,
-  table,
-  confirmState,
-  cancelConfirm,
-  deleteItem,
-  toggleStatus,
-} = useRoles()
+const { filterConfig, table, confirmState, cancelConfirm, deleteItem, toggleStatus } = useRoles()
 
 /** Type-safe row accessor */
 function r(row: any): Role {
@@ -52,7 +45,7 @@ function r(row: any): Role {
       />
 
       <DataTable
-        :data="(table.items.value as any)"
+        :data="table.items.value as any"
         :loading="table.loading.value"
         :total-items="table.totalItems.value"
         :page="table.page.value"
@@ -91,7 +84,9 @@ function r(row: any): Role {
 
             <!-- Guard -->
             <TableCell>
-              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-blue-500/10 text-blue-500">
+              <span
+                class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-blue-500/10 text-blue-500"
+              >
                 {{ r(row).guard_name }}
               </span>
             </TableCell>
@@ -100,7 +95,11 @@ function r(row: any): Role {
             <TableCell>
               <button
                 class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium cursor-pointer transition-opacity hover:opacity-80"
-                :class="r(row).status?.color === 'green' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-gray-500/10 text-gray-400'"
+                :class="
+                  r(row).status?.color === 'green'
+                    ? 'bg-emerald-500/10 text-emerald-500'
+                    : 'bg-gray-500/10 text-gray-400'
+                "
                 @click="toggleStatus(r(row))"
               >
                 <span
@@ -124,7 +123,9 @@ function r(row: any): Role {
                 <Button
                   variant="ghost"
                   size="sm"
-                  @click="router.push({ name: 'admin-roles-show', params: { id: String(r(row).id) } })"
+                  @click="
+                    router.push({ name: 'admin-roles-show', params: { id: String(r(row).id) } })
+                  "
                 >
                   {{ t('actions.view', 'View') }}
                 </Button>
@@ -132,7 +133,9 @@ function r(row: any): Role {
                   v-if="r(row).can_update"
                   variant="ghost"
                   size="sm"
-                  @click="router.push({ name: 'admin-roles-edit', params: { id: String(r(row).id) } })"
+                  @click="
+                    router.push({ name: 'admin-roles-edit', params: { id: String(r(row).id) } })
+                  "
                 >
                   {{ t('actions.edit', 'Edit') }}
                 </Button>

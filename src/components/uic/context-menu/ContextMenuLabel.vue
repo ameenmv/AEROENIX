@@ -10,6 +10,11 @@ const props = defineProps<ContextMenuLabelProps & { class?: HTMLAttributes['clas
 <template>
   <ContextMenuLabel
     data-slot="context-menu-label"
-    :class="cn('text-muted-foreground px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider', props.class)"
+    :class="
+      cn(
+        'text-muted-foreground px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider',
+        props.class,
+      )
+    "
   />
 </template>

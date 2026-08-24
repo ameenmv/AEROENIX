@@ -48,7 +48,9 @@ const emit = defineEmits<{
   (e: 'cancel'): void
 }>()
 const formModel = computed(() => props.form?.values || props.modelValue)
-const formErrors = computed(() => props.form?.displayErrors?.value ?? props.form?.errors?.value ?? props.errors)
+const formErrors = computed(
+  () => props.form?.displayErrors?.value ?? props.form?.errors?.value ?? props.errors,
+)
 const formSaving = computed(() => {
   if (props.form?.isPending !== undefined) {
     return typeof props.form.isPending === 'boolean'
@@ -88,7 +90,9 @@ function handlePrevious() {
 /** Scroll to the first field that has a validation error */
 function scrollToFirstError() {
   nextTick(() => {
-    const errorEl = formRef.value?.querySelector('[data-error="true"], .text-destructive, [aria-invalid="true"]')
+    const errorEl = formRef.value?.querySelector(
+      '[data-error="true"], .text-destructive, [aria-invalid="true"]',
+    )
     if (errorEl) {
       errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
@@ -249,7 +253,11 @@ function handleCancelSubmit() {
           :loading="formSaving"
           :disabled="formSaving"
         >
-          {{ (isEdit || form?.action === 'update') ? t('common.save_changes', 'Save Changes') : t('common.create', 'Create') }}
+          {{
+            isEdit || form?.action === 'update'
+              ? t('common.save_changes', 'Save Changes')
+              : t('common.create', 'Create')
+          }}
         </Btn>
       </div>
     </div>

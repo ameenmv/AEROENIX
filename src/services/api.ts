@@ -144,11 +144,7 @@ api.interceptors.response.use(
         localStorage.removeItem('_current_permission')
         const locale = localStorage.getItem('locale') || 'en'
 
-        await showToast(
-          'warning',
-          'Session Expired',
-          'Please log in again to continue.',
-        )
+        await showToast('warning', 'Session Expired', 'Please log in again to continue.')
 
         if (!window.location.pathname.includes('/login')) {
           window.location.href = `/${locale}/admin/login`

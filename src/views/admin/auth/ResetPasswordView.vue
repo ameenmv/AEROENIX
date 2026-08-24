@@ -38,11 +38,12 @@ const form = useForm({
     password: '',
     password_confirmation: '',
   },
-  mutationFn: data => authStore.resetPassword({
-    reset_token: resetToken.value,
-    password: data.password,
-    password_confirmation: data.password_confirmation,
-  }),
+  mutationFn: data =>
+    authStore.resetPassword({
+      reset_token: resetToken.value,
+      password: data.password,
+      password_confirmation: data.password_confirmation,
+    }),
   onSuccess: () => {
     resetSuccess.value = true
     setTimeout(() => {
@@ -59,7 +60,9 @@ const [passwordConfirmation] = form.defineField('password_confirmation')
 
 <template>
   <AuthLayout>
-    <Card class="w-full max-w-[547px] !rounded-3xl !border-border !shadow-[0_4px_20px_rgba(148,163,184,0.1)] !py-0">
+    <Card
+      class="w-full max-w-[547px] !rounded-3xl !border-border !shadow-[0_4px_20px_rgba(148,163,184,0.1)] !py-0"
+    >
       <CardHeader class="!px-5 sm:!px-12 !pt-8 !pb-0 text-center">
         <CardTitle class="!text-[32px] !leading-[48px] font-semibold !text-foreground">
           {{ t('auth.reset_password_title', 'Reset Password') }}
@@ -96,9 +99,13 @@ const [passwordConfirmation] = form.defineField('password_confirmation')
         </div>
         <form v-if="!resetSuccess" class="flex flex-col gap-6" @submit.prevent="form.onSubmit">
           <InputField
-            id="reset-password" v-model="password" :type="showPassword ? 'text' : 'password'"
-            :label="t('auth.new_password_label', 'New Password')" :placeholder="t('auth.password_placeholder', '••••••••')"
-            :error="form.errors.value.password" size="lg"
+            id="reset-password"
+            v-model="password"
+            :type="showPassword ? 'text' : 'password'"
+            :label="t('auth.new_password_label', 'New Password')"
+            :placeholder="t('auth.password_placeholder', '••••••••')"
+            :error="form.errors.value.password"
+            size="lg"
           >
             <template #suffix>
               <button
@@ -111,17 +118,40 @@ const [passwordConfirmation] = form.defineField('password_confirmation')
             </template>
           </InputField>
           <InputField
-            id="reset-password-confirm" v-model="passwordConfirmation"
-            :type="showPassword ? 'text' : 'password'" :label="t('auth.confirm_password_label', 'Confirm Password')"
-            :placeholder="t('auth.password_placeholder', '••••••••')" :error="form.errors.value.password_confirmation" size="lg"
+            id="reset-password-confirm"
+            v-model="passwordConfirmation"
+            :type="showPassword ? 'text' : 'password'"
+            :label="t('auth.confirm_password_label', 'Confirm Password')"
+            :placeholder="t('auth.password_placeholder', '••••••••')"
+            :error="form.errors.value.password_confirmation"
+            size="lg"
           />
-          <Btn type="submit" variant="primary" class="auth-btn-primary w-full" :disabled="form.isPending.value">
+          <Btn
+            type="submit"
+            variant="primary"
+            class="auth-btn-primary w-full"
+            :disabled="form.isPending.value"
+          >
             <svg
-              v-if="form.isPending.value" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+              v-if="form.isPending.value"
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
             >
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              />
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
             </svg>
             {{
               form.isPending.value
@@ -133,7 +163,10 @@ const [passwordConfirmation] = form.defineField('password_confirmation')
       </CardContent>
       <!-- Footer -->
       <div class="flex justify-center items-center gap-1 px-5 sm:px-12 pb-6">
-        <RouterLink :to="`/${locale}/admin/login`" class="text-base font-semibold text-foreground hover:underline">
+        <RouterLink
+          :to="`/${locale}/admin/login`"
+          class="text-base font-semibold text-foreground hover:underline"
+        >
           {{ t('auth.back_to_login', 'Back to login') }}
         </RouterLink>
       </div>

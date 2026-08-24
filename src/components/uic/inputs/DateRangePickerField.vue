@@ -79,16 +79,19 @@ const value = computed({
         <Button
           :id="inputId"
           variant="outline"
-          :class="cn(
-            'w-full justify-start text-start font-normal px-3 h-9 bg-background',
-            !value.start && !value.end && 'text-muted-foreground',
-          )"
+          :class="
+            cn(
+              'w-full justify-start text-start font-normal px-3 h-9 bg-background',
+              !value.start && !value.end && 'text-muted-foreground',
+            )
+          "
           :disabled="disabled"
         >
           <HugeiconsIcon :icon="CalendarIcon" class="me-2 h-3.5 w-3.5" />
           <template v-if="value.start">
             <template v-if="value.end">
-              {{ df.format(value.start.toDate(getLocalTimeZone())) }} - {{ df.format(value.end.toDate(getLocalTimeZone())) }}
+              {{ df.format(value.start.toDate(getLocalTimeZone())) }} -
+              {{ df.format(value.end.toDate(getLocalTimeZone())) }}
             </template>
             <template v-else>
               {{ df.format(value.start.toDate(getLocalTimeZone())) }}

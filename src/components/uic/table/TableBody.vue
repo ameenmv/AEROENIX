@@ -10,7 +10,11 @@ const props = defineProps<{
 </script>
 
 <template>
-  <tbody data-slot="table-body" v-bind="$attrs" :class="cn('[&_tr:last-child]:border-0', props.class)">
+  <tbody
+    data-slot="table-body"
+    v-bind="$attrs"
+    :class="cn('[&_tr:last-child]:border-0', props.class)"
+  >
     <slot />
   </tbody>
 </template>

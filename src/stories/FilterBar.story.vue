@@ -7,8 +7,26 @@ const search = ref('')
 const filterValues = ref<Record<string, unknown>>({})
 
 const filters: FilterConfig[] = [
-  { model: 'status', label: 'Status', type: 'select', options: [{ label: 'Active', value: 'active' }, { label: 'Inactive', value: 'inactive' }, { label: 'Pending', value: 'pending' }] },
-  { model: 'role', label: 'Role', type: 'select', options: [{ label: 'Admin', value: 'admin' }, { label: 'User', value: 'user' }, { label: 'Editor', value: 'editor' }] },
+  {
+    model: 'status',
+    label: 'Status',
+    type: 'select',
+    options: [
+      { label: 'Active', value: 'active' },
+      { label: 'Inactive', value: 'inactive' },
+      { label: 'Pending', value: 'pending' },
+    ],
+  },
+  {
+    model: 'role',
+    label: 'Role',
+    type: 'select',
+    options: [
+      { label: 'Admin', value: 'admin' },
+      { label: 'User', value: 'user' },
+      { label: 'Editor', value: 'editor' },
+    ],
+  },
   { model: 'name', label: 'Name', type: 'text', placeholder: 'Filter by name...' },
   { model: 'date', label: 'Created Date', type: 'date' },
 ]
@@ -22,7 +40,12 @@ const filters: FilterConfig[] = [
           <h3 class="text-lg font-bold text-foreground">
             Light
           </h3>
-          <FilterBar v-model:search="search" v-model:filter-values="filterValues" :filters="filters" search-placeholder="Search users..." />
+          <FilterBar
+            v-model:search="search"
+            v-model:filter-values="filterValues"
+            :filters="filters"
+            search-placeholder="Search users..."
+          />
           <p class="text-xs text-muted-foreground">
             Search: "{{ search }}" | Filters: {{ JSON.stringify(filterValues) }}
           </p>
@@ -31,7 +54,12 @@ const filters: FilterConfig[] = [
           <h3 class="text-lg font-bold text-foreground">
             Dark
           </h3>
-          <FilterBar v-model:search="search" v-model:filter-values="filterValues" :filters="filters" search-placeholder="Search users..." />
+          <FilterBar
+            v-model:search="search"
+            v-model:filter-values="filterValues"
+            :filters="filters"
+            search-placeholder="Search users..."
+          />
         </div>
       </div>
     </Variant>

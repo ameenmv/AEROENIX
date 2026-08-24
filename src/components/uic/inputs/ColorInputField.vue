@@ -52,11 +52,13 @@ const colorValue = computed({
 
     <div class="flex items-center gap-3">
       <div
-        :class="cn(
-          'relative w-9 h-9 rounded-lg overflow-hidden border-2 transition-colors cursor-pointer shrink-0',
-          error ? 'border-destructive' : 'border-input hover:border-ring',
-          disabled && 'opacity-50 cursor-not-allowed',
-        )"
+        :class="
+          cn(
+            'relative w-9 h-9 rounded-lg overflow-hidden border-2 transition-colors cursor-pointer shrink-0',
+            error ? 'border-destructive' : 'border-input hover:border-ring',
+            disabled && 'opacity-50 cursor-not-allowed',
+          )
+        "
         :style="{ backgroundColor: colorValue }"
       >
         <input
@@ -72,12 +74,14 @@ const colorValue = computed({
           v-model="colorValue"
           type="text"
           :disabled="disabled"
-          :class="cn(
-            'w-full px-3 py-1.5 border rounded-md text-sm font-mono uppercase transition-colors outline-none',
-            'bg-transparent border-input focus:border-ring focus:ring-ring/50 focus:ring-[3px]',
-            error && 'border-destructive focus:ring-destructive/20',
-            disabled && 'opacity-50 cursor-not-allowed',
-          )"
+          :class="
+            cn(
+              'w-full px-3 py-1.5 border rounded-md text-sm font-mono uppercase transition-colors outline-none',
+              'bg-transparent border-input focus:border-ring focus:ring-ring/50 focus:ring-[3px]',
+              error && 'border-destructive focus:ring-destructive/20',
+              disabled && 'opacity-50 cursor-not-allowed',
+            )
+          "
           placeholder="#000000"
           maxlength="7"
         >

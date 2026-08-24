@@ -404,7 +404,11 @@ function handleBack() {
       <Card v-else>
         <CardHeader class="pb-2">
           <CardTitle class="text-sm text-muted-foreground font-medium uppercase tracking-wider">
-            {{ activeLocale === 'ar' ? $t('common.lang_ar_content', 'المحتوى العربي') : $t('common.lang_en_content', 'English Content') }}
+            {{
+              activeLocale === 'ar'
+                ? $t('common.lang_ar_content', 'المحتوى العربي')
+                : $t('common.lang_en_content', 'English Content')
+            }}
           </CardTitle>
         </CardHeader>
         <CardContent :dir="activeLocale === 'ar' ? 'rtl' : 'ltr'" class="space-y-5">
@@ -424,7 +428,8 @@ function handleBack() {
       <!-- Bottom bar -->
       <div class="mt-6 flex items-center justify-between pt-4 border-t border-border/50">
         <p class="text-xs text-muted-foreground">
-          {{ fields.length }} {{ $t('cms.fields', 'fields') }} {{ $t('common.separator', '·') }} {{ activeLocale.toUpperCase() }}
+          {{ fields.length }} {{ $t('cms.fields', 'fields') }} {{ $t('common.separator', '·') }}
+          {{ activeLocale.toUpperCase() }}
         </p>
         <Button :loading="saving" :disabled="saving" @click="handleSave">
           {{ $t('cms.save_all_locales', 'Save Both Locales') }}

@@ -42,11 +42,23 @@ const { item, loading } = useDetails<Admin>({
           <div class="mt-3 flex items-center gap-2">
             <span
               class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium"
-              :class="item.status?.color === 'green' ? 'bg-emerald-500/10 text-emerald-500' : item.status?.color === 'red' ? 'bg-red-500/10 text-red-400' : 'bg-gray-500/10 text-gray-400'"
+              :class="
+                item.status?.color === 'green'
+                  ? 'bg-emerald-500/10 text-emerald-500'
+                  : item.status?.color === 'red'
+                    ? 'bg-red-500/10 text-red-400'
+                    : 'bg-gray-500/10 text-gray-400'
+              "
             >
               <span
                 class="h-1.5 w-1.5 rounded-full"
-                :class="item.status?.color === 'green' ? 'bg-emerald-500' : item.status?.color === 'red' ? 'bg-red-400' : 'bg-gray-400'"
+                :class="
+                  item.status?.color === 'green'
+                    ? 'bg-emerald-500'
+                    : item.status?.color === 'red'
+                      ? 'bg-red-400'
+                      : 'bg-gray-400'
+                "
               />
               {{ item.status?.badge || item.status_label }}
             </span>
@@ -62,25 +74,33 @@ const { item, loading } = useDetails<Admin>({
         <!-- Detail Fields -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <span class="text-sm text-muted-foreground">{{ t('admins.fields.phone', 'Phone') }}</span>
+            <span class="text-sm text-muted-foreground">{{
+              t('admins.fields.phone', 'Phone')
+            }}</span>
             <p class="font-medium mt-1" dir="ltr">
               {{ item.phone || '—' }}
             </p>
           </div>
           <div>
-            <span class="text-sm text-muted-foreground">{{ t('admins.fields.username', 'Username') }}</span>
+            <span class="text-sm text-muted-foreground">{{
+              t('admins.fields.username', 'Username')
+            }}</span>
             <p class="font-medium mt-1">
               {{ item.username || '—' }}
             </p>
           </div>
           <div>
-            <span class="text-sm text-muted-foreground">{{ t('admins.fields.created_at', 'Created At') }}</span>
+            <span class="text-sm text-muted-foreground">{{
+              t('admins.fields.created_at', 'Created At')
+            }}</span>
             <p class="font-medium mt-1">
               {{ new Date(item.created_at).toLocaleString() }}
             </p>
           </div>
           <div>
-            <span class="text-sm text-muted-foreground">{{ t('admins.fields.updated_at', 'Updated At') }}</span>
+            <span class="text-sm text-muted-foreground">{{
+              t('admins.fields.updated_at', 'Updated At')
+            }}</span>
             <p class="font-medium mt-1">
               {{ new Date(item.updated_at).toLocaleString() }}
             </p>

@@ -38,9 +38,34 @@ function onConfirm(_reason: string) {
               Reject with reason
             </Button>
           </div>
-          <ConfirmDialog v-model:open="open1" title="Approve Subscription" description="Are you sure you want to approve this subscription?" confirm-text="Approve" :loading="loading" @confirm="onConfirm" />
-          <ConfirmDialog v-model:open="open2" title="Delete Record" description="This action cannot be undone. This will permanently delete the record." confirm-text="Delete" confirm-variant="destructive" :loading="loading" @confirm="onConfirm" />
-          <ConfirmDialog v-model:open="open3" title="Reject Request" description="Please provide a reason for rejection." confirm-text="Reject" confirm-variant="destructive" :show-reason="true" reason-placeholder="Enter rejection reason..." :loading="loading" @confirm="onConfirm" />
+          <ConfirmDialog
+            v-model:open="open1"
+            title="Approve Subscription"
+            description="Are you sure you want to approve this subscription?"
+            confirm-text="Approve"
+            :loading="loading"
+            @confirm="onConfirm"
+          />
+          <ConfirmDialog
+            v-model:open="open2"
+            title="Delete Record"
+            description="This action cannot be undone. This will permanently delete the record."
+            confirm-text="Delete"
+            confirm-variant="destructive"
+            :loading="loading"
+            @confirm="onConfirm"
+          />
+          <ConfirmDialog
+            v-model:open="open3"
+            title="Reject Request"
+            description="Please provide a reason for rejection."
+            confirm-text="Reject"
+            confirm-variant="destructive"
+            :show-reason="true"
+            reason-placeholder="Enter rejection reason..."
+            :loading="loading"
+            @confirm="onConfirm"
+          />
         </div>
         <div class="dark p-8 rounded-xl bg-background border border-border space-y-6">
           <h3 class="text-lg font-bold text-foreground">

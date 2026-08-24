@@ -11,19 +11,22 @@ import { Label } from '@/components/uic/label'
 import SelectField from '@/components/uic/select/SelectField.vue'
 import { Switch } from '@/components/uic/switch'
 
-const props = withDefaults(defineProps<{
-  /** Filter field definitions */
-  fields: FilterField[]
-  /** Currently active filter values (v-model) */
-  filters: ActiveFilters
-  /** Layout mode: inline row or responsive grid */
-  layout?: 'inline' | 'grid'
-  /** Whether the filter bar can be collapsed */
-  collapsible?: boolean
-}>(), {
-  layout: 'inline',
-  collapsible: true,
-})
+const props = withDefaults(
+  defineProps<{
+    /** Filter field definitions */
+    fields: FilterField[]
+    /** Currently active filter values (v-model) */
+    filters: ActiveFilters
+    /** Layout mode: inline row or responsive grid */
+    layout?: 'inline' | 'grid'
+    /** Whether the filter bar can be collapsed */
+    collapsible?: boolean
+  }>(),
+  {
+    layout: 'inline',
+    collapsible: true,
+  },
+)
 
 const emit = defineEmits<{
   (e: 'update:filters', filters: ActiveFilters): void
@@ -39,7 +42,9 @@ const localFilters = ref<ActiveFilters>({ ...props.filters })
 
 watch(
   () => props.filters,
-  (val) => { localFilters.value = { ...val } },
+  (val) => {
+    localFilters.value = { ...val }
+  },
   { deep: true },
 )
 
@@ -51,7 +56,8 @@ onMounted(() => {
   props.fields.forEach((field) => {
     if (field.optionsLoader) {
       loadingFields.value.add(field.key)
-      field.optionsLoader()
+      field
+        .optionsLoader()
         .then((result) => {
           loadedOptions.value[field.key] = result.data
         })
@@ -128,8 +134,9 @@ function clearAll() {
   emit('update:filters', {})
 }
 
-const activeCount = computed(() =>
-  Object.values(localFilters.value).filter(v => v !== undefined && v !== '' && v !== null).length,
+const activeCount = computed(
+  () =>
+    Object.values(localFilters.value).filter(v => v !== undefined && v !== '' && v !== null).length,
 )
 
 const hasActive = computed(() => activeCount.value > 0)
@@ -197,9 +204,7 @@ function translatedOptions(field: FilterField) {
           v-for="field in fields"
           :key="field.key"
           class="flex flex-col gap-1.5 min-w-0"
-          :class="[
-            layout === 'inline' ? 'flex-1 min-w-[180px] max-w-[260px]' : '',
-          ]"
+          :class="[layout === 'inline' ? 'flex-1 min-w-[180px] max-w-[260px]' : '']"
         >
           <Label class="text-xs font-medium text-foreground truncate">
             {{ tl(field.label) }}
@@ -263,12 +268,11 @@ function translatedOptions(field: FilterField) {
 
           <!-- ── Toggle (switch) ── -->
           <div v-else-if="field.type === 'toggle'" class="flex items-center gap-2 pt-1">
-            <Switch
-              :checked="!!getVal(field)"
-              @update:checked="setVal(field, $event)"
-            />
+            <Switch :checked="!!getVal(field)" @update:checked="setVal(field, $event)" />
             <span class="text-xs text-muted-foreground">
-              {{ field.placeholder || (getVal(field) ? t('common.yes', 'Yes') : t('common.no', 'No')) }}
+              {{
+                field.placeholder || (getVal(field) ? t('common.yes', 'Yes') : t('common.no', 'No'))
+              }}
             </span>
           </div>
 

@@ -3,7 +3,13 @@ import type { HTMLAttributes } from 'vue'
 import { useId } from 'reka-ui'
 import { computed } from 'vue'
 import { Checkbox } from '@/components/uic/checkbox'
-import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '@/components/uic/field'
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/uic/field'
 import { cn } from '@/utils/cn'
 
 interface Props {
@@ -82,7 +88,9 @@ const checkboxClass = computed(() => {
   )
 })
 
-const hasError = computed(() => typeof props.error === 'string' ? props.error : props.error ? '' : '')
+const hasError = computed(() =>
+  typeof props.error === 'string' ? props.error : props.error ? '' : '',
+)
 </script>
 
 <template>
@@ -101,7 +109,11 @@ const hasError = computed(() => typeof props.error === 'string' ? props.error : 
       @update:model-value="onUpdateChecked"
     />
     <FieldContent v-if="label || description">
-      <FieldLabel :for="inputId" class="font-normal cursor-pointer" @click="onUpdateChecked(!isChecked)">
+      <FieldLabel
+        :for="inputId"
+        class="font-normal cursor-pointer"
+        @click="onUpdateChecked(!isChecked)"
+      >
         {{ label }}
       </FieldLabel>
       <FieldDescription v-if="description">

@@ -47,7 +47,12 @@ export const useNotificationStore = defineStore('notification', () => {
     }
   }
 
-  async function fetchNotifications(page = 1, filters?: any, sortBy = 'created_at', sortDesc = true) {
+  async function fetchNotifications(
+    page = 1,
+    filters?: any,
+    sortBy = 'created_at',
+    sortDesc = true,
+  ) {
     isLoading.value = true
     try {
       const response = await notificationsService.list({

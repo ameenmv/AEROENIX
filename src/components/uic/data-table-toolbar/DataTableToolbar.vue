@@ -9,7 +9,13 @@ import type { DataTableToolbarVariants } from './variants'
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { Button } from '@/components/uic/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/uic/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/uic/select'
 import { cn } from '@/utils/cn'
 import { dataTableToolbarVariants } from './variants'
 
@@ -49,8 +55,12 @@ const emit = defineEmits<{
 const currentPage = computed(() => props.pagination.current_page)
 const lastPage = computed(() => props.pagination.last_page)
 const total = computed(() => props.pagination.total)
-const from = computed(() => props.pagination.from ?? ((currentPage.value - 1) * props.pagination.per_page + 1))
-const to = computed(() => props.pagination.to ?? Math.min(currentPage.value * props.pagination.per_page, total.value))
+const from = computed(
+  () => props.pagination.from ?? (currentPage.value - 1) * props.pagination.per_page + 1,
+)
+const to = computed(
+  () => props.pagination.to ?? Math.min(currentPage.value * props.pagination.per_page, total.value),
+)
 
 function goTo(page: number) {
   if (page >= 1 && page <= lastPage.value && page !== currentPage.value) {
@@ -94,7 +104,12 @@ function goTo(page: number) {
         <Button variant="outline" size="icon-sm" :disabled="currentPage <= 1" @click="goTo(1)">
           <ChevronsLeft :size="14" />
         </Button>
-        <Button variant="outline" size="icon-sm" :disabled="currentPage <= 1" @click="goTo(currentPage - 1)">
+        <Button
+          variant="outline"
+          size="icon-sm"
+          :disabled="currentPage <= 1"
+          @click="goTo(currentPage - 1)"
+        >
           <ChevronLeft :size="14" />
         </Button>
 
@@ -102,10 +117,20 @@ function goTo(page: number) {
           {{ currentPage }} / {{ lastPage }}
         </span>
 
-        <Button variant="outline" size="icon-sm" :disabled="currentPage >= lastPage" @click="goTo(currentPage + 1)">
+        <Button
+          variant="outline"
+          size="icon-sm"
+          :disabled="currentPage >= lastPage"
+          @click="goTo(currentPage + 1)"
+        >
           <ChevronRight :size="14" />
         </Button>
-        <Button variant="outline" size="icon-sm" :disabled="currentPage >= lastPage" @click="goTo(lastPage)">
+        <Button
+          variant="outline"
+          size="icon-sm"
+          :disabled="currentPage >= lastPage"
+          @click="goTo(lastPage)"
+        >
           <ChevronsRight :size="14" />
         </Button>
       </div>

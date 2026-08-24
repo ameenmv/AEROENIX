@@ -80,7 +80,16 @@ export interface FilterOption {
 export interface FilterField {
   key: string
   label: string
-  type: 'text' | 'select' | 'multiselect' | 'date' | 'dateRange' | 'checkbox' | 'toggle' | 'range' | 'number'
+  type:
+    | 'text'
+    | 'select'
+    | 'multiselect'
+    | 'date'
+    | 'dateRange'
+    | 'checkbox'
+    | 'toggle'
+    | 'range'
+    | 'number'
   options?: FilterOption[]
   optionsLoader?: () => Promise<{ data: any[] }>
   placeholder?: string

@@ -58,7 +58,11 @@ const inputId = computed(() => props.id || autoId)
       :max="max"
       :step="step"
       :disabled="disabled"
-      @update:model-value="(val) => { if (val) emit('update:modelValue', val) }"
+      @update:model-value="
+        (val) => {
+          if (val) emit('update:modelValue', val)
+        }
+      "
     />
 
     <FieldDescription v-if="description">

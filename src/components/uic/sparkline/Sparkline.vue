@@ -101,11 +101,7 @@ const points = computed(() => {
     preserveAspectRatio="none"
     aria-hidden="true"
   >
-    <path
-      v-if="filled"
-      :d="points.area"
-      :fill="trendColors.fill"
-    />
+    <path v-if="filled" :d="points.area" :fill="trendColors.fill" />
     <path
       :d="points.line"
       fill="none"

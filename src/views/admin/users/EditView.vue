@@ -27,10 +27,14 @@ const form = useForm({
   onSuccess: () => router.push({ name: 'admin-users' }),
 })
 
-watch(item, (newItem) => {
-  if (newItem)
-    form.setValues(newItem)
-}, { immediate: true })
+watch(
+  item,
+  (newItem) => {
+    if (newItem)
+      form.setValues(newItem)
+  },
+  { immediate: true },
+)
 </script>
 
 <template>

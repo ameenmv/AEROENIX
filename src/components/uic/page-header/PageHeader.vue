@@ -43,10 +43,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <header
-    data-slot="page-header"
-    :class="cn(pageHeaderVariants({ size, align }), props.class)"
-  >
+  <header data-slot="page-header" :class="cn(pageHeaderVariants({ size, align }), props.class)">
     <!-- Breadcrumb (using shadcn Breadcrumb component) -->
     <Breadcrumb v-if="breadcrumb.length">
       <BreadcrumbList>
@@ -68,7 +65,10 @@ const props = withDefaults(
     <div class="flex items-start justify-between gap-4 flex-wrap">
       <div class="flex flex-col gap-2 min-w-0">
         <!-- Eyebrow -->
-        <p v-if="$slots.eyebrow || eyebrow" class="text-xs font-semibold text-primary uppercase tracking-widest m-0">
+        <p
+          v-if="$slots.eyebrow || eyebrow"
+          class="text-xs font-semibold text-primary uppercase tracking-widest m-0"
+        >
           <slot name="eyebrow">
             {{ eyebrow }}
           </slot>
@@ -76,7 +76,10 @@ const props = withDefaults(
 
         <!-- Title -->
         <slot name="title">
-          <h1 data-slot="page-header-title" class="font-semibold tracking-tight text-foreground leading-tight m-0">
+          <h1
+            data-slot="page-header-title"
+            class="font-semibold tracking-tight text-foreground leading-tight m-0"
+          >
             {{ title }}
           </h1>
         </slot>

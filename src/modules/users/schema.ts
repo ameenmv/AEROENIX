@@ -26,10 +26,7 @@ export function userCreateSchema(t: TranslateFn) {
 
 export function userEditSchema(t: TranslateFn) {
   return z.object({
-    name: z
-      .string()
-      .min(1, t('users.validation.name_required', 'Name is required.'))
-      .optional(),
+    name: z.string().min(1, t('users.validation.name_required', 'Name is required.')).optional(),
     email: z
       .string()
       .email(t('users.validation.email_invalid', 'Please enter a valid email address.'))

@@ -97,11 +97,7 @@ function buildMeta(
 export function createMockService<T extends Record<string, unknown> = Record<string, unknown>>(
   config: MockServiceConfig,
 ): ResourceService<T> {
-  const {
-    fields,
-    count = 25,
-    delay = 200,
-  } = config
+  const { fields, count = 25, delay = 200 } = config
 
   // ── In-memory store ─────────────────────────────────────────────────────
   let store: T[] = generateMockRecords<T>(fields, count)
@@ -117,9 +113,7 @@ export function createMockService<T extends Record<string, unknown> = Record<str
     if (params.search) {
       const q = params.search.toLowerCase()
       items = items.filter(item =>
-        Object.values(item).some(val =>
-          String(val).toLowerCase().includes(q),
-        ),
+        Object.values(item).some(val => String(val).toLowerCase().includes(q)),
       )
     }
 
@@ -238,9 +232,7 @@ export function createMockService<T extends Record<string, unknown> = Record<str
         })
       }
 
-      const updateData = data instanceof FormData
-        ? Object.fromEntries(data.entries())
-        : data
+      const updateData = data instanceof FormData ? Object.fromEntries(data.entries()) : data
 
       const updated = {
         ...store[index],

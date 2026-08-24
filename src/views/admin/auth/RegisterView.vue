@@ -64,7 +64,10 @@ async function handleRegister() {
         <CardContent>
           <form class="flex flex-col gap-5" @submit.prevent="handleRegister">
             <!-- Error message -->
-            <p v-if="error" class="text-sm text-destructive text-center bg-destructive/10 rounded-md p-2">
+            <p
+              v-if="error"
+              class="text-sm text-destructive text-center bg-destructive/10 rounded-md p-2"
+            >
               {{ error }}
             </p>
             <InputField id="name" v-model="name" :label="t('auth.name_label')" required />

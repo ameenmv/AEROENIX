@@ -97,11 +97,7 @@ function onOpenChange(open: boolean) {
         <label v-if="reasonLabel" class="text-sm font-medium text-foreground mb-1.5 block">
           {{ reasonLabel }}
         </label>
-        <Textarea
-          v-model="reason"
-          :placeholder="reasonPlaceholder"
-          :rows="3"
-        />
+        <Textarea v-model="reason" :placeholder="reasonPlaceholder" :rows="3" />
       </div>
 
       <!-- Extra slot -->
@@ -112,9 +108,12 @@ function onOpenChange(open: boolean) {
           {{ cancelText }}
         </AlertDialogCancel>
         <AlertDialogAction
-          :class="cn(
-            confirmVariant === 'destructive' && 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-          )"
+          :class="
+            cn(
+              confirmVariant === 'destructive'
+                && 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+            )
+          "
           :disabled="loading || (showReason && !reason.trim())"
           @click.prevent="onConfirm"
         >

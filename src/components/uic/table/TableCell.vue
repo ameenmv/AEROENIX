@@ -14,7 +14,12 @@ const isEmpty = computed(() => {
     return true
   return slotContent.every((vnode) => {
     const child = vnode.children
-    return child === null || child === undefined || child === '' || (Array.isArray(child) && child.length === 0)
+    return (
+      child === null
+      || child === undefined
+      || child === ''
+      || (Array.isArray(child) && child.length === 0)
+    )
   })
 })
 </script>

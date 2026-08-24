@@ -23,10 +23,7 @@ const form = useForm({
       {{ t('actions.create') }} {{ t('users.title', 'User') }}
     </h1>
 
-    <FormContainer
-      :form="form"
-      @cancel="router.push({ name: 'admin-users' })"
-    >
+    <FormContainer :form="form" @cancel="router.push({ name: 'admin-users' })">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <InputField
           name="name"

@@ -67,11 +67,7 @@ const formatConfig = {
     </DropdownMenuTrigger>
 
     <DropdownMenuContent align="end">
-      <DropdownMenuItem
-        v-for="format in formats"
-        :key="format"
-        @click="emit('export', format)"
-      >
+      <DropdownMenuItem v-for="format in formats" :key="format" @click="emit('export', format)">
         <component :is="formatConfig[format].icon" :size="14" class="mr-2" />
         {{ formatConfig[format].label }}
       </DropdownMenuItem>

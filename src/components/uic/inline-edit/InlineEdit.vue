@@ -70,22 +70,24 @@ function onKeydown(e: KeyboardEvent) {
 </script>
 
 <template>
-  <div
-    data-slot="inline-edit"
-    :class="cn(inlineEditVariants({ size }), props.class)"
-  >
+  <div data-slot="inline-edit" :class="cn(inlineEditVariants({ size }), props.class)">
     <!-- Editing mode -->
     <template v-if="isEditing">
-      <Input
-        ref="inputRef"
-        v-model="draft"
-        class="flex-1 h-auto py-1"
-        @keydown="onKeydown"
-      />
-      <Button variant="ghost" size="icon-sm" class="text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10" @click="save">
+      <Input ref="inputRef" v-model="draft" class="flex-1 h-auto py-1" @keydown="onKeydown" />
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        class="text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10"
+        @click="save"
+      >
         <Check :size="14" />
       </Button>
-      <Button variant="ghost" size="icon-sm" class="text-destructive hover:bg-destructive/10" @click="cancel">
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        class="text-destructive hover:bg-destructive/10"
+        @click="cancel"
+      >
         <X :size="14" />
       </Button>
     </template>
@@ -93,12 +95,14 @@ function onKeydown(e: KeyboardEvent) {
     <!-- Display mode -->
     <template v-else>
       <span
-        :class="cn(
-          'cursor-pointer rounded px-1 py-0.5 transition-colors',
-          'hover:bg-muted',
-          !modelValue && 'text-muted-foreground italic',
-          disabled && 'cursor-not-allowed opacity-50',
-        )"
+        :class="
+          cn(
+            'cursor-pointer rounded px-1 py-0.5 transition-colors',
+            'hover:bg-muted',
+            !modelValue && 'text-muted-foreground italic',
+            disabled && 'cursor-not-allowed opacity-50',
+          )
+        "
         @click="startEditing"
       >
         {{ modelValue || placeholder }}

@@ -39,29 +39,32 @@
 
 import { computed, onMounted, ref, watch } from 'vue'
 
-const props = withDefaults(defineProps<{
-  /** The image URL — can be SVG or any image format */
-  src: string
-  /** Icon size in pixels (width & height). Pass string for custom units */
-  size?: number | string
-  /** Override color for SVG fill/stroke. Uses `currentColor` by default (inherits from CSS) */
-  color?: string
-  /** Fallback image URL if the source fails to load */
-  fallback?: string
-  /** Alt text for accessibility */
-  alt?: string
-  /** Whether to replace hardcoded colors with currentColor (SVGs only). Default: true */
-  colorize?: boolean
-  /** If true, preserves the original SVG colors and only uses `color` for the style wrapper */
-  preserveColors?: boolean
-}>(), {
-  size: 24,
-  color: undefined,
-  fallback: undefined,
-  alt: '',
-  colorize: true,
-  preserveColors: false,
-})
+const props = withDefaults(
+  defineProps<{
+    /** The image URL — can be SVG or any image format */
+    src: string
+    /** Icon size in pixels (width & height). Pass string for custom units */
+    size?: number | string
+    /** Override color for SVG fill/stroke. Uses `currentColor` by default (inherits from CSS) */
+    color?: string
+    /** Fallback image URL if the source fails to load */
+    fallback?: string
+    /** Alt text for accessibility */
+    alt?: string
+    /** Whether to replace hardcoded colors with currentColor (SVGs only). Default: true */
+    colorize?: boolean
+    /** If true, preserves the original SVG colors and only uses `color` for the style wrapper */
+    preserveColors?: boolean
+  }>(),
+  {
+    size: 24,
+    color: undefined,
+    fallback: undefined,
+    alt: '',
+    colorize: true,
+    preserveColors: false,
+  },
+)
 
 // ── State ─────────────────────────────────────────────────────────
 
@@ -185,7 +188,11 @@ async function fetchSvg(url: string): Promise<string> {
     const text = await response.text()
 
     // Verify it's actually SVG content
-    if (!contentType.includes('svg') && !text.trim().startsWith('<svg') && !text.includes('xmlns="http://www.w3.org/2000/svg"')) {
+    if (
+      !contentType.includes('svg')
+      && !text.trim().startsWith('<svg')
+      && !text.includes('xmlns="http://www.w3.org/2000/svg"')
+    ) {
       throw new Error('Response is not SVG content')
     }
 
@@ -236,13 +243,19 @@ async function loadImage(url: string) {
 // ── Lifecycle ─────────────────────────────────────────────────────
 
 onMounted(() => loadImage(props.src))
-watch(() => props.src, newSrc => loadImage(newSrc))
-watch(() => [props.colorize, props.preserveColors], () => {
-  if (isSvg.value && props.src) {
-    // Re-process with new color settings (cache key includes these)
-    loadImage(props.src)
-  }
-})
+watch(
+  () => props.src,
+  newSrc => loadImage(newSrc),
+)
+watch(
+  () => [props.colorize, props.preserveColors],
+  () => {
+    if (isSvg.value && props.src) {
+      // Re-process with new color settings (cache key includes these)
+      loadImage(props.src)
+    }
+  },
+)
 </script>
 
 <template>
@@ -350,7 +363,12 @@ watch(() => [props.colorize, props.preserveColors], () => {
 }
 
 @keyframes svg-image-shimmer {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 </style>

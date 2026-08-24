@@ -20,9 +20,12 @@ export const tabsTriggerVariants = cva(
   {
     variants: {
       variant: {
-        default: 'rounded-md px-3 py-1 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm',
-        underline: 'rounded-none px-4 py-2 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-foreground',
-        pills: 'rounded-full px-4 py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
+        default:
+          'rounded-md px-3 py-1 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm',
+        underline:
+          'rounded-none px-4 py-2 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-foreground',
+        pills:
+          'rounded-full px-4 py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
       },
     },
     defaultVariants: { variant: 'default' },

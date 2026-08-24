@@ -11,7 +11,10 @@ import { AspectRatio } from '@/components/uic/aspect-ratio'
             Light
           </h3>
           <div class="w-[300px]">
-            <AspectRatio :ratio="16 / 9" class="bg-muted rounded-md flex items-center justify-center">
+            <AspectRatio
+              :ratio="16 / 9"
+              class="bg-muted rounded-md flex items-center justify-center"
+            >
               <span class="text-sm text-muted-foreground">16:9</span>
             </AspectRatio>
           </div>
@@ -26,7 +29,10 @@ import { AspectRatio } from '@/components/uic/aspect-ratio'
             Dark
           </h3>
           <div class="w-[300px]">
-            <AspectRatio :ratio="4 / 3" class="bg-muted rounded-md flex items-center justify-center">
+            <AspectRatio
+              :ratio="4 / 3"
+              class="bg-muted rounded-md flex items-center justify-center"
+            >
               <span class="text-sm text-muted-foreground">4:3</span>
             </AspectRatio>
           </div>

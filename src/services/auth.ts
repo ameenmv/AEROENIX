@@ -162,7 +162,6 @@ const MOCK_CONFIG: AuthConfig = {
 // ── Service ─────────────────────────────────────────────────────────────────
 
 export const authService = {
-
   // ─── Config ───────────────────────────────────────────────────────────────
 
   /** GET /auth/config — auth configuration for the guard (public) */
@@ -260,7 +259,10 @@ export const authService = {
         user: MOCK_USER,
       }
     }
-    const res = await api.post<ApiSuccessResponse<OtpVerifyResponse>>(AUTH_ENDPOINTS.OTP_VERIFY, data)
+    const res = await api.post<ApiSuccessResponse<OtpVerifyResponse>>(
+      AUTH_ENDPOINTS.OTP_VERIFY,
+      data,
+    )
     return res.data.data
   },
 
@@ -279,7 +281,10 @@ export const authService = {
         locked_until: null,
       }
     }
-    const res = await api.post<ApiSuccessResponse<OtpResendResponse>>(AUTH_ENDPOINTS.OTP_RESEND, data)
+    const res = await api.post<ApiSuccessResponse<OtpResendResponse>>(
+      AUTH_ENDPOINTS.OTP_RESEND,
+      data,
+    )
     return res.data.data
   },
 
@@ -297,7 +302,10 @@ export const authService = {
         locked_until: null,
       }
     }
-    const res = await api.post<ApiSuccessResponse<ForgotPasswordResponse>>(AUTH_ENDPOINTS.PASSWORD_FORGOT, data)
+    const res = await api.post<ApiSuccessResponse<ForgotPasswordResponse>>(
+      AUTH_ENDPOINTS.PASSWORD_FORGOT,
+      data,
+    )
     return res.data.data
   },
 
@@ -305,7 +313,10 @@ export const authService = {
   async verifyResetOtp(data: ResetOtpVerifyPayload): Promise<ResetOtpVerifyResponse> {
     if (isMock)
       return mockDelay({ message: 'OTP verified', reset_token: 'mock-reset-token' })
-    const res = await api.post<ApiSuccessResponse<ResetOtpVerifyResponse>>(AUTH_ENDPOINTS.PASSWORD_VERIFY_OTP, data)
+    const res = await api.post<ApiSuccessResponse<ResetOtpVerifyResponse>>(
+      AUTH_ENDPOINTS.PASSWORD_VERIFY_OTP,
+      data,
+    )
     return res.data.data
   },
 
@@ -313,7 +324,10 @@ export const authService = {
   async resetPassword(data: ResetPasswordPayload): Promise<ResetPasswordResponse> {
     if (isMock)
       return mockDelay({ message: 'Password reset successful' })
-    const res = await api.post<ApiSuccessResponse<ResetPasswordResponse>>(AUTH_ENDPOINTS.PASSWORD_RESET, data)
+    const res = await api.post<ApiSuccessResponse<ResetPasswordResponse>>(
+      AUTH_ENDPOINTS.PASSWORD_RESET,
+      data,
+    )
     return res.data.data
   },
 
@@ -340,7 +354,10 @@ export const authService = {
   async changePassword(data: ChangePasswordPayload): Promise<ChangePasswordResponse> {
     if (isMock)
       return mockDelay({ message: 'Password changed', requires_otp: false })
-    const res = await api.post<ApiSuccessResponse<ChangePasswordResponse>>(AUTH_ENDPOINTS.PASSWORD_CHANGE, data)
+    const res = await api.post<ApiSuccessResponse<ChangePasswordResponse>>(
+      AUTH_ENDPOINTS.PASSWORD_CHANGE,
+      data,
+    )
     return res.data.data
   },
 
@@ -348,7 +365,10 @@ export const authService = {
   async verifyChangePassword(data: VerifyChangePasswordPayload): Promise<MessageResponse> {
     if (isMock)
       return mockDelay({ message: 'Password change confirmed' })
-    const res = await api.post<ApiSuccessResponse<MessageResponse>>(AUTH_ENDPOINTS.PASSWORD_CHANGE_VERIFY, data)
+    const res = await api.post<ApiSuccessResponse<MessageResponse>>(
+      AUTH_ENDPOINTS.PASSWORD_CHANGE_VERIFY,
+      data,
+    )
     return res.data.data
   },
 
@@ -365,7 +385,10 @@ export const authService = {
         two_factor_enabled: enabled,
       })
     }
-    const res = await api.put<ApiSuccessResponse<Toggle2faResponse>>(AUTH_ENDPOINTS.TOGGLE_2FA, data)
+    const res = await api.put<ApiSuccessResponse<Toggle2faResponse>>(
+      AUTH_ENDPOINTS.TOGGLE_2FA,
+      data,
+    )
     return res.data.data
   },
 
@@ -388,7 +411,10 @@ export const authService = {
   async confirmTotp(data: TotpConfirmPayload): Promise<MessageResponse> {
     if (isMock)
       return mockDelay({ message: 'TOTP enabled' })
-    const res = await api.post<ApiSuccessResponse<MessageResponse>>(AUTH_ENDPOINTS.TOTP_CONFIRM, data)
+    const res = await api.post<ApiSuccessResponse<MessageResponse>>(
+      AUTH_ENDPOINTS.TOTP_CONFIRM,
+      data,
+    )
     return res.data.data
   },
 
@@ -403,7 +429,10 @@ export const authService = {
   // ─── Social Login ─────────────────────────────────────────────────────────
 
   /** POST /auth/social/{provider}/redirect — get OAuth redirect URL (public) */
-  async socialRedirect(provider: SocialProvider, data: SocialRedirectPayload): Promise<SocialRedirectResponse> {
+  async socialRedirect(
+    provider: SocialProvider,
+    data: SocialRedirectPayload,
+  ): Promise<SocialRedirectResponse> {
     if (isMock)
       return mockDelay({ redirect_url: `https://accounts.google.com/o/oauth2?mock=true` })
     const res = await api.post<ApiSuccessResponse<SocialRedirectResponse>>(
@@ -414,7 +443,10 @@ export const authService = {
   },
 
   /** POST /auth/social/{provider}/callback — exchange OAuth code for token (public) */
-  async socialCallback(provider: SocialProvider, data: SocialCallbackPayload): Promise<SocialCallbackResponse> {
+  async socialCallback(
+    provider: SocialProvider,
+    data: SocialCallbackPayload,
+  ): Promise<SocialCallbackResponse> {
     if (isMock) {
       return mockDelay<SocialCallbackResponse>({
         token: MOCK_TOKEN,

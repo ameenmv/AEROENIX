@@ -59,7 +59,7 @@ const radarOptions = computed<ApexOptions>(() => ({
   },
   yaxis: {
     show: false,
-    ...props.options.yaxis as object,
+    ...(props.options.yaxis as object),
   },
 }))
 </script>

@@ -7,7 +7,10 @@ import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui
 import { Input } from '@/components/uic/input'
 import { Textarea } from '@/components/uic/textarea'
 
-interface TranslatableField { en: string, ar: string }
+interface TranslatableField {
+  en: string
+  ar: string
+}
 
 interface Props {
   modelValue: TranslatableField

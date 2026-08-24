@@ -73,18 +73,18 @@ const formattedDelta = computed(() => {
 
 const deltaBadgeVariant = computed(() => {
   switch (resolvedTrend.value) {
-    case 'up': return 'success' as const
-    case 'down': return 'destructive' as const
-    default: return 'secondary' as const
+    case 'up':
+      return 'success' as const
+    case 'down':
+      return 'destructive' as const
+    default:
+      return 'secondary' as const
   }
 })
 </script>
 
 <template>
-  <Card
-    data-slot="stat-card"
-    :class="cn(statCardVariants({ accent, size }), props.class)"
-  >
+  <Card data-slot="stat-card" :class="cn(statCardVariants({ accent, size }), props.class)">
     <CardHeader class="p-0">
       <!-- Head: icon + label -->
       <div class="flex items-center gap-2.5">
@@ -103,8 +103,15 @@ const deltaBadgeVariant = computed(() => {
     <CardContent class="p-0">
       <!-- Value row -->
       <div class="flex items-end justify-between gap-3">
-        <span class="text-3xl font-semibold tracking-tight text-foreground leading-none tabular-nums">
-          <span v-if="prefix" class="text-lg font-medium text-muted-foreground mx-0.5">{{ prefix }}</span>{{ value }}<span v-if="suffix" class="text-lg font-medium text-muted-foreground mx-0.5">{{ suffix }}</span>
+        <span
+          class="text-3xl font-semibold tracking-tight text-foreground leading-none tabular-nums"
+        >
+          <span v-if="prefix" class="text-lg font-medium text-muted-foreground mx-0.5">{{
+            prefix
+          }}</span>{{ value
+          }}<span v-if="suffix" class="text-lg font-medium text-muted-foreground mx-0.5">{{
+            suffix
+          }}</span>
         </span>
 
         <Sparkline
@@ -117,7 +124,10 @@ const deltaBadgeVariant = computed(() => {
       </div>
 
       <!-- Delta -->
-      <div v-if="formattedDelta !== null || deltaLabel" class="flex items-center gap-1.5 text-xs mt-3">
+      <div
+        v-if="formattedDelta !== null || deltaLabel"
+        class="flex items-center gap-1.5 text-xs mt-3"
+      >
         <Badge
           v-if="formattedDelta !== null"
           :variant="deltaBadgeVariant"
@@ -131,7 +141,10 @@ const deltaBadgeVariant = computed(() => {
       </div>
 
       <!-- Extra slot -->
-      <div v-if="$slots.default" class="mt-2 pt-2 border-t border-dashed border-border text-sm text-muted-foreground">
+      <div
+        v-if="$slots.default"
+        class="mt-2 pt-2 border-t border-dashed border-border text-sm text-muted-foreground"
+      >
         <slot />
       </div>
     </CardContent>

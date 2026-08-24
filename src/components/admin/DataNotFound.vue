@@ -11,7 +11,9 @@ const router = useRouter()
 </script>
 
 <template>
-  <div class="min-h-[75vh] flex flex-col items-center justify-center bg-background px-4 rounded-xl border border-border shadow-sm w-full">
+  <div
+    class="min-h-[75vh] flex flex-col items-center justify-center bg-background px-4 rounded-xl border border-border shadow-sm w-full"
+  >
     <div class="flex flex-col items-center gap-6 text-center max-w-md">
       <!-- 404 number -->
       <div class="relative">
@@ -28,7 +30,12 @@ const router = useRouter()
           {{ t('common.no_data_found', 'No Data Found') }}
         </h2>
         <p class="text-sm text-muted-foreground leading-relaxed">
-          {{ t('common.no_data_found_description', "The item you're looking for doesn't exist, has been removed, or you don't have permission to view it.") }}
+          {{
+            t(
+              'common.no_data_found_description',
+              "The item you're looking for doesn't exist, has been removed, or you don't have permission to view it.",
+            )
+          }}
         </p>
       </div>
 

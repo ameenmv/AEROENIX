@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@/components/uic/context-menu'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/uic/context-menu'
 </script>
 
 <template>
@@ -11,7 +17,9 @@ import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator,
             Light
           </h3>
           <ContextMenu>
-            <ContextMenuTrigger class="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm">
+            <ContextMenuTrigger
+              class="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm"
+            >
               Right click here
             </ContextMenuTrigger>
             <ContextMenuContent class="w-64">
@@ -29,7 +37,9 @@ import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator,
             Dark
           </h3>
           <ContextMenu>
-            <ContextMenuTrigger class="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm">
+            <ContextMenuTrigger
+              class="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm"
+            >
               Right click here
             </ContextMenuTrigger>
             <ContextMenuContent class="w-64">

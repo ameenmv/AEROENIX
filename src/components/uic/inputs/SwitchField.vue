@@ -2,7 +2,13 @@
 import type { HTMLAttributes } from 'vue'
 import { useId } from 'reka-ui'
 import { computed } from 'vue'
-import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '@/components/uic/field'
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/uic/field'
 import { Switch } from '@/components/uic/switch'
 
 interface Props {
@@ -43,12 +49,7 @@ function onUpdate(checked: boolean) {
     :data-disabled="disabled ? true : undefined"
     :class="props.class"
   >
-    <Switch
-      :id="inputId"
-      :checked="modelValue"
-      :disabled="disabled"
-      @update:checked="onUpdate"
-    />
+    <Switch :id="inputId" :checked="modelValue" :disabled="disabled" @update:checked="onUpdate" />
     <FieldContent v-if="label || description">
       <FieldLabel :for="inputId" class="font-normal">
         {{ label }}

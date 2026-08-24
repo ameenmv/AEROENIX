@@ -13,14 +13,7 @@ import { NotificationStatusColor, NotificationStatusLabel } from '@/enums'
 const { t } = useI18n()
 const router = useRouter()
 
-const {
-  filterConfig,
-  table,
-  confirmState,
-  cancelConfirm,
-  deleteItem,
-  sendNow,
-} = useNotifications()
+const { filterConfig, table, confirmState, cancelConfirm, deleteItem, sendNow } = useNotifications()
 
 const statusColorClass: Record<string, string> = {
   gray: 'bg-gray-500/10 text-gray-400',
@@ -67,7 +60,7 @@ function n(row: any): ManualNotification {
       />
 
       <DataTable
-        :data="(table.items.value as any)"
+        :data="table.items.value as any"
         :loading="table.loading.value"
         :total-items="table.totalItems.value"
         :page="table.page.value"
@@ -125,9 +118,11 @@ function n(row: any): ManualNotification {
             <!-- Send At -->
             <TableCell>
               <span class="text-xs text-muted-foreground">
-                {{ n(row).send_at
-                  ? new Date(n(row).send_at!).toLocaleString()
-                  : t('common.not_scheduled', '—') }}
+                {{
+                  n(row).send_at
+                    ? new Date(n(row).send_at!).toLocaleString()
+                    : t('common.not_scheduled', '—')
+                }}
               </span>
             </TableCell>
 
@@ -144,23 +139,28 @@ function n(row: any): ManualNotification {
                 <Button
                   variant="ghost"
                   size="sm"
-                  @click="router.push({ name: 'admin-notifications-show', params: { id: String(n(row).id) } })"
+                  @click="
+                    router.push({
+                      name: 'admin-notifications-show',
+                      params: { id: String(n(row).id) },
+                    })
+                  "
                 >
                   {{ t('actions.view', 'View') }}
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
-                  @click="router.push({ name: 'admin-notifications-edit', params: { id: String(n(row).id) } })"
+                  @click="
+                    router.push({
+                      name: 'admin-notifications-edit',
+                      params: { id: String(n(row).id) },
+                    })
+                  "
                 >
                   {{ t('actions.edit', 'Edit') }}
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  class="text-primary"
-                  @click="sendNow(n(row))"
-                >
+                <Button variant="ghost" size="sm" class="text-primary" @click="sendNow(n(row))">
                   {{ t('notifications.actions.send_now', 'Send') }}
                 </Button>
                 <Button

@@ -33,15 +33,9 @@ const props = withDefaults(
 </script>
 
 <template>
-  <li
-    data-slot="timeline-item"
-    :class="cn('flex items-start gap-3 relative', props.class)"
-  >
+  <li data-slot="timeline-item" :class="cn('flex items-start gap-3 relative', props.class)">
     <!-- Dot -->
-    <span
-      data-slot="timeline-dot"
-      :class="cn(timelineDotVariants({ variant, size }), 'mt-1.5')"
-    />
+    <span data-slot="timeline-dot" :class="cn(timelineDotVariants({ variant, size }), 'mt-1.5')" />
 
     <!-- Content -->
     <div class="flex-1 min-w-0">

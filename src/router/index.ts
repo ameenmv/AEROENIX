@@ -122,7 +122,7 @@ router.beforeEach((to, _from, next) => {
   if (token) {
     const ttlMs = AUTH_SESSION_TTL > 0 ? AUTH_SESSION_TTL * 60 * 1000 : 0
     const issuedAt = Number(localStorage.getItem('auth_token_issued_at') || 0)
-    if (ttlMs > 0 && issuedAt > 0 && (Date.now() - issuedAt > ttlMs)) {
+    if (ttlMs > 0 && issuedAt > 0 && Date.now() - issuedAt > ttlMs) {
       localStorage.removeItem('auth_token')
       localStorage.removeItem('auth_token_issued_at')
       localStorage.removeItem('auth_user')

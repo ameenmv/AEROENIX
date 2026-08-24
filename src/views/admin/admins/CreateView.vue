@@ -46,10 +46,7 @@ function toggleRole(roleId: number) {
       {{ t('actions.create') }} {{ t('admins.title', 'Admin') }}
     </h1>
 
-    <FormContainer
-      :form="form"
-      @cancel="router.push({ name: 'admin-admins' })"
-    >
+    <FormContainer :form="form" @cancel="router.push({ name: 'admin-admins' })">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <InputField
           name="name"

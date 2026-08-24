@@ -22,8 +22,12 @@ const emit = defineEmits<{
     </label>
     <div class="rounded-lg border border-border bg-background overflow-hidden">
       <div class="flex items-center gap-1 px-3 py-1.5 border-b border-border bg-muted/30">
-        <span class="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">{{ $t('cms.rich_text_blocks', 'Rich Text Blocks') }}</span>
-        <span class="text-[10px] text-muted-foreground ml-auto">{{ $t('cms.textarea_fallback', '(Textarea fallback)') }}</span>
+        <span class="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">{{
+          $t('cms.rich_text_blocks', 'Rich Text Blocks')
+        }}</span>
+        <span class="text-[10px] text-muted-foreground ml-auto">{{
+          $t('cms.textarea_fallback', '(Textarea fallback)')
+        }}</span>
       </div>
       <Textarea
         :model-value="modelValue ?? ''"

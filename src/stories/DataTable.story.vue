@@ -121,10 +121,36 @@ const lastAction = ref('')
             :data="sampleData"
             searchable
             :context-menu-actions="[
-              { label: 'View', icon: ViewIcon, onClick: (row) => { lastAction = `View: ${row?.name}` } },
-              { label: 'Edit', icon: Edit02Icon, onClick: (row) => { lastAction = `Edit: ${row?.name}` } },
-              { label: 'Copy ID', icon: Copy01Icon, onClick: (row) => { lastAction = `Copy: ${row?.id}` } },
-              { label: 'Delete', icon: Delete01Icon, variant: 'delete', separator: true, onClick: (row) => { lastAction = `Delete: ${row?.name}` } },
+              {
+                label: 'View',
+                icon: ViewIcon,
+                onClick: (row) => {
+                  lastAction = `View: ${row?.name}`
+                },
+              },
+              {
+                label: 'Edit',
+                icon: Edit02Icon,
+                onClick: (row) => {
+                  lastAction = `Edit: ${row?.name}`
+                },
+              },
+              {
+                label: 'Copy ID',
+                icon: Copy01Icon,
+                onClick: (row) => {
+                  lastAction = `Copy: ${row?.id}`
+                },
+              },
+              {
+                label: 'Delete',
+                icon: Delete01Icon,
+                variant: 'delete',
+                separator: true,
+                onClick: (row) => {
+                  lastAction = `Delete: ${row?.name}`
+                },
+              },
             ]"
           />
         </div>

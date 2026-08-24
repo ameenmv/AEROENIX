@@ -43,15 +43,19 @@ const form = useForm({
   onSuccess: () => router.push({ name: 'admin-roles' }),
 })
 
-watch(item, (newItem) => {
-  if (newItem) {
-    form.setValues({
-      display_name: newItem.display_name,
-      permissions: newItem.permissions?.map(p => p.id) || [],
-    })
-    selectedPermissions.value = newItem.permissions?.map(p => p.id) || []
-  }
-}, { immediate: true })
+watch(
+  item,
+  (newItem) => {
+    if (newItem) {
+      form.setValues({
+        display_name: newItem.display_name,
+        permissions: newItem.permissions?.map(p => p.id) || [],
+      })
+      selectedPermissions.value = newItem.permissions?.map(p => p.id) || []
+    }
+  },
+  { immediate: true },
+)
 
 // Group permissions by module for the UI
 function groupedPermissions(permissions: Permission[]) {

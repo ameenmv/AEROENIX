@@ -145,9 +145,8 @@ function validateSlugLocale(slug: string, locale: 'en' | 'ar') {
   if (!slug)
     return
   // Snake case: letters, numbers, and underscores only
-  const isSnakeCase = locale === 'ar'
-    ? /^[\u0600-\u06FF0-9_]+$/.test(slug)
-    : /^[a-z0-9_]+$/.test(slug)
+  const isSnakeCase
+    = locale === 'ar' ? /^[\u0600-\u06FF0-9_]+$/.test(slug) : /^[a-z0-9_]+$/.test(slug)
 
   if (!isSnakeCase) {
     inlineErrors.value[`slug.${locale}`] = t(
@@ -208,7 +207,9 @@ async function handleSubmit() {
       await cmsPageService.update(pageId.value!, updatePayload)
 
       // Save SEO separately via batch endpoint
-      const cleanedSeo = cleanSeoPayload(seo.value) as Record<string, Partial<CmsSeoMeta>> | undefined
+      const cleanedSeo = cleanSeoPayload(seo.value) as
+        | Record<string, Partial<CmsSeoMeta>>
+        | undefined
       const hasSeo = cleanedSeo && Object.keys(cleanedSeo).length > 0
       if (hasSeo) {
         await cmsSeoService.saveBatch(pageId.value!, {
@@ -223,7 +224,9 @@ async function handleSubmit() {
     }
     else {
       // ── Create mode: send slug, title, optional SEO ──
-      const cleanedSeo = cleanSeoPayload(seo.value) as Record<string, Partial<CmsSeoMeta>> | undefined
+      const cleanedSeo = cleanSeoPayload(seo.value) as
+        | Record<string, Partial<CmsSeoMeta>>
+        | undefined
       const hasSeo = cleanedSeo && Object.keys(cleanedSeo).length > 0
 
       const createPayload: CreatePagePayload = {

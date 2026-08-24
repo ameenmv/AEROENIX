@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { Card, CardContent } from '@/components/uic/card'
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/uic/carousel'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/uic/carousel'
 </script>
 
 <template>

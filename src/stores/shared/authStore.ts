@@ -63,14 +63,18 @@ export const useAuthStore = defineStore('auth', () => {
   /** Bearer token stored in encrypted cookie */
   const token = ref(decryptAndGetCookie('auth_token') || '')
 
-  watch(token, (newVal) => {
-    if (newVal) {
-      encryptAndSetCookie('auth_token', newVal, { secure: true, sameSite: 'strict' })
-    }
-    else {
-      removeCookie('auth_token')
-    }
-  }, { immediate: true })
+  watch(
+    token,
+    (newVal) => {
+      if (newVal) {
+        encryptAndSetCookie('auth_token', newVal, { secure: true, sameSite: 'strict' })
+      }
+      else {
+        removeCookie('auth_token')
+      }
+    },
+    { immediate: true },
+  )
 
   /** Authenticated user object stored in localStorage */
   const user = useStorage<AuthUser | null>('auth_user', null, undefined, {
@@ -194,14 +198,18 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Auto-start timer when token changes
-  watch(token, (newToken) => {
-    if (newToken) {
-      startSessionTimer()
-    }
-    else {
-      clearSessionTimer()
-    }
-  }, { immediate: true })
+  watch(
+    token,
+    (newToken) => {
+      if (newToken) {
+        startSessionTimer()
+      }
+      else {
+        clearSessionTimer()
+      }
+    },
+    { immediate: true },
+  )
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -325,9 +333,7 @@ export const useAuthStore = defineStore('auth', () => {
           locked_until: response.locked_until,
         })
         otpMessage.value = 'Verification code sent to your email.'
-        otpIdentifier.value = credentials.email
-          || credentials.phone
-          || ''
+        otpIdentifier.value = credentials.email || credentials.phone || ''
         return response.token
       }
 
@@ -589,14 +595,20 @@ export const useAuthStore = defineStore('auth', () => {
 
   // ─── Social Login ─────────────────────────────────────────────────────────
 
-  async function socialRedirect(provider: SocialProvider, data: SocialRedirectPayload): Promise<string> {
+  async function socialRedirect(
+    provider: SocialProvider,
+    data: SocialRedirectPayload,
+  ): Promise<string> {
     return withLoading(async () => {
       const response = await authService.socialRedirect(provider, data)
       return response.redirect_url
     })
   }
 
-  async function socialCallback(provider: SocialProvider, data: SocialCallbackPayload): Promise<void> {
+  async function socialCallback(
+    provider: SocialProvider,
+    data: SocialCallbackPayload,
+  ): Promise<void> {
     return withLoading(async () => {
       const response = await authService.socialCallback(provider, data)
       completeAuth({

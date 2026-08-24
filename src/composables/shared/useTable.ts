@@ -130,13 +130,15 @@ export function useTable<T = unknown>(options: UseTableOptions<T>): UseTableRetu
         return handleMockList()
       if (!fetchFn)
         throw new Error(`[useTable] Neither fetchFn nor mockData provided for "${resourceName}"`)
-      return fetchFn(debouncedParams.value).catch((e) => {
-        onError?.(e)
-        throw e
-      }).then((result) => {
-        onSuccess?.(result.data)
-        return result
-      })
+      return fetchFn(debouncedParams.value)
+        .catch((e) => {
+          onError?.(e)
+          throw e
+        })
+        .then((result) => {
+          onSuccess?.(result.data)
+          return result
+        })
     },
     enabled: immediate,
     retry: false,
@@ -152,7 +154,9 @@ export function useTable<T = unknown>(options: UseTableOptions<T>): UseTableRetu
       return rawItems.value
     return formatForTable(rawItems.value as T[]) as unknown as T[]
   })
-  const totalItems = computed(() => (listQuery.data.value as any)?.meta?.total || (listQuery.data.value as any)?.total || 0)
+  const totalItems = computed(
+    () => (listQuery.data.value as any)?.meta?.total || (listQuery.data.value as any)?.total || 0,
+  )
   const loading = computed(() => listQuery.isLoading.value)
   const error = computed(() => listQuery.error.value)
   const forbidden = computed(() => {

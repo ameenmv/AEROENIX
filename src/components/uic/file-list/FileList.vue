@@ -33,10 +33,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div
-    data-slot="file-list"
-    :class="cn(fileListVariants({ layout, size }), props.class)"
-  >
+  <div data-slot="file-list" :class="cn(fileListVariants({ layout, size }), props.class)">
     <FileItem
       v-for="(file, i) in files"
       :key="`${file.name}-${i}`"

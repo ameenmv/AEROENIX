@@ -3,7 +3,11 @@ import Cookies from 'js-cookie'
 
 const SECRET_KEY = import.meta.env.VITE_APP_SECRET || 'neop-default-secret-key-2026'
 
-export function encryptAndSetCookie(name: string, value: string, options?: Cookies.CookieAttributes) {
+export function encryptAndSetCookie(
+  name: string,
+  value: string,
+  options?: Cookies.CookieAttributes,
+) {
   if (!value) {
     Cookies.remove(name, options)
     return

@@ -173,11 +173,7 @@ export function createService<T = unknown>(
     }) as unknown as ResourceService<T>
   }
 
-  const {
-    dataPath = 'data',
-    defaultDropdownScope = 'micro',
-    defaultLimit = 15,
-  } = config
+  const { dataPath = 'data', defaultDropdownScope = 'micro', defaultLimit = 15 } = config
 
   /**
    * Extract data from the backend response envelope.
@@ -208,7 +204,7 @@ export function createService<T = unknown>(
         search: params.search,
         sort_by: params.sort_by,
         sort_dir: params.sort_dir,
-        ...params.filters ? { filters: params.filters } : {},
+        ...(params.filters ? { filters: params.filters } : {}),
       }
 
       const response = await api.get<ApiPaginatedResponse<T>>(endpoint, {
@@ -229,7 +225,7 @@ export function createService<T = unknown>(
         limit: params.limit ?? defaultLimit,
         scope: params.scope ?? defaultDropdownScope,
         search: params.search,
-        ...params.filters ? { filters: params.filters } : {},
+        ...(params.filters ? { filters: params.filters } : {}),
       }
 
       const response = await api.get<ApiPaginatedResponse<T>>(`${endpoint}/dropdown`, {
@@ -305,9 +301,13 @@ export function createService<T = unknown>(
       const formData = new FormData()
       formData.append('file', file)
 
-      const response = await api.post<ApiSuccessResponse<ImportResponse>>(`${endpoint}/import`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
+      const response = await api.post<ApiSuccessResponse<ImportResponse>>(
+        `${endpoint}/import`,
+        formData,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        },
+      )
       return extractData(response) as ImportResponse
     },
   }

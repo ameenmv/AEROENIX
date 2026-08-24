@@ -37,12 +37,16 @@ const form = useForm({
   onSuccess: () => router.push({ name: 'admin-admins' }),
 })
 
-watch(item, (newItem) => {
-  if (newItem) {
-    form.setValues(newItem)
-    selectedRoleIds.value = newItem.roles?.map(r => r.id) || []
-  }
-}, { immediate: true })
+watch(
+  item,
+  (newItem) => {
+    if (newItem) {
+      form.setValues(newItem)
+      selectedRoleIds.value = newItem.roles?.map(r => r.id) || []
+    }
+  },
+  { immediate: true },
+)
 
 function toggleRole(roleId: number) {
   const idx = selectedRoleIds.value.indexOf(roleId)

@@ -53,7 +53,9 @@ const [remember] = form.defineField('remember')
 
 <template>
   <AuthLayout>
-    <Card class="w-full max-w-[547px] !rounded-3xl !border-border !shadow-[0_4px_20px_rgba(148,163,184,0.1)] ">
+    <Card
+      class="w-full max-w-[547px] !rounded-3xl !border-border !shadow-[0_4px_20px_rgba(148,163,184,0.1)]"
+    >
       <CardHeader class="!px-5 sm:!px-12 !pt-8 !pb-0 text-center">
         <CardTitle class="!text-[32px] !leading-[48px] font-semibold !text-foreground">
           {{ t('auth.login_title', 'Super Admin Login') }}
@@ -79,14 +81,22 @@ const [remember] = form.defineField('remember')
         </div>
         <form class="flex flex-col gap-6" @submit.prevent="form.onSubmit">
           <InputField
-            id="login-email" v-model="email" type="email" :label="t('auth.email_label', 'Email')"
-            :placeholder="t('auth.email_placeholder', 'e.g admin@neop.com')" :error="form.errors.value.email"
+            id="login-email"
+            v-model="email"
+            type="email"
+            :label="t('auth.email_label', 'Email')"
+            :placeholder="t('auth.email_placeholder', 'e.g admin@neop.com')"
+            :error="form.errors.value.email"
             size="lg"
           />
           <div class="flex flex-col gap-3">
             <InputField
-              id="login-password" v-model="password" :type="showPassword ? 'text' : 'password'"
-              :label="t('auth.password_label', 'Password')" :placeholder="t('auth.password_placeholder', '••••••••')" :error="form.errors.value.password"
+              id="login-password"
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              :label="t('auth.password_label', 'Password')"
+              :placeholder="t('auth.password_placeholder', '••••••••')"
+              :error="form.errors.value.password"
               size="lg"
             >
               <template #suffix>
@@ -103,11 +113,15 @@ const [remember] = form.defineField('remember')
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <Checkbox
-                  id="login-remember" :checked="remember"
+                  id="login-remember"
+                  :checked="remember"
                   class="!size-6 !rounded-md !border-border data-[state=checked]:!bg-muted-foreground data-[state=checked]:!border-muted-foreground"
                   @update:checked="(val: boolean) => (remember = val)"
                 />
-                <Label for="login-remember" class="text-base font-normal !text-foreground cursor-pointer">
+                <Label
+                  for="login-remember"
+                  class="text-base font-normal !text-foreground cursor-pointer"
+                >
                   {{ t('auth.stay_signed_in', 'Stay Signed in') }}
                 </Label>
               </div>
@@ -119,13 +133,32 @@ const [remember] = form.defineField('remember')
               </RouterLink>
             </div>
           </div>
-          <Btn type="submit" variant="primary" class="auth-btn-primary w-full" :disabled="form.isPending.value">
+          <Btn
+            type="submit"
+            variant="primary"
+            class="auth-btn-primary w-full"
+            :disabled="form.isPending.value"
+          >
             <svg
-              v-if="form.isPending.value" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+              v-if="form.isPending.value"
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
             >
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              />
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
             </svg>
             {{
               form.isPending.value

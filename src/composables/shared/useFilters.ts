@@ -91,9 +91,10 @@ export function defineFilters(resource: string, fields: FilterFieldShorthand[]):
             data: result.data.map((item: any) => {
               const raw = item[labelKey]
               // Handle i18n objects like { en: "Admin", ar: "مدير" }
-              const label = (raw && typeof raw === 'object' && !Array.isArray(raw))
-                ? (raw.en || raw.ar || String(raw))
-                : String(raw ?? '')
+              const label
+                = raw && typeof raw === 'object' && !Array.isArray(raw)
+                  ? raw.en || raw.ar || String(raw)
+                  : String(raw ?? '')
               return { value: item[valueKey], label }
             }),
           }

@@ -4,7 +4,13 @@ import type { HTMLAttributes } from 'vue'
 import { useId } from 'reka-ui'
 import { computed } from 'vue'
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/uic/field'
-import { TagsInput, TagsInputInput, TagsInputItem, TagsInputItemDelete, TagsInputItemText } from '@/components/uic/tags-input'
+import {
+  TagsInput,
+  TagsInputInput,
+  TagsInputItem,
+  TagsInputItemDelete,
+  TagsInputItemText,
+} from '@/components/uic/tags-input'
 
 interface Props {
   modelValue?: AcceptableInputValue[]

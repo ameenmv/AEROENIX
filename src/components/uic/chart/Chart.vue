@@ -57,7 +57,23 @@ const mergedOptions = computed<ApexOptions>(() => {
     chart: {
       ...base.chart,
       ...custom.chart,
-      type: props.type as 'area' | 'line' | 'bar' | 'pie' | 'donut' | 'radialBar' | 'scatter' | 'bubble' | 'heatmap' | 'candlestick' | 'radar' | 'polarArea' | 'rangeBar' | 'rangeArea' | 'treemap' | 'boxPlot',
+      type: props.type as
+      | 'area'
+      | 'line'
+      | 'bar'
+      | 'pie'
+      | 'donut'
+      | 'radialBar'
+      | 'scatter'
+      | 'bubble'
+      | 'heatmap'
+      | 'candlestick'
+      | 'radar'
+      | 'polarArea'
+      | 'rangeBar'
+      | 'rangeArea'
+      | 'treemap'
+      | 'boxPlot',
       height: props.height,
     },
     colors: custom.colors || base.colors,
@@ -87,11 +103,13 @@ const mergedOptions = computed<ApexOptions>(() => {
 <template>
   <div
     data-slot="chart"
-    :class="cn(
-      'border bg-card text-card-foreground shadow-sm overflow-hidden',
-      chartVariants({ size, rounded }),
-      props.class,
-    )"
+    :class="
+      cn(
+        'border bg-card text-card-foreground shadow-sm overflow-hidden',
+        chartVariants({ size, rounded }),
+        props.class,
+      )
+    "
   >
     <!-- Header -->
     <div v-if="title || description || $slots.header" class="px-5 pt-5 pb-2">
@@ -108,7 +126,7 @@ const mergedOptions = computed<ApexOptions>(() => {
     <!-- Chart -->
     <div class="px-3 pb-3">
       <VueApexCharts
-        :type="(type as any)"
+        :type="type as any"
         :height="height"
         :options="mergedOptions"
         :series="series"

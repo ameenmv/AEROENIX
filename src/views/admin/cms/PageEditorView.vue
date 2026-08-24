@@ -579,7 +579,11 @@ function handleGoToStructure() {
                   <CardTitle
                     class="text-sm text-muted-foreground font-medium uppercase tracking-wider"
                   >
-                    {{ activeLocale === 'ar' ? $t('common.lang_ar_content', 'المحتوى العربي') : $t('common.lang_en_content', 'English Content') }}
+                    {{
+                      activeLocale === 'ar'
+                        ? $t('common.lang_ar_content', 'المحتوى العربي')
+                        : $t('common.lang_en_content', 'English Content')
+                    }}
                   </CardTitle>
                 </CardHeader>
                 <CardContent class="space-y-5">

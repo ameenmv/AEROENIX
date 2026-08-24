@@ -48,9 +48,7 @@ export function useCmsMode() {
     cmsMode.value = cmsMode.value === 'developer' ? 'client' : 'developer'
     sessionStorage.setItem(STORAGE_KEY, cmsMode.value)
     toast.info(
-      cmsMode.value === 'developer'
-        ? '🔧 Developer mode enabled'
-        : '👤 Client mode enabled',
+      cmsMode.value === 'developer' ? '🔧 Developer mode enabled' : '👤 Client mode enabled',
       { description: 'Press Ctrl+Shift+D to toggle' },
     )
   }

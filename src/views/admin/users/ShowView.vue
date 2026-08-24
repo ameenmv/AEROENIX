@@ -42,9 +42,17 @@ const { item, loading } = useDetails<User>({
           <div class="mt-2 flex items-center gap-2">
             <span
               class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-              :class="item.email_verified_at ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'"
+              :class="
+                item.email_verified_at
+                  ? 'bg-emerald-500/10 text-emerald-500'
+                  : 'bg-amber-500/10 text-amber-500'
+              "
             >
-              {{ item.email_verified_at ? `✓ ${t('users.verified', 'Verified')}` : t('users.unverified', 'Unverified') }}
+              {{
+                item.email_verified_at
+                  ? `✓ ${t('users.verified', 'Verified')}`
+                  : t('users.unverified', 'Unverified')
+              }}
             </span>
           </div>
         </div>
@@ -52,13 +60,17 @@ const { item, loading } = useDetails<User>({
         <!-- Detail Fields -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <span class="text-sm text-muted-foreground">{{ t('users.fields.email', 'Email') }}</span>
+            <span class="text-sm text-muted-foreground">{{
+              t('users.fields.email', 'Email')
+            }}</span>
             <p class="font-medium mt-1">
               {{ item.email }}
             </p>
           </div>
           <div>
-            <span class="text-sm text-muted-foreground">{{ t('users.fields.created_at', 'Created At') }}</span>
+            <span class="text-sm text-muted-foreground">{{
+              t('users.fields.created_at', 'Created At')
+            }}</span>
             <p class="font-medium mt-1">
               {{ new Date(item.created_at).toLocaleString() }}
             </p>

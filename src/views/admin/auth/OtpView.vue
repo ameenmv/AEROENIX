@@ -88,7 +88,9 @@ function handleBackToLogin() {
 
 <template>
   <AuthLayout>
-    <Card class="w-full max-w-[547px] !rounded-3xl !border-border !shadow-[0_4px_20px_rgba(148,163,184,0.1)] !py-0">
+    <Card
+      class="w-full max-w-[547px] !rounded-3xl !border-border !shadow-[0_4px_20px_rgba(148,163,184,0.1)] !py-0"
+    >
       <CardHeader class="!px-5 sm:!px-12 !pt-8 sm:!pt-8 !pb-0 text-center">
         <CardTitle class="!text-[32px] !leading-[48px] font-semibold !text-foreground">
           {{ t('auth.otp_title', 'Two-Factor Authentication') }}
@@ -96,8 +98,12 @@ function handleBackToLogin() {
         <CardDescription class="!text-sm font-medium !text-foreground/80">
           <!-- Server message (e.g. "Verification code sent to your email.") -->
           <span v-if="otpMessage" class="block">{{ t('auth.otp_message', otpMessage) }}</span>
-          <span v-else>{{ t('auth.otp_subtitle', 'Enter the 6-digit verification code sent to') }}</span>
-          <span v-if="otpIdentifier" class="font-semibold text-foreground block mt-1">{{ otpIdentifier }}</span>
+          <span v-else>{{
+            t('auth.otp_subtitle', 'Enter the 6-digit verification code sent to')
+          }}</span>
+          <span v-if="otpIdentifier" class="font-semibold text-foreground block mt-1">{{
+            otpIdentifier
+          }}</span>
         </CardDescription>
       </CardHeader>
       <CardContent class="!px-5 sm:!px-12 !pb-0">
@@ -110,8 +116,8 @@ function handleBackToLogin() {
               clip-rule="evenodd"
             />
           </svg>
-          <span>{{ t('auth.account_locked', 'Too many attempts. Try again in') }} <span class="font-semibold">{{
-            otpLockDisplay }}</span></span>
+          <span>{{ t('auth.account_locked', 'Too many attempts. Try again in') }}
+            <span class="font-semibold">{{ otpLockDisplay }}</span></span>
         </div>
 
         <!-- Expiry Alert -->
@@ -127,7 +133,10 @@ function handleBackToLogin() {
         </div>
 
         <!-- Error Alert -->
-        <div v-if="error && !isOtpExpired && !isOtpLocked" class="auth-alert auth-alert--error mb-4">
+        <div
+          v-if="error && !isOtpExpired && !isOtpLocked"
+          class="auth-alert auth-alert--error mb-4"
+        >
           <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path
               fill-rule="evenodd"
@@ -167,36 +176,63 @@ function handleBackToLogin() {
           </InputOTP>
 
           <!-- Code Expiry Timer -->
-          <div v-if="otpExpiryCountdown > 0 && !isOtpLocked" class="flex items-center gap-1.5 text-sm">
+          <div
+            v-if="otpExpiryCountdown > 0 && !isOtpLocked"
+            class="flex items-center gap-1.5 text-sm"
+          >
             <svg
-              class="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              class="w-4 h-4 text-muted-foreground"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
               stroke-width="2"
             >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
-            <span class="text-muted-foreground">{{ t('auth.code_expires_in', 'Code expires in') }}</span>
-            <span class="font-semibold" :class="otpExpiryCountdown <= 60 ? 'text-red-500' : 'text-foreground'">
+            <span class="text-muted-foreground">{{
+              t('auth.code_expires_in', 'Code expires in')
+            }}</span>
+            <span
+              class="font-semibold"
+              :class="otpExpiryCountdown <= 60 ? 'text-red-500' : 'text-foreground'"
+            >
               {{ otpExpiryDisplay }}
             </span>
           </div>
 
           <!-- Verify Button -->
           <Btn
-            type="submit" variant="primary" class="auth-btn-primary w-full"
+            type="submit"
+            variant="primary"
+            class="auth-btn-primary w-full"
             :disabled="otp.length < 6 || isLoading || isOtpExpired || isOtpLocked"
           >
             <svg
-              v-if="isLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
-              fill="none" viewBox="0 0 24 24"
+              v-if="isLoading"
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
             >
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              />
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
             </svg>
-            {{
-              isLoading
-                ? t('auth.verifying', 'Verifying...')
-                : t('auth.verify_btn', 'Verify')
-            }}
+            {{ isLoading ? t('auth.verifying', 'Verifying...') : t('auth.verify_btn', 'Verify') }}
           </Btn>
 
           <!-- Resend OTP -->
@@ -205,21 +241,35 @@ function handleBackToLogin() {
               {{ t('auth.didnt_receive_code', "Didn't receive the code?") }}
             </p>
             <button
-              v-if="canResendOtp" type="button"
+              v-if="canResendOtp"
+              type="button"
               class="text-sm font-semibold text-foreground hover:underline mt-1 inline-flex items-center gap-2"
-              :disabled="isResending" @click="handleResend"
+              :disabled="isResending"
+              @click="handleResend"
             >
               <svg
-                v-if="isResending" class="animate-spin h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                v-if="isResending"
+                class="animate-spin h-3.5 w-3.5"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
                 viewBox="0 0 24 24"
               >
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                />
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
               </svg>
               {{
-                isResending
-                  ? t('auth.sending', 'Sending...')
-                  : t('auth.resend_code', 'Resend Code')
+                isResending ? t('auth.sending', 'Sending...') : t('auth.resend_code', 'Resend Code')
               }}
             </button>
             <p v-else-if="otpResendCountdown > 0" class="text-sm text-muted-foreground mt-1">
@@ -232,7 +282,8 @@ function handleBackToLogin() {
       <!-- Footer -->
       <div class="flex justify-center items-center gap-1 px-12 pb-6">
         <button
-          type="button" class="text-base font-semibold text-foreground hover:underline"
+          type="button"
+          class="text-base font-semibold text-foreground hover:underline"
           @click="handleBackToLogin"
         >
           {{ t('auth.back_to_login', 'Back to login') }}

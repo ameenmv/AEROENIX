@@ -13,7 +13,8 @@ prefs.barVisible = true
         <div class="light bg-background border border-border rounded-xl overflow-hidden">
           <AccessibilityBar />
           <div class="p-8 text-sm text-muted-foreground">
-            Content below the accessibility bar. Try clicking zoom, font size, grayscale, contrast, underline links, and big cursor buttons.
+            Content below the accessibility bar. Try clicking zoom, font size, grayscale, contrast,
+            underline links, and big cursor buttons.
           </div>
         </div>
       </div>

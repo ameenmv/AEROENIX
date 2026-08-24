@@ -6,11 +6,7 @@ import { Check } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Button as Btn } from '@/components/uic/button'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/uic/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/uic/popover'
 
 const props = defineProps<{
   /** All column definitions */
@@ -71,9 +67,7 @@ function isDisabled(key: string): boolean {
           v-for="col in columns"
           :key="col.key"
           class="flex items-center gap-2.5 px-3 py-1.5 cursor-pointer transition-colors rounded-sm mx-1"
-          :class="[
-            isDisabled(col.key) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-muted/60',
-          ]"
+          :class="[isDisabled(col.key) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-muted/60']"
           @click="!isDisabled(col.key) && emit('toggle', col.key)"
         >
           <!-- Custom checkbox indicator -->

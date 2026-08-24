@@ -12,10 +12,12 @@ export const inputVariants = cva(
         lg: 'h-12 px-5 text-lg',
       },
       variant: {
-        default: 'border-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
+        default:
+          'border-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
         search: 'pl-9 bg-card border-none ring-1 ring-border shadow-none h-9 text-xs',
         ghost: 'border-none shadow-none bg-transparent focus-visible:ring-0',
-        error: 'border-destructive focus-visible:ring-destructive focus-visible:ring-[3px] focus-visible:ring-destructive/20',
+        error:
+          'border-destructive focus-visible:ring-destructive focus-visible:ring-[3px] focus-visible:ring-destructive/20',
       },
     },
     defaultVariants: { size: 'default', variant: 'default' },

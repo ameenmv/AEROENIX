@@ -6,7 +6,15 @@ import FilterPanel from '@/components/uic/filter-panel/FilterPanel.vue'
 const filterValues = ref<Record<string, unknown>>({})
 
 const filters: FilterConfig[] = [
-  { model: 'status', label: 'Status', type: 'select', options: [{ label: 'Active', value: 'active' }, { label: 'Inactive', value: 'inactive' }] },
+  {
+    model: 'status',
+    label: 'Status',
+    type: 'select',
+    options: [
+      { label: 'Active', value: 'active' },
+      { label: 'Inactive', value: 'inactive' },
+    ],
+  },
   { model: 'name', label: 'Name', type: 'text', placeholder: 'Enter name...' },
   { model: 'created', label: 'Created', type: 'date' },
   { model: 'range', label: 'Date Range', type: 'daterange' },

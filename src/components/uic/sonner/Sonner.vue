@@ -28,7 +28,7 @@ onMounted(() => {
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 })
 
-const theme = computed(() => isDark.value ? 'dark' : 'light')
+const theme = computed(() => (isDark.value ? 'dark' : 'light'))
 
 // Exclude theme and class from v-bind spread since they're set explicitly
 const restProps = computed(() => {
@@ -76,7 +76,9 @@ const restProps = computed(() => {
 [data-sonner-toaster] [data-sonner-toast] {
   font-family: var(--font-sans) !important;
   border-radius: 12px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08) !important;
   padding: 14px 16px !important;
   gap: 8px !important;
 }
@@ -84,7 +86,9 @@ const restProps = computed(() => {
 /* Dark mode base shadow */
 .dark [data-sonner-toaster] [data-sonner-toast],
 [data-sonner-toaster][data-sonner-theme='dark'] [data-sonner-toast] {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.4) !important;
 }
 
 /* ── Success Toast ─────────────────────────────────────────────── */
@@ -94,8 +98,12 @@ const restProps = computed(() => {
   color: #065f46 !important;
 }
 [data-sonner-toast][data-type='success'] [data-title],
-[data-sonner-toast][data-type='success'] [data-description] { color: #065f46 !important; }
-[data-sonner-toast][data-type='success'] [data-icon] svg { color: #10b981 !important; }
+[data-sonner-toast][data-type='success'] [data-description] {
+  color: #065f46 !important;
+}
+[data-sonner-toast][data-type='success'] [data-icon] svg {
+  color: #10b981 !important;
+}
 
 /* Dark success — solid */
 .dark [data-sonner-toast][data-type='success'],
@@ -105,11 +113,17 @@ const restProps = computed(() => {
   color: #bbf7d0 !important;
 }
 .dark [data-sonner-toast][data-type='success'] [data-title],
-[data-sonner-theme='dark'] [data-sonner-toast][data-type='success'] [data-title] { color: #bbf7d0 !important; }
+[data-sonner-theme='dark'] [data-sonner-toast][data-type='success'] [data-title] {
+  color: #bbf7d0 !important;
+}
 .dark [data-sonner-toast][data-type='success'] [data-description],
-[data-sonner-theme='dark'] [data-sonner-toast][data-type='success'] [data-description] { color: #86efac !important; }
+[data-sonner-theme='dark'] [data-sonner-toast][data-type='success'] [data-description] {
+  color: #86efac !important;
+}
 .dark [data-sonner-toast][data-type='success'] [data-icon] svg,
-[data-sonner-theme='dark'] [data-sonner-toast][data-type='success'] [data-icon] svg { color: #4ade80 !important; }
+[data-sonner-theme='dark'] [data-sonner-toast][data-type='success'] [data-icon] svg {
+  color: #4ade80 !important;
+}
 
 /* ── Error Toast ───────────────────────────────────────────────── */
 [data-sonner-toast][data-type='error'] {
@@ -118,8 +132,12 @@ const restProps = computed(() => {
   color: #991b1b !important;
 }
 [data-sonner-toast][data-type='error'] [data-title],
-[data-sonner-toast][data-type='error'] [data-description] { color: #991b1b !important; }
-[data-sonner-toast][data-type='error'] [data-icon] svg { color: #ef4444 !important; }
+[data-sonner-toast][data-type='error'] [data-description] {
+  color: #991b1b !important;
+}
+[data-sonner-toast][data-type='error'] [data-icon] svg {
+  color: #ef4444 !important;
+}
 
 /* Dark error — solid */
 .dark [data-sonner-toast][data-type='error'],
@@ -129,11 +147,17 @@ const restProps = computed(() => {
   color: #fecaca !important;
 }
 .dark [data-sonner-toast][data-type='error'] [data-title],
-[data-sonner-theme='dark'] [data-sonner-toast][data-type='error'] [data-title] { color: #fecaca !important; }
+[data-sonner-theme='dark'] [data-sonner-toast][data-type='error'] [data-title] {
+  color: #fecaca !important;
+}
 .dark [data-sonner-toast][data-type='error'] [data-description],
-[data-sonner-theme='dark'] [data-sonner-toast][data-type='error'] [data-description] { color: #fca5a5 !important; }
+[data-sonner-theme='dark'] [data-sonner-toast][data-type='error'] [data-description] {
+  color: #fca5a5 !important;
+}
 .dark [data-sonner-toast][data-type='error'] [data-icon] svg,
-[data-sonner-theme='dark'] [data-sonner-toast][data-type='error'] [data-icon] svg { color: #f87171 !important; }
+[data-sonner-theme='dark'] [data-sonner-toast][data-type='error'] [data-icon] svg {
+  color: #f87171 !important;
+}
 
 /* ── Warning Toast ─────────────────────────────────────────────── */
 [data-sonner-toast][data-type='warning'] {
@@ -142,8 +166,12 @@ const restProps = computed(() => {
   color: #92400e !important;
 }
 [data-sonner-toast][data-type='warning'] [data-title],
-[data-sonner-toast][data-type='warning'] [data-description] { color: #92400e !important; }
-[data-sonner-toast][data-type='warning'] [data-icon] svg { color: #f59e0b !important; }
+[data-sonner-toast][data-type='warning'] [data-description] {
+  color: #92400e !important;
+}
+[data-sonner-toast][data-type='warning'] [data-icon] svg {
+  color: #f59e0b !important;
+}
 
 /* Dark warning — solid */
 .dark [data-sonner-toast][data-type='warning'],
@@ -153,11 +181,17 @@ const restProps = computed(() => {
   color: #fef3c7 !important;
 }
 .dark [data-sonner-toast][data-type='warning'] [data-title],
-[data-sonner-theme='dark'] [data-sonner-toast][data-type='warning'] [data-title] { color: #fef3c7 !important; }
+[data-sonner-theme='dark'] [data-sonner-toast][data-type='warning'] [data-title] {
+  color: #fef3c7 !important;
+}
 .dark [data-sonner-toast][data-type='warning'] [data-description],
-[data-sonner-theme='dark'] [data-sonner-toast][data-type='warning'] [data-description] { color: #fcd34d !important; }
+[data-sonner-theme='dark'] [data-sonner-toast][data-type='warning'] [data-description] {
+  color: #fcd34d !important;
+}
 .dark [data-sonner-toast][data-type='warning'] [data-icon] svg,
-[data-sonner-theme='dark'] [data-sonner-toast][data-type='warning'] [data-icon] svg { color: #fbbf24 !important; }
+[data-sonner-theme='dark'] [data-sonner-toast][data-type='warning'] [data-icon] svg {
+  color: #fbbf24 !important;
+}
 
 /* ── Info Toast ─────────────────────────────────────────────────── */
 [data-sonner-toast][data-type='info'] {
@@ -166,8 +200,12 @@ const restProps = computed(() => {
   color: #1e40af !important;
 }
 [data-sonner-toast][data-type='info'] [data-title],
-[data-sonner-toast][data-type='info'] [data-description] { color: #1e40af !important; }
-[data-sonner-toast][data-type='info'] [data-icon] svg { color: #3b82f6 !important; }
+[data-sonner-toast][data-type='info'] [data-description] {
+  color: #1e40af !important;
+}
+[data-sonner-toast][data-type='info'] [data-icon] svg {
+  color: #3b82f6 !important;
+}
 
 /* Dark info — solid */
 .dark [data-sonner-toast][data-type='info'],
@@ -177,11 +215,17 @@ const restProps = computed(() => {
   color: #dbeafe !important;
 }
 .dark [data-sonner-toast][data-type='info'] [data-title],
-[data-sonner-theme='dark'] [data-sonner-toast][data-type='info'] [data-title] { color: #dbeafe !important; }
+[data-sonner-theme='dark'] [data-sonner-toast][data-type='info'] [data-title] {
+  color: #dbeafe !important;
+}
 .dark [data-sonner-toast][data-type='info'] [data-description],
-[data-sonner-theme='dark'] [data-sonner-toast][data-type='info'] [data-description] { color: #93c5fd !important; }
+[data-sonner-theme='dark'] [data-sonner-toast][data-type='info'] [data-description] {
+  color: #93c5fd !important;
+}
 .dark [data-sonner-toast][data-type='info'] [data-icon] svg,
-[data-sonner-theme='dark'] [data-sonner-toast][data-type='info'] [data-icon] svg { color: #60a5fa !important; }
+[data-sonner-theme='dark'] [data-sonner-toast][data-type='info'] [data-icon] svg {
+  color: #60a5fa !important;
+}
 
 /* ── Toast Typography ──────────────────────────────────────────── */
 [data-sonner-toast] [data-title] {

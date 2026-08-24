@@ -886,7 +886,7 @@ function getFieldTypeLabel(type: string): string {
                                 class="w-7 h-7 flex items-center justify-center rounded-md text-sky-500/60 hover:text-sky-500 hover:bg-sky-500/10 transition-colors shrink-0 cursor-pointer"
                                 :title="$t('actions.edit', 'Edit')"
                                 @click="
-                                  editFormEditingField = mapDefinitionToPickerField(field);
+                                  editFormEditingField = mapDefinitionToPickerField(field)
                                   showEditFieldPicker = true
                                 "
                               >
@@ -978,8 +978,9 @@ function getFieldTypeLabel(type: string): string {
       >
         <p class="text-sm text-muted-foreground">
           {{ sections.length }} {{ $t('cms.sections', 'sections') }}
-          {{ $t('common.separator', '·') }} {{ sections.filter((s) => !s.is_hidden).length }} {{ $t('cms.visible', 'visible') }}
-          {{ $t('common.separator', '·') }} {{ sections.filter((s) => s.is_reusable).length }} {{ $t('cms.reusable', 'reusable') }}
+          {{ $t('common.separator', '·') }} {{ sections.filter((s) => !s.is_hidden).length }}
+          {{ $t('cms.visible', 'visible') }} {{ $t('common.separator', '·') }}
+          {{ sections.filter((s) => s.is_reusable).length }} {{ $t('cms.reusable', 'reusable') }}
         </p>
       </div>
 
@@ -1050,7 +1051,9 @@ function getFieldTypeLabel(type: string): string {
             </div>
 
             <!-- Repeatable toggle -->
-            <div class="flex items-center justify-between rounded-lg border border-border p-3 max-w-sm">
+            <div
+              class="flex items-center justify-between rounded-lg border border-border p-3 max-w-sm"
+            >
               <div>
                 <label class="text-sm font-medium text-foreground">
                   {{ $t('cms.repeatable', 'Repeatable') }}
@@ -1130,7 +1133,7 @@ function getFieldTypeLabel(type: string): string {
                         class="w-7 h-7 flex items-center justify-center rounded-md text-sky-500/60 hover:text-sky-500 hover:bg-sky-500/10 transition-colors shrink-0 cursor-pointer"
                         :title="$t('actions.edit', 'Edit')"
                         @click="
-                          existingEditingField = mapDefinitionToPickerField(field);
+                          existingEditingField = mapDefinitionToPickerField(field)
                           showFieldPicker = true
                         "
                       >
@@ -1254,7 +1257,9 @@ function getFieldTypeLabel(type: string): string {
               </div>
               <div class="flex items-center gap-1.5 mb-1">
                 <code class="text-[10px] text-muted-foreground font-mono">{{ item.key }}</code>
-                <span class="text-[10px] text-muted-foreground">{{ $t('common.separator', '·') }}</span>
+                <span class="text-[10px] text-muted-foreground">{{
+                  $t('common.separator', '·')
+                }}</span>
                 <span class="text-[10px] text-muted-foreground">{{ (item.fields || []).length }} {{ $t('cms.fields', 'fields') }}</span>
               </div>
               <div class="flex flex-wrap gap-1">

@@ -29,10 +29,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <div
-    data-slot="kv-item"
-    :class="cn(kvItemVariants({ layout }), props.class)"
-  >
+  <div data-slot="kv-item" :class="cn(kvItemVariants({ layout }), props.class)">
     <!-- Label -->
     <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider shrink-0">
       <slot name="label">{{ label }}</slot>
@@ -40,10 +37,7 @@ const props = withDefaults(
 
     <!-- Value -->
     <span
-      :class="cn(
-        'text-sm font-medium text-foreground truncate',
-        mono && 'font-mono tabular-nums',
-      )"
+      :class="cn('text-sm font-medium text-foreground truncate', mono && 'font-mono tabular-nums')"
     >
       <slot>{{ value ?? '—' }}</slot>
     </span>

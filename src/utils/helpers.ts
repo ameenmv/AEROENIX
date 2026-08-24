@@ -1,4 +1,6 @@
-export function getStatusVariant(status: any): 'default' | 'destructive' | 'secondary' | 'outline' | 'success' | 'warning' | 'info' {
+export function getStatusVariant(
+  status: any,
+): 'default' | 'destructive' | 'secondary' | 'outline' | 'success' | 'warning' | 'info' {
   if (!status)
     return 'secondary'
 
@@ -9,8 +11,13 @@ export function getStatusVariant(status: any): 'default' | 'destructive' | 'seco
   const color = status.color
   if (color) {
     // Direct variant names from the API
-    if (['default', 'destructive', 'secondary', 'outline', 'success', 'warning', 'info'].includes(color))
+    if (
+      ['default', 'destructive', 'secondary', 'outline', 'success', 'warning', 'info'].includes(
+        color,
+      )
+    ) {
       return color as any
+    }
     if (color === 'green')
       return 'success'
     if (color === 'danger' || color === 'red')
@@ -60,7 +67,7 @@ export function getRoleNames(admin: any): string {
     return '—'
   if (admin.role_name)
     return admin.role_name
-  const roles = admin.roles?.length ? admin.roles : (admin.role ? [admin.role] : [])
+  const roles = admin.roles?.length ? admin.roles : admin.role ? [admin.role] : []
   if (roles.length > 0) {
     return roles.map((r: any) => getDisplayName(r)).join(', ')
   }

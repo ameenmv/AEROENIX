@@ -29,9 +29,10 @@ export function useAdmins() {
         return {
           data: res.data.map(role => ({
             value: role.id,
-            label: typeof role.display_name === 'object' && role.display_name?.en
-              ? role.display_name.en
-              : role.name,
+            label:
+              typeof role.display_name === 'object' && role.display_name?.en
+                ? role.display_name.en
+                : role.name,
           })),
         }
       },
@@ -84,7 +85,10 @@ export function useAdmins() {
 
   async function handleExport() {
     try {
-      const res = await adminsService.export({ ...table.activeFilters.value, search: table.searchQuery.value })
+      const res = await adminsService.export({
+        ...table.activeFilters.value,
+        search: table.searchQuery.value,
+      })
       if (res?.download_url) {
         window.open(res.download_url, '_blank', 'noopener,noreferrer')
       }

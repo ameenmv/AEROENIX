@@ -12,7 +12,11 @@ import { PageHeader } from '@/components/uic/page-header'
           <h3 class="text-lg font-bold text-foreground">
             Light
           </h3>
-          <PageHeader title="Users" description="Manage platform users" :breadcrumbs="[{ label: 'Home', href: '#' }, { label: 'Users' }]">
+          <PageHeader
+            title="Users"
+            description="Manage platform users"
+            :breadcrumbs="[{ label: 'Home', href: '#' }, { label: 'Users' }]"
+          >
             <template #actions>
               <Button variant="add" size="sm">
                 <Plus :size="14" class="mr-1" />

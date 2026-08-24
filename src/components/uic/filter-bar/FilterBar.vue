@@ -59,9 +59,7 @@ const emit = defineEmits<{
 const filterOpen = ref(false)
 
 const activeFilterCount = computed(() => {
-  return Object.values(props.filterValues).filter(
-    v => v !== null && v !== undefined && v !== '',
-  ).length
+  return Object.values(props.filterValues).filter(v => v !== null && v !== undefined && v !== '').length
 })
 
 function onApply(values: Record<string, unknown>) {
@@ -80,13 +78,13 @@ function clearSearch() {
 </script>
 
 <template>
-  <div
-    data-slot="filter-bar"
-    :class="cn(filterBarVariants({ size, layout }), props.class)"
-  >
+  <div data-slot="filter-bar" :class="cn(filterBarVariants({ size, layout }), props.class)">
     <!-- Search input -->
     <div v-if="showSearch" class="relative w-full max-w-sm">
-      <Search :size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+      <Search
+        :size="16"
+        class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+      />
       <Input
         :model-value="search"
         :placeholder="searchPlaceholder"

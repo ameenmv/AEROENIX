@@ -90,7 +90,9 @@ export function useForm<T = any>(options: UseFormOptions<T>) {
     },
     onError: (err: unknown) => {
       // Debug: trace mutation error
-      const errMessage = (err as any)?.response?.data?.message || (err instanceof Error ? err.message : 'Unknown error')
+      const errMessage
+        = (err as any)?.response?.data?.message
+          || (err instanceof Error ? err.message : 'Unknown error')
       const errStatus = (err as any)?.response?.status || (err as any)?.status
 
       if (showNotifications) {
@@ -197,7 +199,9 @@ export function useForm<T = any>(options: UseFormOptions<T>) {
     enabled: confirmBeforeSubmit,
     title: confirmTitle || getDefaultConfirmTitle(),
     message: confirmMessage || getDefaultConfirmMessage(),
-    confirmLabel: confirmLabel || (action === 'create' ? t('common.create', 'Create') : t('common.save', 'Save')),
+    confirmLabel:
+      confirmLabel
+      || (action === 'create' ? t('common.create', 'Create') : t('common.save', 'Save')),
     cancelLabel: cancelLabel || t('common.cancel', 'Cancel'),
   }
 
@@ -284,31 +288,41 @@ export function useForm<T = any>(options: UseFormOptions<T>) {
   Object.defineProperties(result, {
     hasConfirmBeforeSubmit: {
       get: () => _confirm.enabled,
-      set: (v: any) => { _confirm.enabled = v },
+      set: (v: any) => {
+        _confirm.enabled = v
+      },
       enumerable: true,
       configurable: true,
     },
     confirmTitle: {
       get: () => _confirm.title,
-      set: (v: any) => { _confirm.title = v },
+      set: (v: any) => {
+        _confirm.title = v
+      },
       enumerable: true,
       configurable: true,
     },
     confirmMessage: {
       get: () => _confirm.message,
-      set: (v: any) => { _confirm.message = v },
+      set: (v: any) => {
+        _confirm.message = v
+      },
       enumerable: true,
       configurable: true,
     },
     confirmLabel: {
       get: () => _confirm.confirmLabel,
-      set: (v: any) => { _confirm.confirmLabel = v },
+      set: (v: any) => {
+        _confirm.confirmLabel = v
+      },
       enumerable: true,
       configurable: true,
     },
     cancelLabel: {
       get: () => _confirm.cancelLabel,
-      set: (v: any) => { _confirm.cancelLabel = v },
+      set: (v: any) => {
+        _confirm.cancelLabel = v
+      },
       enumerable: true,
       configurable: true,
     },

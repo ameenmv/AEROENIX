@@ -18,9 +18,7 @@ const router = useRouter()
 const queryClient = useQueryClient()
 const { confirmState, confirm, cancel } = useConfirm()
 
-const filterConfig = defineFilters('users', [
-  { key: 'created_at', type: 'dateRange' },
-])
+const filterConfig = defineFilters('users', [{ key: 'created_at', type: 'dateRange' }])
 
 const table = useTable<User>({
   resourceName: 'users',
@@ -37,11 +35,15 @@ const deleteMutation = useMutation({
 })
 
 function handleDelete(id: string | number) {
-  confirm(t('common.confirm_delete', 'Confirm Delete'), t('common.confirm_delete_message', 'Are you sure you want to delete this item?'), () => {
-    deleteMutation.mutate(id, {
-      onSettled: () => cancel(),
-    })
-  })
+  confirm(
+    t('common.confirm_delete', 'Confirm Delete'),
+    t('common.confirm_delete_message', 'Are you sure you want to delete this item?'),
+    () => {
+      deleteMutation.mutate(id, {
+        onSettled: () => cancel(),
+      })
+    },
+  )
 }
 
 /** Type-safe row accessor */
@@ -75,7 +77,7 @@ function u(row: any): User {
       />
 
       <DataTable
-        :data="(table.items.value as any)"
+        :data="table.items.value as any"
         :loading="table.loading.value"
         :total-items="table.totalItems.value"
         :page="table.page.value"
@@ -113,9 +115,17 @@ function u(row: any): User {
             <TableCell>
               <span
                 class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-                :class="u(row).email_verified_at ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'"
+                :class="
+                  u(row).email_verified_at
+                    ? 'bg-emerald-500/10 text-emerald-500'
+                    : 'bg-amber-500/10 text-amber-500'
+                "
               >
-                {{ u(row).email_verified_at ? t('common.check_mark', '✓') : t('common.cross_mark', '✗') }}
+                {{
+                  u(row).email_verified_at
+                    ? t('common.check_mark', '✓')
+                    : t('common.cross_mark', '✗')
+                }}
               </span>
             </TableCell>
 
@@ -132,14 +142,18 @@ function u(row: any): User {
                 <Button
                   variant="ghost"
                   size="sm"
-                  @click="router.push({ name: 'admin-users-show', params: { id: String(u(row).id) } })"
+                  @click="
+                    router.push({ name: 'admin-users-show', params: { id: String(u(row).id) } })
+                  "
                 >
                   {{ t('actions.view', 'View') }}
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
-                  @click="router.push({ name: 'admin-users-edit', params: { id: String(u(row).id) } })"
+                  @click="
+                    router.push({ name: 'admin-users-edit', params: { id: String(u(row).id) } })
+                  "
                 >
                   {{ t('actions.edit', 'Edit') }}
                 </Button>

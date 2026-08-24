@@ -157,22 +157,32 @@ export const FIELD_MAP: Record<string, () => unknown> = {
 
   // ── Bilingual (AR/EN) ─────────────────────────────────────────────────────
   name_en: () => faker.person.fullName(),
-  name_ar: () => faker.helpers.arrayElement(['محمد أحمد', 'فاطمة علي', 'عبدالله سعود', 'نور الهدى', 'خالد العمري']),
+  name_ar: () =>
+    faker.helpers.arrayElement([
+      'محمد أحمد',
+      'فاطمة علي',
+      'عبدالله سعود',
+      'نور الهدى',
+      'خالد العمري',
+    ]),
   title_en: () => faker.lorem.sentence({ min: 3, max: 8 }),
-  title_ar: () => faker.helpers.arrayElement(['عنوان تجريبي', 'عنوان اختباري', 'مقالة جديدة', 'تقرير شامل']),
+  title_ar: () =>
+    faker.helpers.arrayElement(['عنوان تجريبي', 'عنوان اختباري', 'مقالة جديدة', 'تقرير شامل']),
   description_en: () => faker.lorem.paragraph(),
-  description_ar: () => faker.helpers.arrayElement([
-    'هذا وصف تجريبي للاختبار والتطوير',
-    'محتوى تجريبي يستخدم لأغراض العرض',
-    'نص وصفي لعرض المحتوى في الواجهة',
-  ]),
+  description_ar: () =>
+    faker.helpers.arrayElement([
+      'هذا وصف تجريبي للاختبار والتطوير',
+      'محتوى تجريبي يستخدم لأغراض العرض',
+      'نص وصفي لعرض المحتوى في الواجهة',
+    ]),
   label_en: () => faker.lorem.words(2),
   label_ar: () => faker.helpers.arrayElement(['تسمية', 'عنوان فرعي', 'بيانات']),
   content_en: () => faker.lorem.paragraphs(2),
-  content_ar: () => faker.helpers.arrayElement([
-    'محتوى تجريبي باللغة العربية يستخدم لأغراض التطوير والاختبار',
-    'نص عربي تجريبي يمثل المحتوى الفعلي في التطبيق',
-  ]),
+  content_ar: () =>
+    faker.helpers.arrayElement([
+      'محتوى تجريبي باللغة العربية يستخدم لأغراض التطوير والاختبار',
+      'نص عربي تجريبي يمثل المحتوى الفعلي في التطبيق',
+    ]),
 
   // ── Misc ───────────────────────────────────────────────────────────────────
   color: () => faker.color.rgb(),

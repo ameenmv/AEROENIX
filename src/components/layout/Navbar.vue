@@ -164,7 +164,8 @@ function openProfileCtx(event: MouseEvent) {
             <Btn
               variant="ghost"
               size="icon"
-              class="h-8 w-8 transition-colors" :class="[
+              class="h-8 w-8 transition-colors"
+              :class="[
                 a11yPrefs.barVisible
                   ? 'text-primary bg-primary/10 hover:bg-primary/20'
                   : 'text-muted-foreground hover:text-foreground',

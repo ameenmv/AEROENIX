@@ -60,7 +60,9 @@ const {
               </p>
             </TooltipContent>
           </Tooltip>
-          <span class="text-[10px] font-mono font-medium text-muted-foreground min-w-[32px] text-center">
+          <span
+            class="text-[10px] font-mono font-medium text-muted-foreground min-w-[32px] text-center"
+          >
             {{ prefs.zoomLevel }}%
           </span>
           <Tooltip>
@@ -107,7 +109,9 @@ const {
           </Tooltip>
           <div class="flex items-center gap-0.5">
             <Type :size="13" class="text-muted-foreground" />
-            <span class="text-[10px] font-mono font-medium text-muted-foreground min-w-[32px] text-center">
+            <span
+              class="text-[10px] font-mono font-medium text-muted-foreground min-w-[32px] text-center"
+            >
               {{ prefs.fontScale }}%
             </span>
           </div>
@@ -141,7 +145,8 @@ const {
               <Btn
                 variant="ghost"
                 size="icon-sm"
-                class="h-6 w-6 transition-colors" :class="[
+                class="h-6 w-6 transition-colors"
+                :class="[
                   prefs.grayscale
                     ? 'text-primary bg-primary/10 hover:bg-primary/20'
                     : 'text-muted-foreground hover:text-foreground',
@@ -166,7 +171,8 @@ const {
               <Btn
                 variant="ghost"
                 size="icon-sm"
-                class="h-6 w-6 transition-colors" :class="[
+                class="h-6 w-6 transition-colors"
+                :class="[
                   prefs.highContrast
                     ? 'text-primary bg-primary/10 hover:bg-primary/20'
                     : 'text-muted-foreground hover:text-foreground',
@@ -191,7 +197,8 @@ const {
               <Btn
                 variant="ghost"
                 size="icon-sm"
-                class="h-6 w-6 transition-colors" :class="[
+                class="h-6 w-6 transition-colors"
+                :class="[
                   prefs.underlineLinks
                     ? 'text-primary bg-primary/10 hover:bg-primary/20'
                     : 'text-muted-foreground hover:text-foreground',
@@ -216,7 +223,8 @@ const {
               <Btn
                 variant="ghost"
                 size="icon-sm"
-                class="h-6 w-6 transition-colors" :class="[
+                class="h-6 w-6 transition-colors"
+                :class="[
                   prefs.bigCursor
                     ? 'text-primary bg-primary/10 hover:bg-primary/20'
                     : 'text-muted-foreground hover:text-foreground',

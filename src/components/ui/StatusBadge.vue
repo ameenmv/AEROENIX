@@ -18,22 +18,25 @@
 import type { StatusVariant, StatusVariantMap } from '@/utils/statusVariants'
 import { getVariantByColor, resolveStatusVariant } from '@/utils/statusVariants'
 
-const props = withDefaults(defineProps<{
-  /** Pre-resolved variant object (highest priority) */
-  variant?: StatusVariant
-  /** Variant map from enum file (e.g. WhatsAppTemplateStatusVariants) */
-  variants?: StatusVariantMap
-  /** Backend status object { value, label, color, badge } or string */
-  status?: { value?: number, label?: string, color?: string, badge?: string } | string | null
-  /** Display label override. Falls back to status.badge → status.label */
-  label?: string
-  /** Direct color name ('green', 'red', 'yellow') when no enum lookup needed */
-  color?: string
-  /** Size variant */
-  size?: 'xs' | 'sm' | 'md'
-}>(), {
-  size: 'sm',
-})
+const props = withDefaults(
+  defineProps<{
+    /** Pre-resolved variant object (highest priority) */
+    variant?: StatusVariant
+    /** Variant map from enum file (e.g. WhatsAppTemplateStatusVariants) */
+    variants?: StatusVariantMap
+    /** Backend status object { value, label, color, badge } or string */
+    status?: { value?: number, label?: string, color?: string, badge?: string } | string | null
+    /** Display label override. Falls back to status.badge → status.label */
+    label?: string
+    /** Direct color name ('green', 'red', 'yellow') when no enum lookup needed */
+    color?: string
+    /** Size variant */
+    size?: 'xs' | 'sm' | 'md'
+  }>(),
+  {
+    size: 'sm',
+  },
+)
 
 const resolved = computed<StatusVariant>(() => {
   // 1. Direct variant prop
@@ -63,19 +66,25 @@ const displayLabel = computed(() => {
 
 const sizeClasses = computed(() => {
   switch (props.size) {
-    case 'xs': return 'px-[8px] py-[2px] text-[9px] gap-[4px]'
-    case 'md': return 'px-[12px] py-[5px] text-[12px] gap-[8px]'
+    case 'xs':
+      return 'px-[8px] py-[2px] text-[9px] gap-[4px]'
+    case 'md':
+      return 'px-[12px] py-[5px] text-[12px] gap-[8px]'
     case 'sm':
-    default: return 'px-[10px] py-[3px] text-[10px] gap-[6px]'
+    default:
+      return 'px-[10px] py-[3px] text-[10px] gap-[6px]'
   }
 })
 
 const dotSize = computed(() => {
   switch (props.size) {
-    case 'xs': return 'w-[4px] h-[4px]'
-    case 'md': return 'w-[6px] h-[6px]'
+    case 'xs':
+      return 'w-[4px] h-[4px]'
+    case 'md':
+      return 'w-[6px] h-[6px]'
     case 'sm':
-    default: return 'w-[5px] h-[5px]'
+    default:
+      return 'w-[5px] h-[5px]'
   }
 })
 </script>

@@ -121,12 +121,14 @@ const existingFiles = computed<CmsMediaItem[]>(() => {
 
   // Single object
   if (typeof val === 'object' && !Array.isArray(val) && (val.url || val.thumb)) {
-    return [{
-      url: val.url || val.thumb || '',
-      thumb: val.thumb || val.url || '',
-      name: val.file_name || val.name || 'file',
-      id: val.id,
-    }]
+    return [
+      {
+        url: val.url || val.thumb || '',
+        thumb: val.thumb || val.url || '',
+        name: val.file_name || val.name || 'file',
+        id: val.id,
+      },
+    ]
   }
 
   return []
@@ -338,12 +340,14 @@ const hasMultiFiles = computed(() => {
     <!-- ══════════ SINGLE MODE ══════════ -->
     <template v-if="!multiple">
       <div
-        :class="cn(
-          'image-input-zone relative rounded-md border border-dashed border-input transition-all cursor-pointer overflow-hidden',
-          dragOver ? 'border-primary bg-primary/5' : 'hover:border-primary/50',
-          error ? 'border-destructive' : '',
-          disabled || uploading ? 'opacity-50 pointer-events-none' : '',
-        )"
+        :class="
+          cn(
+            'image-input-zone relative rounded-md border border-dashed border-input transition-all cursor-pointer overflow-hidden',
+            dragOver ? 'border-primary bg-primary/5' : 'hover:border-primary/50',
+            error ? 'border-destructive' : '',
+            disabled || uploading ? 'opacity-50 pointer-events-none' : '',
+          )
+        "
         @click="triggerFileInput"
         @drop="handleDrop"
         @dragover="handleDragOver"
@@ -367,16 +371,35 @@ const hasMultiFiles = computed(() => {
             v-if="uploading"
             class="absolute inset-0 bg-black/50 flex items-center justify-center"
           >
-            <div class="size-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            <div
+              class="size-8 border-2 border-primary border-t-transparent rounded-full animate-spin"
+            />
           </div>
-          <div v-if="!uploading" class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+          <div
+            v-if="!uploading"
+            class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3"
+          >
             <button
               type="button"
               class="image-input-action"
               :title="$t('common.image_change', 'Change file')"
               @click.stop="triggerFileInput"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" x2="12" y1="3" y2="15" />
+              </svg>
             </button>
             <button
               type="button"
@@ -384,7 +407,21 @@ const hasMultiFiles = computed(() => {
               :title="$t('common.image_remove', 'Remove file')"
               @click.stop="clearSingle"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+              </svg>
             </button>
           </div>
           <div class="px-3 py-1.5 bg-card border-t border-border">
@@ -395,12 +432,31 @@ const hasMultiFiles = computed(() => {
         </div>
 
         <div v-else class="flex flex-col items-center justify-center py-10 px-4 text-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground/40 mb-3"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="text-muted-foreground/40 mb-3"
+          >
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+            <circle cx="9" cy="9" r="2" />
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+          </svg>
           <p class="text-sm font-medium text-muted-foreground mb-1">
             {{ $t('common.image_click_to_upload', 'Click to upload or drag & drop') }}
           </p>
           <p class="text-xs text-muted-foreground/60">
-            {{ allowedTypes?.length ? allowedTypes.join(', ') : $t('common.allowed_file_types', 'PNG, JPG, SVG, WebP, Video') }}
+            {{
+              allowedTypes?.length
+                ? allowedTypes.join(', ')
+                : $t('common.allowed_file_types', 'PNG, JPG, SVG, WebP, Video')
+            }}
           </p>
         </div>
       </div>
@@ -423,19 +479,31 @@ const hasMultiFiles = computed(() => {
               :alt="file.name"
               class="w-full h-28 object-cover bg-black/10"
             >
-            <video
-              v-else
-              :src="file.url"
-              class="w-full h-28 object-cover bg-black/10"
-            />
-            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <video v-else :src="file.url" class="w-full h-28 object-cover bg-black/10" />
+            <div
+              class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+            >
               <button
                 type="button"
                 class="image-input-action text-destructive !w-8 !h-8"
                 :title="$t('actions.remove', 'Remove')"
                 @click="removeExistingFile(idx)"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                </svg>
               </button>
             </div>
             <div class="px-2 py-1 border-t border-border">
@@ -457,17 +525,15 @@ const hasMultiFiles = computed(() => {
               :alt="file.name"
               class="w-full h-28 object-cover bg-black/10"
             >
-            <video
-              v-else
-              :src="file.preview"
-              class="w-full h-28 object-cover bg-black/10"
-            />
+            <video v-else :src="file.preview" class="w-full h-28 object-cover bg-black/10" />
             <!-- Upload spinner -->
             <div
               v-if="file.uploading"
               class="absolute inset-0 bg-black/50 flex items-center justify-center"
             >
-              <div class="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <div
+                class="size-6 border-2 border-primary border-t-transparent rounded-full animate-spin"
+              />
             </div>
             <!-- Error overlay -->
             <div
@@ -479,14 +545,31 @@ const hasMultiFiles = computed(() => {
               </p>
             </div>
             <!-- Hover remove -->
-            <div v-else class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <div
+              v-else
+              class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+            >
               <button
                 type="button"
                 class="image-input-action text-destructive !w-8 !h-8"
                 :title="$t('actions.remove', 'Remove')"
                 @click="removeLocalFile(idx)"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                </svg>
               </button>
             </div>
             <div class="px-2 py-1 border-t border-border">
@@ -503,7 +586,21 @@ const hasMultiFiles = computed(() => {
             :class="disabled || anyUploading ? 'opacity-50 pointer-events-none' : ''"
             @click.stop="triggerFileInput"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground/50 mb-1"><line x1="12" x2="12" y1="5" y2="19" /><line x1="5" x2="19" y1="12" y2="12" /></svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="text-muted-foreground/50 mb-1"
+            >
+              <line x1="12" x2="12" y1="5" y2="19" />
+              <line x1="5" x2="19" y1="12" y2="12" />
+            </svg>
             <span class="text-[10px] text-muted-foreground">
               {{ $t('cms.add_more', 'Add more') }}
             </span>
@@ -514,19 +611,36 @@ const hasMultiFiles = computed(() => {
       <!-- Empty drop zone (no files yet) -->
       <div
         v-else
-        :class="cn(
-          'image-input-zone relative rounded-md border border-dashed border-input transition-all cursor-pointer overflow-hidden',
-          dragOver ? 'border-primary bg-primary/5' : 'hover:border-primary/50',
-          error ? 'border-destructive' : '',
-          disabled ? 'opacity-50 pointer-events-none' : '',
-        )"
+        :class="
+          cn(
+            'image-input-zone relative rounded-md border border-dashed border-input transition-all cursor-pointer overflow-hidden',
+            dragOver ? 'border-primary bg-primary/5' : 'hover:border-primary/50',
+            error ? 'border-destructive' : '',
+            disabled ? 'opacity-50 pointer-events-none' : '',
+          )
+        "
         @click="triggerFileInput"
         @drop="handleDrop"
         @dragover="handleDragOver"
         @dragleave="handleDragLeave"
       >
         <div class="flex flex-col items-center justify-center py-10 px-4 text-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground/40 mb-3"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="text-muted-foreground/40 mb-3"
+          >
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+            <circle cx="9" cy="9" r="2" />
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+          </svg>
           <p class="text-sm font-medium text-muted-foreground mb-1">
             {{ $t('common.image_click_to_upload', 'Click to upload or drag & drop') }}
           </p>

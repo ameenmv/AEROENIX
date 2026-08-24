@@ -29,10 +29,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <Card
-    data-slot="info-card"
-    :class="cn(infoCardVariants({ padding }), props.class)"
-  >
+  <Card data-slot="info-card" :class="cn(infoCardVariants({ padding }), props.class)">
     <!-- Section header with icon -->
     <CardHeader v-if="title || $slots.header || icon" class="p-0 pb-4">
       <slot name="header">

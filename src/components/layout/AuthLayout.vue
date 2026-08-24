@@ -21,7 +21,7 @@ function toggleLanguage() {
 </script>
 
 <template>
-  <div class="min-h-dvh flex flex-col bg-background ">
+  <div class="min-h-dvh flex flex-col bg-background">
     <!-- Top bar with lang/theme -->
     <div class="flex items-center justify-end gap-1 px-4 py-2">
       <Btn

@@ -10,7 +10,13 @@ import { computed, reactive, ref, watch } from 'vue'
 import { Button } from '@/components/uic/button'
 import { Input } from '@/components/uic/input'
 import { Label } from '@/components/uic/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/uic/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/uic/select'
 import { Separator } from '@/components/uic/separator'
 import { cn } from '@/utils/cn'
 import { filterPanelVariants } from './variants'
@@ -70,11 +76,7 @@ watch(
   { deep: true },
 )
 
-watch(
-  localFilters,
-  val => emit('update:modelValue', { ...val }),
-  { deep: true },
-)
+watch(localFilters, val => emit('update:modelValue', { ...val }), { deep: true })
 
 function resetAll() {
   for (const key in localFilters) {
@@ -113,10 +115,7 @@ const dateRangeEnd = computed(() => (model: string) => getDateRangeValue(model, 
 </script>
 
 <template>
-  <div
-    data-slot="filter-panel"
-    :class="cn(filterPanelVariants({ position, size }), props.class)"
-  >
+  <div data-slot="filter-panel" :class="cn(filterPanelVariants({ position, size }), props.class)">
     <!-- Header -->
     <div class="flex items-center justify-between px-4 py-3 border-b border-border">
       <h6 class="text-sm font-semibold text-foreground m-0">
@@ -161,11 +160,7 @@ const dateRangeEnd = computed(() => (model: string) => getDateRangeValue(model, 
             <SelectValue :placeholder="filter.placeholder || filter.label" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem
-              v-for="opt in filter.options"
-              :key="opt.value"
-              :value="String(opt.value)"
-            >
+            <SelectItem v-for="opt in filter.options" :key="opt.value" :value="String(opt.value)">
               {{ opt.label }}
             </SelectItem>
           </SelectContent>

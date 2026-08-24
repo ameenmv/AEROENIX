@@ -24,8 +24,48 @@ const defaults: A11yPreferences = {
   barVisible: false,
 }
 
-const ZOOM_STEPS = [50, 60, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 140, 150, 175, 200]
-const FONT_STEPS = [50, 60, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 140, 150, 175, 200]
+const ZOOM_STEPS = [
+  50,
+  60,
+  70,
+  75,
+  80,
+  85,
+  90,
+  95,
+  100,
+  105,
+  110,
+  115,
+  120,
+  125,
+  130,
+  140,
+  150,
+  175,
+  200,
+]
+const FONT_STEPS = [
+  50,
+  60,
+  70,
+  75,
+  80,
+  85,
+  90,
+  95,
+  100,
+  105,
+  110,
+  115,
+  120,
+  125,
+  130,
+  140,
+  150,
+  175,
+  200,
+]
 
 // Shared reactive state (singleton) — survives across component instances
 const prefs = reactive<A11yPreferences>({ ...defaults })
@@ -114,10 +154,14 @@ export function useAccessibility() {
     }
 
     // Reactively apply on every change
-    watch(prefs, (newPrefs) => {
-      savePrefs(newPrefs)
-      applyToDOM(newPrefs)
-    }, { deep: true })
+    watch(
+      prefs,
+      (newPrefs) => {
+        savePrefs(newPrefs)
+        applyToDOM(newPrefs)
+      },
+      { deep: true },
+    )
   }
 
   // --- Actions ---

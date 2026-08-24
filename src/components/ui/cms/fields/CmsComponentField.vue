@@ -24,7 +24,12 @@ const _emit = defineEmits<{
         {{ $t('cms.component_field', 'Component field') }} ({{ componentRef || 'unknown' }})
       </p>
       <p class="text-[10px] text-muted-foreground mt-1">
-        {{ repeatable ? $t('cms.repeatable', 'Repeatable') : $t('cms.single_instance', 'Single instance') }}{{ $t('common.separator_dash', ' — ') }}{{ $t('cms.nested_editing_coming', 'Nested editing coming in a future update') }}
+        {{
+          repeatable
+            ? $t('cms.repeatable', 'Repeatable')
+            : $t('cms.single_instance', 'Single instance')
+        }}{{ $t('common.separator_dash', ' — ')
+        }}{{ $t('cms.nested_editing_coming', 'Nested editing coming in a future update') }}
       </p>
     </div>
   </div>

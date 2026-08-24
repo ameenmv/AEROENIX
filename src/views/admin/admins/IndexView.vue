@@ -12,14 +12,7 @@ import { useAdmins } from '@/composables'
 const { t } = useI18n()
 const router = useRouter()
 
-const {
-  filterConfig,
-  table,
-  confirmState,
-  cancelConfirm,
-  deleteItem,
-  toggleStatus,
-} = useAdmins()
+const { filterConfig, table, confirmState, cancelConfirm, deleteItem, toggleStatus } = useAdmins()
 
 /** Type-safe row accessor */
 function a(row: any): Admin {
@@ -52,7 +45,7 @@ function a(row: any): Admin {
       />
 
       <DataTable
-        :data="(table.items.value as any)"
+        :data="table.items.value as any"
         :loading="table.loading.value"
         :total-items="table.totalItems.value"
         :page="table.page.value"
@@ -104,12 +97,24 @@ function a(row: any): Admin {
             <TableCell>
               <button
                 class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium cursor-pointer transition-opacity hover:opacity-80"
-                :class="a(row).status?.color === 'green' ? 'bg-emerald-500/10 text-emerald-500' : a(row).status?.color === 'red' ? 'bg-red-500/10 text-red-400' : 'bg-gray-500/10 text-gray-400'"
+                :class="
+                  a(row).status?.color === 'green'
+                    ? 'bg-emerald-500/10 text-emerald-500'
+                    : a(row).status?.color === 'red'
+                      ? 'bg-red-500/10 text-red-400'
+                      : 'bg-gray-500/10 text-gray-400'
+                "
                 @click="toggleStatus(a(row))"
               >
                 <span
                   class="h-1.5 w-1.5 rounded-full"
-                  :class="a(row).status?.color === 'green' ? 'bg-emerald-500' : a(row).status?.color === 'red' ? 'bg-red-400' : 'bg-gray-400'"
+                  :class="
+                    a(row).status?.color === 'green'
+                      ? 'bg-emerald-500'
+                      : a(row).status?.color === 'red'
+                        ? 'bg-red-400'
+                        : 'bg-gray-400'
+                  "
                 />
                 {{ a(row).status?.badge || a(row).status_label }}
               </button>
@@ -128,7 +133,9 @@ function a(row: any): Admin {
                 <Button
                   variant="ghost"
                   size="sm"
-                  @click="router.push({ name: 'admin-admins-show', params: { id: String(a(row).id) } })"
+                  @click="
+                    router.push({ name: 'admin-admins-show', params: { id: String(a(row).id) } })
+                  "
                 >
                   {{ t('actions.view', 'View') }}
                 </Button>
@@ -136,7 +143,9 @@ function a(row: any): Admin {
                   v-if="a(row).can_update"
                   variant="ghost"
                   size="sm"
-                  @click="router.push({ name: 'admin-admins-edit', params: { id: String(a(row).id) } })"
+                  @click="
+                    router.push({ name: 'admin-admins-edit', params: { id: String(a(row).id) } })
+                  "
                 >
                   {{ t('actions.edit', 'Edit') }}
                 </Button>

@@ -22,10 +22,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <div
-    data-slot="kv-list"
-    :class="cn(kvListVariants({ spacing, dividers }), props.class)"
-  >
+  <div data-slot="kv-list" :class="cn(kvListVariants({ spacing, dividers }), props.class)">
     <slot />
   </div>
 </template>

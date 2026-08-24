@@ -47,7 +47,11 @@ function handleOpenChange(open: boolean) {
   <AlertDialog :open="show" @update:open="handleOpenChange">
     <AlertDialogContent>
       <AlertDialogHeader>
-        <AlertDialogTitle>{{ title || t('common.confirm_action', 'Confirm Action') }}</AlertDialogTitle>
+        <AlertDialogTitle>
+          {{
+            title || t('common.confirm_action', 'Confirm Action')
+          }}
+        </AlertDialogTitle>
         <AlertDialogDescription>
           {{ message || t('common.confirm_delete', 'Are you sure you want to proceed?') }}
         </AlertDialogDescription>

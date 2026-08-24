@@ -60,13 +60,15 @@ const statusColorClass: Record<string, string> = {
         <!-- Content -->
         <div class="space-y-4">
           <div>
-            <span class="text-sm text-muted-foreground">{{ t('notifications.fields.content', 'Content') }} {{ t('common.lang_en', '(EN)') }}</span>
+            <span class="text-sm text-muted-foreground">{{ t('notifications.fields.content', 'Content') }}
+              {{ t('common.lang_en', '(EN)') }}</span>
             <p class="font-medium mt-1 whitespace-pre-wrap">
               {{ item.content?.en || '—' }}
             </p>
           </div>
           <div v-if="item.content?.ar">
-            <span class="text-sm text-muted-foreground">{{ t('notifications.fields.content', 'Content') }} {{ t('common.lang_ar', '(AR)') }}</span>
+            <span class="text-sm text-muted-foreground">{{ t('notifications.fields.content', 'Content') }}
+              {{ t('common.lang_ar', '(AR)') }}</span>
             <p class="font-medium mt-1 whitespace-pre-wrap" dir="rtl">
               {{ item.content.ar }}
             </p>
@@ -76,37 +78,57 @@ const statusColorClass: Record<string, string> = {
         <!-- Detail Fields -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
-            <span class="text-sm text-muted-foreground">{{ t('notifications.fields.type', 'Type') }}</span>
+            <span class="text-sm text-muted-foreground">{{
+              t('notifications.fields.type', 'Type')
+            }}</span>
             <p class="font-medium mt-1">
               {{ item.type }}
             </p>
           </div>
           <div>
-            <span class="text-sm text-muted-foreground">{{ t('notifications.fields.audience_type', 'Audience') }}</span>
+            <span class="text-sm text-muted-foreground">{{
+              t('notifications.fields.audience_type', 'Audience')
+            }}</span>
             <p class="font-medium mt-1">
               {{ item.audience_type }}
             </p>
           </div>
           <div>
-            <span class="text-sm text-muted-foreground">{{ t('notifications.fields.send_to', 'Send To') }}</span>
+            <span class="text-sm text-muted-foreground">{{
+              t('notifications.fields.send_to', 'Send To')
+            }}</span>
             <p class="font-medium mt-1">
               {{ item.send_to }}
             </p>
           </div>
           <div>
-            <span class="text-sm text-muted-foreground">{{ t('notifications.fields.send_at', 'Send At') }}</span>
+            <span class="text-sm text-muted-foreground">{{
+              t('notifications.fields.send_at', 'Send At')
+            }}</span>
             <p class="font-medium mt-1">
-              {{ item.send_at ? new Date(item.send_at).toLocaleString() : t('common.not_scheduled', '—') }}
+              {{
+                item.send_at
+                  ? new Date(item.send_at).toLocaleString()
+                  : t('common.not_scheduled', '—')
+              }}
             </p>
           </div>
           <div>
-            <span class="text-sm text-muted-foreground">{{ t('notifications.fields.sent_at', 'Sent At') }}</span>
+            <span class="text-sm text-muted-foreground">{{
+              t('notifications.fields.sent_at', 'Sent At')
+            }}</span>
             <p class="font-medium mt-1">
-              {{ item.sent_at ? new Date(item.sent_at).toLocaleString() : t('common.not_available', '—') }}
+              {{
+                item.sent_at
+                  ? new Date(item.sent_at).toLocaleString()
+                  : t('common.not_available', '—')
+              }}
             </p>
           </div>
           <div>
-            <span class="text-sm text-muted-foreground">{{ t('notifications.fields.created_at', 'Created At') }}</span>
+            <span class="text-sm text-muted-foreground">{{
+              t('notifications.fields.created_at', 'Created At')
+            }}</span>
             <p class="font-medium mt-1">
               {{ new Date(item.created_at).toLocaleString() }}
             </p>
@@ -116,7 +138,9 @@ const statusColorClass: Record<string, string> = {
         <!-- Actions -->
         <div class="flex items-center gap-2 pt-4 border-t border-border">
           <Button
-            @click="router.push({ name: 'admin-notifications-edit', params: { id: String(item.id) } })"
+            @click="
+              router.push({ name: 'admin-notifications-edit', params: { id: String(item.id) } })
+            "
           >
             {{ t('actions.edit', 'Edit') }}
           </Button>

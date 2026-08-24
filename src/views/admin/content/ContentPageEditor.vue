@@ -7,7 +7,15 @@
  * Edit-only: no create, delete, structure, or publish controls.
  */
 import type { CmsFieldDefinition, CmsPage, CmsSection, CmsSeoMeta } from '@/types/cms'
-import { Add01Icon, ArrowDown01Icon, ArrowLeft02Icon, ArrowUp01Icon, Cancel01Icon, CheckmarkCircle02Icon, Delete02Icon } from '@hugeicons/core-free-icons'
+import {
+  Add01Icon,
+  ArrowDown01Icon,
+  ArrowLeft02Icon,
+  ArrowUp01Icon,
+  Cancel01Icon,
+  CheckmarkCircle02Icon,
+  Delete02Icon,
+} from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -119,7 +127,8 @@ async function loadPage() {
 
     // Load page SEO data
     try {
-      const rawSeo = (fullPage as any).seo_metas ?? (fullPage as any).seoMetas ?? (fullPage as any).seo
+      const rawSeo
+        = (fullPage as any).seo_metas ?? (fullPage as any).seoMetas ?? (fullPage as any).seo
       if (rawSeo) {
         const seoData: Record<string, Partial<CmsSeoMeta>> = { en: {}, ar: {} }
         if (Array.isArray(rawSeo)) {
@@ -135,7 +144,12 @@ async function loadPage() {
           }
         }
         seo.value = {
-          en: { is_default: true, robots: 'index,follow', twitter_card: 'summary_large_image', ...seoData.en },
+          en: {
+            is_default: true,
+            robots: 'index,follow',
+            twitter_card: 'summary_large_image',
+            ...seoData.en,
+          },
           ar: { ...seoData.ar },
         }
       }
@@ -144,7 +158,12 @@ async function loadPage() {
         const seoAll = await cmsSeoService.getAll(matchedPage.id)
         if (seoAll) {
           seo.value = {
-            en: { is_default: true, robots: 'index,follow', twitter_card: 'summary_large_image', ...(seoAll.en || {}) },
+            en: {
+              is_default: true,
+              robots: 'index,follow',
+              twitter_card: 'summary_large_image',
+              ...(seoAll.en || {}),
+            },
             ar: { ...(seoAll.ar || {}) },
           }
         }
@@ -202,7 +221,10 @@ async function loadSectionContent(sectionId: number) {
     const data = await cmsSectionContentService.getAll(sectionId)
 
     if (!contentStore[sectionId]) {
-      contentStore[sectionId] = { en: structuredClone(emptyContent), ar: structuredClone(emptyContent) }
+      contentStore[sectionId] = {
+        en: structuredClone(emptyContent),
+        ar: structuredClone(emptyContent),
+      }
     }
     if (!contentStatus[sectionId]) {
       contentStatus[sectionId] = { en: 0, ar: 0 }
@@ -226,7 +248,10 @@ async function loadSectionContent(sectionId: number) {
   catch {
     // Content may not exist yet — initialize empty
     if (!contentStore[sectionId]) {
-      contentStore[sectionId] = { en: structuredClone(emptyContent), ar: structuredClone(emptyContent) }
+      contentStore[sectionId] = {
+        en: structuredClone(emptyContent),
+        ar: structuredClone(emptyContent),
+      }
     }
     if (!contentStatus[sectionId]) {
       contentStatus[sectionId] = { en: 0, ar: 0 }
@@ -308,8 +333,7 @@ const collapsedEntries = ref<Set<number>>(new Set())
 function toggleEntryCollapse(index: number) {
   if (collapsedEntries.value.has(index))
     collapsedEntries.value.delete(index)
-  else
-    collapsedEntries.value.add(index)
+  else collapsedEntries.value.add(index)
 }
 
 /** Get the array of entries for the active repeatable section */
@@ -680,8 +704,7 @@ function sanitizeContentForSave(sectionId: number, rawContent: any): any {
         const result = sanitizeMediaValue(cleaned[key], fieldDef.multiple === true)
         if (result === SKIP_FIELD)
           delete cleaned[key] // omit unchanged media — backend keeps existing
-        else
-          cleaned[key] = result
+        else cleaned[key] = result
       }
     }
     return cleaned
@@ -715,7 +738,10 @@ async function handleSaveAll() {
     try {
       const cleanedSeo = cleanSeoPayload(seo.value)
       if (cleanedSeo && Object.keys(cleanedSeo).length > 0) {
-        await cmsSeoService.saveBatch(page.value.id, { default: 'en', locales: cleanedSeo as Record<string, Partial<CmsSeoMeta>> })
+        await cmsSeoService.saveBatch(page.value.id, {
+          default: 'en',
+          locales: cleanedSeo as Record<string, Partial<CmsSeoMeta>>,
+        })
       }
       toast.success(t('cms.seo_saved', 'SEO settings saved successfully'))
     }
@@ -768,7 +794,10 @@ async function handleSaveAll() {
       try {
         const cleanedSeo = cleanSeoPayload(seo.value)
         if (cleanedSeo && Object.keys(cleanedSeo).length > 0) {
-          await cmsSeoService.saveBatch(page.value.id, { default: 'en', locales: cleanedSeo as Record<string, Partial<CmsSeoMeta>> })
+          await cmsSeoService.saveBatch(page.value.id, {
+            default: 'en',
+            locales: cleanedSeo as Record<string, Partial<CmsSeoMeta>>,
+          })
         }
       }
       catch {
@@ -791,7 +820,8 @@ async function handleSaveAll() {
       for (const [key, msgs] of Object.entries(errors)) {
         // Backend usually prefixes with 'content.' (e.g. 'content.dasda')
         const fieldKey = key.replace(/^content\./, '')
-        validationErrors[sectionId as number]![activeLocale.value]![fieldKey] = (msgs as string[])[0] || 'Validation failed'
+        validationErrors[sectionId as number]![activeLocale.value]![fieldKey]
+          = (msgs as string[])[0] || 'Validation failed'
       }
     }
     else {
@@ -831,9 +861,11 @@ async function handlePublish() {
     // Only save draft if there are actual changes since last save.
     // This prevents re-sending consumed temp upload tokens.
     const snapshotContent = originalContentStore.value?.[sectionId]?.[activeLocale.value]
-    const hasChanges = JSON.stringify(content) !== JSON.stringify(
-      snapshotContent ? sanitizeContentForSave(sectionId, snapshotContent) : undefined,
-    )
+    const hasChanges
+      = JSON.stringify(content)
+        !== JSON.stringify(
+          snapshotContent ? sanitizeContentForSave(sectionId, snapshotContent) : undefined,
+        )
 
     if (hasChanges) {
       const saveResponse = await cmsSectionContentService.saveDraft(sectionId, {
@@ -881,7 +913,8 @@ async function handlePublish() {
 
       for (const [key, msgs] of Object.entries(errors)) {
         const fieldKey = key.replace(/^content\./, '')
-        validationErrors[sectionId as number]![activeLocale.value]![fieldKey] = (msgs as string[])[0] || 'Validation failed'
+        validationErrors[sectionId as number]![activeLocale.value]![fieldKey]
+          = (msgs as string[])[0] || 'Validation failed'
       }
     }
     else {
@@ -1147,7 +1180,11 @@ function handleBack() {
                   <!-- Entry count header -->
                   <div class="flex items-center justify-between">
                     <p class="text-sm text-muted-foreground font-medium uppercase tracking-wider">
-                      {{ activeLocale === 'ar' ? $t('common.lang_ar_content', 'المحتوى العربي') : $t('common.lang_en_content', 'English Content') }}
+                      {{
+                        activeLocale === 'ar'
+                          ? $t('common.lang_ar_content', 'المحتوى العربي')
+                          : $t('common.lang_en_content', 'English Content')
+                      }}
                       <span class="text-xs opacity-70">({{ repeatableEntries.length }})</span>
                     </p>
                   </div>
@@ -1169,7 +1206,17 @@ function handleBack() {
                           class="w-6 h-6 flex items-center justify-center rounded-full bg-primary/10 text-primary shrink-0 transition-transform"
                           :class="{ 'rotate-180': !collapsedEntries.has(entryIndex) }"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
                             <polyline points="6 9 12 15 18 9" />
                           </svg>
                         </button>
@@ -1188,7 +1235,11 @@ function handleBack() {
                             :title="$t('common.move_up', 'Move up')"
                             @click="moveEntry(entryIndex, 'up')"
                           >
-                            <HugeiconsIcon :icon="ArrowUp01Icon" :size="14" class="text-muted-foreground" />
+                            <HugeiconsIcon
+                              :icon="ArrowUp01Icon"
+                              :size="14"
+                              class="text-muted-foreground"
+                            />
                           </button>
                           <!-- Move down -->
                           <button
@@ -1197,7 +1248,11 @@ function handleBack() {
                             :title="$t('common.move_down', 'Move down')"
                             @click="moveEntry(entryIndex, 'down')"
                           >
-                            <HugeiconsIcon :icon="ArrowDown01Icon" :size="14" class="text-muted-foreground" />
+                            <HugeiconsIcon
+                              :icon="ArrowDown01Icon"
+                              :size="14"
+                              class="text-muted-foreground"
+                            />
                           </button>
                           <!-- Delete -->
                           <button
@@ -1205,21 +1260,30 @@ function handleBack() {
                             :title="$t('common.delete', 'Delete')"
                             @click="removeEntry(entryIndex)"
                           >
-                            <HugeiconsIcon :icon="Delete02Icon" :size="14" class="text-destructive" />
+                            <HugeiconsIcon
+                              :icon="Delete02Icon"
+                              :size="14"
+                              class="text-destructive"
+                            />
                           </button>
                         </div>
                       </div>
 
                       <!-- Entry Body (collapsible) -->
                       <Transition name="slide">
-                        <div v-if="!collapsedEntries.has(entryIndex)" class="px-4 pb-4 pt-1 space-y-4 border-t border-border">
+                        <div
+                          v-if="!collapsedEntries.has(entryIndex)"
+                          class="px-4 pb-4 pt-1 space-y-4 border-t border-border"
+                        >
                           <template v-for="field in activeSectionFields" :key="field.key">
                             <CmsFieldRenderer
                               :field="field"
                               :model-value="getRepeatableFieldValue(entryIndex, field.key)"
                               :sibling-values="entry"
                               :locale="activeLocale"
-                              @update:model-value="setRepeatableFieldValue(entryIndex, field.key, $event)"
+                              @update:model-value="
+                                setRepeatableFieldValue(entryIndex, field.key, $event)
+                              "
                             />
                           </template>
                         </div>
@@ -1243,7 +1307,11 @@ function handleBack() {
                     <CardTitle
                       class="text-sm text-muted-foreground font-medium uppercase tracking-wider"
                     >
-                      {{ activeLocale === 'ar' ? $t('common.lang_ar_content', 'المحتوى العربي') : $t('common.lang_en_content', 'English Content') }}
+                      {{
+                        activeLocale === 'ar'
+                          ? $t('common.lang_ar_content', 'المحتوى العربي')
+                          : $t('common.lang_en_content', 'English Content')
+                      }}
                     </CardTitle>
                   </CardHeader>
                   <CardContent class="space-y-5">
@@ -1266,7 +1334,9 @@ function handleBack() {
             <div v-else-if="activeSectionId === 'seo'" class="p-6 max-w-3xl mx-auto pb-32">
               <div class="mb-6">
                 <div class="flex items-center gap-2 mb-1">
-                  <p class="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
+                  <p
+                    class="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold"
+                  >
                     {{ t('cms.seo', 'SEO') }}
                   </p>
                 </div>
@@ -1305,7 +1375,12 @@ function handleBack() {
               @click="handlePublish"
             >
               <HugeiconsIcon :icon="CheckmarkCircle02Icon" :size="14" />
-              {{ t('cms.publish_locale', 'Publish {locale}').replace('{locale}', activeLocale.toUpperCase()) }}
+              {{
+                t('cms.publish_locale', 'Publish {locale}').replace(
+                  '{locale}',
+                  activeLocale.toUpperCase(),
+                )
+              }}
             </Button>
             <Button :loading="saving" :disabled="saving || publishing" @click="handleSaveAll">
               <HugeiconsIcon :icon="CheckmarkCircle02Icon" :size="14" />

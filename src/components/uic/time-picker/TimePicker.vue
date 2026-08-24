@@ -62,7 +62,11 @@ function initFromValue(val: string) {
   }
 }
 
-watch(() => props.modelValue, v => initFromValue(v), { immediate: true })
+watch(
+  () => props.modelValue,
+  v => initFromValue(v),
+  { immediate: true },
+)
 
 const displayTime = computed(
   () => `${pad(currentHour.value)}:${pad(currentMinute.value)} ${currentPeriod.value}`,
@@ -123,12 +127,14 @@ function onOpenChange(open: boolean) {
         data-slot="time-picker"
         variant="outline"
         :disabled="disabled"
-        :class="cn(
-          timePickerVariants({ size }),
-          'justify-start text-left font-normal gap-2',
-          !modelValue && 'text-muted-foreground',
-          props.class,
-        )"
+        :class="
+          cn(
+            timePickerVariants({ size }),
+            'justify-start text-left font-normal gap-2',
+            !modelValue && 'text-muted-foreground',
+            props.class,
+          )
+        "
       >
         <Clock :size="14" class="text-muted-foreground" />
         {{ displayTime }}
@@ -139,7 +145,10 @@ function onOpenChange(open: boolean) {
       <!-- Columns -->
       <div class="flex justify-center gap-4 px-3 py-4">
         <!-- Hours -->
-        <div class="flex flex-col items-center gap-2.5 w-9" @wheel.prevent="handleWheel($event, 'hour')">
+        <div
+          class="flex flex-col items-center gap-2.5 w-9"
+          @wheel.prevent="handleWheel($event, 'hour')"
+        >
           <button
             type="button"
             class="text-muted-foreground text-sm hover:text-foreground transition-colors cursor-pointer"
@@ -147,7 +156,9 @@ function onOpenChange(open: boolean) {
           >
             {{ pad(prevHour) }}
           </button>
-          <span class="text-foreground font-semibold text-base leading-none py-2">{{ pad(currentHour) }}</span>
+          <span class="text-foreground font-semibold text-base leading-none py-2">{{
+            pad(currentHour)
+          }}</span>
           <button
             type="button"
             class="text-muted-foreground text-sm hover:text-foreground transition-colors cursor-pointer"
@@ -160,7 +171,10 @@ function onOpenChange(open: boolean) {
         <span class="text-foreground font-bold self-center">:</span>
 
         <!-- Minutes -->
-        <div class="flex flex-col items-center gap-2.5 w-9" @wheel.prevent="handleWheel($event, 'minute')">
+        <div
+          class="flex flex-col items-center gap-2.5 w-9"
+          @wheel.prevent="handleWheel($event, 'minute')"
+        >
           <button
             type="button"
             class="text-muted-foreground text-sm hover:text-foreground transition-colors cursor-pointer"
@@ -168,7 +182,9 @@ function onOpenChange(open: boolean) {
           >
             {{ pad(prevMin) }}
           </button>
-          <span class="text-foreground font-semibold text-base leading-none py-2">{{ pad(currentMinute) }}</span>
+          <span class="text-foreground font-semibold text-base leading-none py-2">{{
+            pad(currentMinute)
+          }}</span>
           <button
             type="button"
             class="text-muted-foreground text-sm hover:text-foreground transition-colors cursor-pointer"
@@ -179,24 +195,37 @@ function onOpenChange(open: boolean) {
         </div>
 
         <!-- AM/PM -->
-        <div class="flex flex-col items-center gap-2.5 w-11" @wheel.prevent="handleWheel($event, 'period')">
+        <div
+          class="flex flex-col items-center gap-2.5 w-11"
+          @wheel.prevent="handleWheel($event, 'period')"
+        >
           <button
             type="button"
-            :class="cn(
-              'text-sm transition-colors cursor-pointer',
-              currentPeriod === 'AM' ? 'text-muted-foreground/40' : 'text-muted-foreground hover:text-foreground',
-            )"
+            :class="
+              cn(
+                'text-sm transition-colors cursor-pointer',
+                currentPeriod === 'AM'
+                  ? 'text-muted-foreground/40'
+                  : 'text-muted-foreground hover:text-foreground',
+              )
+            "
             @click="currentPeriod !== 'AM' && togglePeriod()"
           >
             {{ $t('common.am', 'AM') }}
           </button>
-          <span class="text-foreground font-semibold text-base leading-none py-2">{{ currentPeriod }}</span>
+          <span class="text-foreground font-semibold text-base leading-none py-2">{{
+            currentPeriod
+          }}</span>
           <button
             type="button"
-            :class="cn(
-              'text-sm transition-colors cursor-pointer',
-              currentPeriod === 'PM' ? 'text-muted-foreground/40' : 'text-muted-foreground hover:text-foreground',
-            )"
+            :class="
+              cn(
+                'text-sm transition-colors cursor-pointer',
+                currentPeriod === 'PM'
+                  ? 'text-muted-foreground/40'
+                  : 'text-muted-foreground hover:text-foreground',
+              )
+            "
             @click="currentPeriod !== 'PM' && togglePeriod()"
           >
             {{ $t('common.pm', 'PM') }}

@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import type { NavItem } from '@/lib/navigation'
-import { ArrowDown01Icon, File01Icon, Logout02Icon, PlusSignIcon, ViewIcon } from '@hugeicons/core-free-icons'
+import {
+  ArrowDown01Icon,
+  File01Icon,
+  Logout02Icon,
+  PlusSignIcon,
+  ViewIcon,
+} from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { CollapsibleRoot as Collapsible, CollapsibleContent, CollapsibleTrigger } from 'reka-ui'
 import { computed, onMounted, reactive, ref } from 'vue'
@@ -121,14 +127,16 @@ async function loadDynamicNavChildren() {
 
         dynamicNavChildren[item.name] = pages.map((page: any) => {
           // Get translated slug — could be object { en, ar } or string
-          const slug = typeof page.slug === 'string'
-            ? page.slug
-            : (page.slug?.[locale.value] || page.slug?.en || '')
+          const slug
+            = typeof page.slug === 'string'
+              ? page.slug
+              : page.slug?.[locale.value] || page.slug?.en || ''
 
           // Get translated title for the label
-          const title = typeof page.title === 'string'
-            ? page.title
-            : (page.title?.[locale.value] || page.title?.en || slug)
+          const title
+            = typeof page.title === 'string'
+              ? page.title
+              : page.title?.[locale.value] || page.title?.en || slug
 
           return {
             name: `content-${slug}`,
@@ -226,7 +234,9 @@ onMounted(() => {
                       <!-- Loading state for dynamic children -->
                       <SidebarMenuSubItem v-if="item.dynamicChildren && dynamicLoading[item.name]">
                         <SidebarMenuSubButton as-child>
-                          <span class="text-muted-foreground text-xs animate-pulse">{{ t('common.loading', 'Loading...') }}</span>
+                          <span class="text-muted-foreground text-xs animate-pulse">{{
+                            t('common.loading', 'Loading...')
+                          }}</span>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
 
@@ -238,15 +248,25 @@ onMounted(() => {
                           :is-active="isActive(child.to)"
                         >
                           <RouterLink :to="`${adminPrefix}${child.to?.replace('/admin', '')}`">
-                            <span>{{ (child as any)._isDirectLabel ? child.label : t(child.label) }}</span>
+                            <span>{{
+                              (child as any)._isDirectLabel ? child.label : t(child.label)
+                            }}</span>
                           </RouterLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
 
                       <!-- Empty state for dynamic children -->
-                      <SidebarMenuSubItem v-if="item.dynamicChildren && !dynamicLoading[item.name] && getNavChildren(item).length === 0">
+                      <SidebarMenuSubItem
+                        v-if="
+                          item.dynamicChildren
+                            && !dynamicLoading[item.name]
+                            && getNavChildren(item).length === 0
+                        "
+                      >
                         <SidebarMenuSubButton as-child>
-                          <span class="text-muted-foreground text-xs italic">{{ t('cms.no_pages', 'No pages') }}</span>
+                          <span class="text-muted-foreground text-xs italic">{{
+                            t('cms.no_pages', 'No pages')
+                          }}</span>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                     </SidebarMenuSub>

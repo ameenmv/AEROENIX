@@ -607,7 +607,9 @@ function getFieldTypeLabel(type: string): string {
                       <code class="text-[10px] text-muted-foreground font-mono">{{
                         item.key
                       }}</code>
-                      <span class="text-[10px] text-muted-foreground">{{ $t('common.separator', '·') }}</span>
+                      <span class="text-[10px] text-muted-foreground">{{
+                        $t('common.separator', '·')
+                      }}</span>
                       <span class="text-[10px] text-muted-foreground">
                         {{ (item.fields || []).length }} {{ t('cms.fields', 'fields') }}
                       </span>
@@ -615,7 +617,8 @@ function getFieldTypeLabel(type: string): string {
                         v-if="item.pages_count != null"
                         class="text-[10px] text-muted-foreground"
                       >
-                        {{ $t('common.separator', '·') }} {{ item.pages_count }} {{ t('cms.pages_using', 'pages') }}
+                        {{ $t('common.separator', '·') }} {{ item.pages_count }}
+                        {{ t('cms.pages_using', 'pages') }}
                       </span>
                     </div>
                   </div>
@@ -628,7 +631,11 @@ function getFieldTypeLabel(type: string): string {
                     variant="ghost"
                     size="sm"
                     class="h-7 text-xs disabled:opacity-30 disabled:cursor-not-allowed"
-                    :title="(item as any).can_update === false ? t('common.action_restricted', 'Action restricted') : ''"
+                    :title="
+                      (item as any).can_update === false
+                        ? t('common.action_restricted', 'Action restricted')
+                        : ''
+                    "
                     :disabled="(item as any).can_update === false"
                     @click="handleEditContent(item)"
                   >
@@ -638,7 +645,11 @@ function getFieldTypeLabel(type: string): string {
 
                   <!-- Edit Schema -->
                   <button
-                    :title="(item as any).can_update === false ? t('common.action_restricted', 'Action restricted') : t('actions.edit', 'Edit')"
+                    :title="
+                      (item as any).can_update === false
+                        ? t('common.action_restricted', 'Action restricted')
+                        : t('actions.edit', 'Edit')
+                    "
                     class="w-7 h-7 flex items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                     :disabled="(item as any).can_update === false"
                     @click="handleEdit(item)"
@@ -685,7 +696,11 @@ function getFieldTypeLabel(type: string): string {
 
                   <!-- Delete -->
                   <button
-                    :title="(item as any).can_delete === false ? t('common.action_restricted', 'Action restricted') : t('actions.delete', 'Delete')"
+                    :title="
+                      (item as any).can_delete === false
+                        ? t('common.action_restricted', 'Action restricted')
+                        : t('actions.delete', 'Delete')
+                    "
                     class="w-7 h-7 flex items-center justify-center rounded-full text-destructive/70 hover:bg-destructive/10 hover:text-destructive transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                     :class="deleting === item.id ? 'animate-pulse' : ''"
                     :disabled="(item as any).can_delete === false"
@@ -713,7 +728,12 @@ function getFieldTypeLabel(type: string): string {
                   variant="secondary"
                   class="text-[10px]"
                 >
-                  {{ t('cms.more_fields', '+{count} more').replace('{count}', String((item.fields || []).length - 8)) }}
+                  {{
+                    t('cms.more_fields', '+{count} more').replace(
+                      '{count}',
+                      String((item.fields || []).length - 8),
+                    )
+                  }}
                 </Badge>
               </div>
             </CardContent>
@@ -825,7 +845,7 @@ function getFieldTypeLabel(type: string): string {
                           class="w-7 h-7 flex items-center justify-center rounded-md text-sky-500/60 hover:text-sky-500 hover:bg-sky-500/10 transition-colors shrink-0 cursor-pointer"
                           :title="t('actions.edit', 'Edit')"
                           @click="
-                            editFormEditingField = mapDefinitionToPickerField(field);
+                            editFormEditingField = mapDefinitionToPickerField(field)
                             showEditFieldPicker = true
                           "
                         >
@@ -845,9 +865,7 @@ function getFieldTypeLabel(type: string): string {
                 <!-- Actions -->
                 <div class="flex items-center justify-end gap-3 pt-2 border-t border-border/50">
                   <Button variant="outline" @click="cancelEdit">
-                    {{
-                      t('common.cancel', 'Cancel')
-                    }}
+                    {{ t('common.cancel', 'Cancel') }}
                   </Button>
                   <Button
                     :loading="editSaving"
@@ -870,9 +888,7 @@ function getFieldTypeLabel(type: string): string {
             <div class="flex items-center justify-between">
               <div>
                 <CardTitle class="text-lg">
-                  {{
-                    t('cms.new_reusable', 'New Reusable Section')
-                  }}
+                  {{ t('cms.new_reusable', 'New Reusable Section') }}
                 </CardTitle>
                 <p class="text-sm text-muted-foreground mt-0.5">
                   {{
@@ -967,7 +983,7 @@ function getFieldTypeLabel(type: string): string {
                       class="w-7 h-7 flex items-center justify-center rounded-md text-sky-500/60 hover:text-sky-500 hover:bg-sky-500/10 transition-colors shrink-0 cursor-pointer"
                       :title="t('actions.edit', 'Edit')"
                       @click="
-                        existingEditingField = mapDefinitionToPickerField(field);
+                        existingEditingField = mapDefinitionToPickerField(field)
                         showFieldPicker = true
                       "
                     >
@@ -986,9 +1002,7 @@ function getFieldTypeLabel(type: string): string {
 
             <div class="flex items-center justify-end gap-3 pt-2 border-t border-border/50">
               <Button variant="outline" @click="cancelCreate">
-                {{
-                  t('common.cancel', 'Cancel')
-                }}
+                {{ t('common.cancel', 'Cancel') }}
               </Button>
               <Button
                 :loading="createSaving"
@@ -1042,7 +1056,8 @@ function getFieldTypeLabel(type: string): string {
       <div v-if="items.length > 0" class="mt-4 flex items-center pt-3 border-t border-border/50">
         <p class="text-sm text-muted-foreground">
           {{ items.length }} {{ t('cms.reusable_sections', 'reusable sections') }}
-          {{ $t('common.separator', '·') }} {{ items.filter((i) => !i.is_hidden).length }} {{ t('cms.visible', 'visible') }}
+          {{ $t('common.separator', '·') }} {{ items.filter((i) => !i.is_hidden).length }}
+          {{ t('cms.visible', 'visible') }}
         </p>
       </div>
     </template>

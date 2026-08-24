@@ -31,16 +31,27 @@ const { ctxMenuState, closeContextMenu } = useContextMenuPortal()
                 ? 'text-destructive hover:bg-destructive/10 focus:bg-destructive/10'
                 : 'text-muted-foreground hover:bg-accent hover:text-foreground'
             "
-            @click="() => { action.onClick?.(); closeContextMenu() }"
+            @click="
+              () => {
+                action.onClick?.()
+                closeContextMenu()
+              }
+            "
           >
-            <div class="w-5 h-5 flex items-center justify-center shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">
+            <div
+              class="w-5 h-5 flex items-center justify-center shrink-0 opacity-80 group-hover:opacity-100 transition-opacity"
+            >
               <HugeiconsIcon
                 v-if="action.icon && typeof action.icon !== 'string'"
-                :icon="(action.icon as any)"
+                :icon="action.icon as any"
                 :size="15"
                 :stroke-width="2"
               />
-              <i v-else-if="typeof action.icon === 'string'" :class="action.icon" class="text-[13px]" />
+              <i
+                v-else-if="typeof action.icon === 'string'"
+                :class="action.icon"
+                class="text-[13px]"
+              />
             </div>
             <span class="capitalize leading-none">{{ action.label }}</span>
           </button>

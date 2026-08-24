@@ -25,7 +25,12 @@ import { Sparkline } from '@/components/uic/sparkline'
             </div>
             <div class="space-y-1">
               <span class="text-xs text-muted-foreground">Large</span>
-              <Sparkline :data="[5, 20, 10, 30, 15, 40, 25, 45]" :width="160" :height="48" color="#8b5cf6" />
+              <Sparkline
+                :data="[5, 20, 10, 30, 15, 40, 25, 45]"
+                :width="160"
+                :height="48"
+                color="#8b5cf6"
+              />
             </div>
           </div>
         </div>
@@ -36,7 +41,12 @@ import { Sparkline } from '@/components/uic/sparkline'
           <div class="flex flex-wrap gap-6 items-end">
             <Sparkline :data="[10, 15, 8, 22, 18, 30, 28, 35]" color="hsl(var(--primary))" />
             <Sparkline :data="[35, 30, 28, 22, 18, 15, 10, 8]" color="#ef4444" />
-            <Sparkline :data="[5, 20, 10, 30, 15, 40, 25, 45]" :width="160" :height="48" color="#8b5cf6" />
+            <Sparkline
+              :data="[5, 20, 10, 30, 15, 40, 25, 45]"
+              :width="160"
+              :height="48"
+              color="#8b5cf6"
+            />
           </div>
         </div>
       </div>

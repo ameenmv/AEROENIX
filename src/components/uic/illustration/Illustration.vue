@@ -41,23 +41,56 @@ withDefaults(
 
     <!-- Evaluation: document + check -->
     <g v-else-if="name === 'evaluation'">
-      <rect x="30" y="20" width="54" height="70" rx="6" class="fill-card stroke-border" stroke-width="2" />
+      <rect
+        x="30"
+        y="20"
+        width="54"
+        height="70"
+        rx="6"
+        class="fill-card stroke-border"
+        stroke-width="2"
+      />
       <rect x="40" y="32" width="34" height="4" rx="2" class="fill-muted-foreground/30" />
       <rect x="40" y="42" width="24" height="4" rx="2" class="fill-muted-foreground/30" />
       <rect x="40" y="52" width="30" height="4" rx="2" class="fill-muted-foreground/30" />
       <circle cx="78" cy="84" r="20" class="fill-primary" />
-      <path d="M70 84l6 6 12-12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+      <path
+        d="M70 84l6 6 12-12"
+        stroke="white"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
     </g>
 
     <!-- Subscription: receipt -->
     <g v-else-if="name === 'subscription'">
-      <rect x="30" y="22" width="50" height="76" rx="4" class="fill-card stroke-border" stroke-width="2" />
-      <path d="M30 92l5 6 5-6 5 6 5-6 5 6 5-6 5 6 5-6 5 6 5-6" class="stroke-border" stroke-width="2" fill="none" />
+      <rect
+        x="30"
+        y="22"
+        width="50"
+        height="76"
+        rx="4"
+        class="fill-card stroke-border"
+        stroke-width="2"
+      />
+      <path
+        d="M30 92l5 6 5-6 5 6 5-6 5 6 5-6 5 6 5-6 5 6 5-6"
+        class="stroke-border"
+        stroke-width="2"
+        fill="none"
+      />
       <rect x="38" y="34" width="22" height="3" rx="1.5" class="fill-muted-foreground/30" />
       <rect x="38" y="42" width="34" height="3" rx="1.5" class="fill-muted-foreground/30" />
       <rect x="38" y="50" width="20" height="3" rx="1.5" class="fill-muted-foreground/30" />
       <rect x="38" y="64" width="34" height="3" rx="1.5" class="fill-primary" />
-      <path d="M80 56l16 0M88 48l8 8-8 8" class="stroke-primary" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+      <path
+        d="M80 56l16 0M88 48l8 8-8 8"
+        class="stroke-primary"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
     </g>
 
     <!-- Search: magnifier + grid -->
@@ -73,7 +106,13 @@ withDefaults(
 
     <!-- Error: warning triangle -->
     <g v-else-if="name === 'error'">
-      <path d="M60 22L100 92H20L60 22Z" fill="#fff1f0" stroke="#f04438" stroke-width="3" stroke-linejoin="round" />
+      <path
+        d="M60 22L100 92H20L60 22Z"
+        fill="#fff1f0"
+        stroke="#f04438"
+        stroke-width="3"
+        stroke-linejoin="round"
+      />
       <path d="M60 50v22M60 80v.5" stroke="#f04438" stroke-width="4" stroke-linecap="round" />
     </g>
 
@@ -81,12 +120,26 @@ withDefaults(
     <g v-else-if="name === 'success'">
       <circle cx="60" cy="60" r="42" class="fill-primary/10" />
       <circle cx="60" cy="60" r="30" class="fill-primary" />
-      <path d="M48 60l8 8 16-16" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+      <path
+        d="M48 60l8 8 16-16"
+        stroke="white"
+        stroke-width="4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
     </g>
 
     <!-- Empty: placeholder -->
     <g v-else>
-      <rect x="25" y="30" width="70" height="60" rx="8" class="fill-muted stroke-border" stroke-width="2" />
+      <rect
+        x="25"
+        y="30"
+        width="70"
+        height="60"
+        rx="8"
+        class="fill-muted stroke-border"
+        stroke-width="2"
+      />
       <circle cx="60" cy="55" r="10" class="fill-muted-foreground/20" />
       <rect x="40" y="72" width="40" height="4" rx="2" class="fill-muted-foreground/20" />
       <rect x="48" y="80" width="24" height="3" rx="1.5" class="fill-muted-foreground/15" />

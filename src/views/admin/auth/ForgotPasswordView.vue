@@ -34,7 +34,10 @@ const form = useForm({
     const currentIdentifier = identifier.value
     router.push({
       path: `/${lang}/admin/forgot-password/verify`,
-      query: { token: typeof _otpChallengeToken === 'string' ? _otpChallengeToken : undefined, identifier: currentIdentifier },
+      query: {
+        token: typeof _otpChallengeToken === 'string' ? _otpChallengeToken : undefined,
+        identifier: currentIdentifier,
+      },
     })
   },
 })
@@ -45,7 +48,9 @@ const [identifier] = form.defineField('identifier')
 
 <template>
   <AuthLayout>
-    <Card class="w-full max-w-[547px] !rounded-3xl !border-border !shadow-[0_4px_20px_rgba(148,163,184,0.1)] !py-0">
+    <Card
+      class="w-full max-w-[547px] !rounded-3xl !border-border !shadow-[0_4px_20px_rgba(148,163,184,0.1)] !py-0"
+    >
       <CardHeader class="!px-5 sm:!px-12 !pt-8 !pb-0 text-center">
         <CardTitle class="!text-[32px] !leading-[48px] font-semibold !text-foreground">
           {{ t('auth.forgot_password_title', 'Forgot Password') }}
@@ -76,17 +81,40 @@ const [identifier] = form.defineField('identifier')
         </div>
         <form class="flex flex-col gap-6" @submit.prevent="form.onSubmit">
           <InputField
-            id="forgot-identifier" v-model="identifier" type="email" :label="t('auth.email_label', 'Email')"
-            :placeholder="t('auth.email_placeholder', 'e.g admin@neop.com')" :error="form.errors.value.identifier"
+            id="forgot-identifier"
+            v-model="identifier"
+            type="email"
+            :label="t('auth.email_label', 'Email')"
+            :placeholder="t('auth.email_placeholder', 'e.g admin@neop.com')"
+            :error="form.errors.value.identifier"
             size="lg"
           />
-          <Btn type="submit" variant="primary" class="auth-btn-primary w-full" :disabled="form.isPending.value">
+          <Btn
+            type="submit"
+            variant="primary"
+            class="auth-btn-primary w-full"
+            :disabled="form.isPending.value"
+          >
             <svg
-              v-if="form.isPending.value" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+              v-if="form.isPending.value"
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
             >
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              />
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
             </svg>
             {{
               form.isPending.value
@@ -101,7 +129,10 @@ const [identifier] = form.defineField('identifier')
         <span class="text-base font-normal text-muted-foreground">
           {{ t('auth.remember_password', 'Remember your password?') }}
         </span>
-        <RouterLink :to="`/${locale}/admin/login`" class="text-base font-semibold text-foreground hover:underline">
+        <RouterLink
+          :to="`/${locale}/admin/login`"
+          class="text-base font-semibold text-foreground hover:underline"
+        >
           {{ t('auth.back_to_login', 'Back to login') }}
         </RouterLink>
       </div>

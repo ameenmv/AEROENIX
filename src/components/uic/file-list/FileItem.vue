@@ -74,12 +74,11 @@ function formatSize(bytes?: number): string {
 </script>
 
 <template>
-  <div
-    data-slot="file-item"
-    :class="cn(fileItemVariants({ layout }), props.class)"
-  >
+  <div data-slot="file-item" :class="cn(fileItemVariants({ layout }), props.class)">
     <!-- Icon -->
-    <div class="w-9 h-9 rounded-md bg-primary/10 text-primary flex items-center justify-center shrink-0">
+    <div
+      class="w-9 h-9 rounded-md bg-primary/10 text-primary flex items-center justify-center shrink-0"
+    >
       <component :is="fileIcon" :size="18" />
     </div>
 
@@ -114,7 +113,12 @@ function formatSize(bytes?: number): string {
       <TooltipProvider v-if="removable">
         <Tooltip>
           <TooltipTrigger as-child>
-            <Button variant="ghost" size="icon-sm" class="text-destructive hover:bg-destructive/10" @click="emit('remove', file)">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              class="text-destructive hover:bg-destructive/10"
+              @click="emit('remove', file)"
+            >
               <Trash2 :size="14" />
             </Button>
           </TooltipTrigger>

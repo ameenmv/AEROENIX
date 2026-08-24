@@ -84,12 +84,27 @@ const translatableTypes = ['text', 'textarea', 'text_editor', 'rich_text_blocks'
 const regexTypes = ['text', 'textarea'] as const
 const minMaxLengthTypes = ['text', 'textarea'] as const
 const maxLengthOnlyTypes = ['text_editor'] as const
-const conditionOperators: CmsConditionOperator[] = ['eq', 'neq', 'gt', 'lt', 'gte', 'lte', 'in', 'not_in', 'contains', 'not_contains']
+const conditionOperators: CmsConditionOperator[] = [
+  'eq',
+  'neq',
+  'gt',
+  'lt',
+  'gte',
+  'lte',
+  'in',
+  'not_in',
+  'contains',
+  'not_contains',
+]
 
 const hasTranslatable = computed(() => translatableTypes.includes(selectedType.value?.value as any))
 const hasRegex = computed(() => regexTypes.includes(selectedType.value?.value as any))
 const hasMinLength = computed(() => minMaxLengthTypes.includes(selectedType.value?.value as any))
-const hasMaxLength = computed(() => minMaxLengthTypes.includes(selectedType.value?.value as any) || maxLengthOnlyTypes.includes(selectedType.value?.value as any))
+const hasMaxLength = computed(
+  () =>
+    minMaxLengthTypes.includes(selectedType.value?.value as any)
+    || maxLengthOnlyTypes.includes(selectedType.value?.value as any),
+)
 const hasMinMax = computed(() => selectedType.value?.value === 'number')
 const hasMediaItems = computed(() => selectedType.value?.value === 'media')
 const hasColorFormat = computed(() => selectedType.value?.value === 'color')
@@ -158,7 +173,9 @@ watch(
       if (props.editingField) {
         step.value = 'configure'
         selectedType.value
-          = pickerTypes.find((td: FieldTypeDefinition) => td.value === props.editingField!.type) ?? pickerTypes[0] ?? null
+          = pickerTypes.find((td: FieldTypeDefinition) => td.value === props.editingField!.type)
+            ?? pickerTypes[0]
+            ?? null
         fieldLabel.value = {
           en:
             typeof props.editingField.label === 'object'
@@ -174,7 +191,13 @@ watch(
         const conf = props.editingField.config
         if (props.editingField.type === 'media' && conf) {
           mediaMultiple.value = conf.mediaMultiple !== false
-          mediaAllowedTypes.value = conf.mediaAllowedTypes || ['images', 'videos', 'documents', 'audio', 'all']
+          mediaAllowedTypes.value = conf.mediaAllowedTypes || [
+            'images',
+            'videos',
+            'documents',
+            'audio',
+            'all',
+          ]
         }
         else {
           mediaMultiple.value = true
@@ -182,16 +205,13 @@ watch(
         }
         if (props.editingField.type === 'number' && conf)
           numberFormat.value = conf.numberFormat || 'integer'
-        else
-          numberFormat.value = 'integer'
+        else numberFormat.value = 'integer'
         if (props.editingField.type === 'date' && conf)
           includeTime.value = !!conf.includeTime
-        else
-          includeTime.value = false
+        else includeTime.value = false
         if (props.editingField.type === 'enumeration' && conf)
           selectOptions.value = conf.selectOptions || [{ value: '', label: '' }]
-        else
-          selectOptions.value = [{ value: '', label: '' }]
+        else selectOptions.value = [{ value: '', label: '' }]
         if (props.editingField.type === 'relation' && conf) {
           relationResource.value = conf.relationResource || ''
           relationType.value = conf.relationType || 'one-to-one'
@@ -654,9 +674,14 @@ function close() {
                           <div class="mt-0.5">
                             <div
                               class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors"
-                              :class="mediaMultiple ? 'border-primary' : 'border-muted-foreground/40'"
+                              :class="
+                                mediaMultiple ? 'border-primary' : 'border-muted-foreground/40'
+                              "
                             >
-                              <div v-if="mediaMultiple" class="w-2.5 h-2.5 rounded-full bg-primary" />
+                              <div
+                                v-if="mediaMultiple"
+                                class="w-2.5 h-2.5 rounded-full bg-primary"
+                              />
                             </div>
                           </div>
                           <div>
@@ -948,9 +973,14 @@ function close() {
                   <div class="space-y-5">
                     <!-- ═══ Translatable (text, textarea, text_editor, rich_text_blocks) ═══ -->
                     <label v-if="hasTranslatable" class="flex items-center gap-3 cursor-pointer">
-                      <Switch :checked="fieldTranslatable" @update:checked="fieldTranslatable = $event" />
+                      <Switch
+                        :checked="fieldTranslatable"
+                        @update:checked="fieldTranslatable = $event"
+                      />
                       <div>
-                        <span class="text-sm text-foreground">{{ t('cms.translatable', 'Translatable') }}</span>
+                        <span class="text-sm text-foreground">{{
+                          t('cms.translatable', 'Translatable')
+                        }}</span>
                         <p class="text-[10px] text-muted-foreground">
                           {{ t('cms.translatable_hint', 'Content varies per locale (EN / AR)') }}
                         </p>
@@ -969,7 +999,12 @@ function close() {
                         class="font-mono"
                       />
                       <p class="text-xs text-muted-foreground mt-1">
-                        {{ t('cms.regex_hint', 'Custom regex the value must match (validated on save)') }}
+                        {{
+                          t(
+                            'cms.regex_hint',
+                            'Custom regex the value must match (validated on save)',
+                          )
+                        }}
                       </p>
                     </div>
 
@@ -983,7 +1018,9 @@ function close() {
                           :model-value="fieldMinLength ?? ''"
                           type="number"
                           :placeholder="t('cms.optional', 'Optional')"
-                          @update:model-value="(v: any) => fieldMinLength = v === '' ? undefined : Number(v)"
+                          @update:model-value="
+                            (v: any) => (fieldMinLength = v === '' ? undefined : Number(v))
+                          "
                         />
                       </div>
                       <div v-if="hasMaxLength">
@@ -994,7 +1031,9 @@ function close() {
                           :model-value="fieldMaxLength ?? ''"
                           type="number"
                           :placeholder="t('cms.optional', 'Optional')"
-                          @update:model-value="(v: any) => fieldMaxLength = v === '' ? undefined : Number(v)"
+                          @update:model-value="
+                            (v: any) => (fieldMaxLength = v === '' ? undefined : Number(v))
+                          "
                         />
                       </div>
                     </div>
@@ -1009,7 +1048,9 @@ function close() {
                           :model-value="fieldMin ?? ''"
                           type="number"
                           :placeholder="t('cms.optional', 'Optional')"
-                          @update:model-value="(v: any) => fieldMin = v === '' ? undefined : Number(v)"
+                          @update:model-value="
+                            (v: any) => (fieldMin = v === '' ? undefined : Number(v))
+                          "
                         />
                       </div>
                       <div>
@@ -1020,7 +1061,9 @@ function close() {
                           :model-value="fieldMax ?? ''"
                           type="number"
                           :placeholder="t('cms.optional', 'Optional')"
-                          @update:model-value="(v: any) => fieldMax = v === '' ? undefined : Number(v)"
+                          @update:model-value="
+                            (v: any) => (fieldMax = v === '' ? undefined : Number(v))
+                          "
                         />
                       </div>
                     </div>
@@ -1035,7 +1078,9 @@ function close() {
                           :model-value="mediaMinItems ?? ''"
                           type="number"
                           :placeholder="t('cms.optional', 'Optional')"
-                          @update:model-value="(v: any) => mediaMinItems = v === '' ? undefined : Number(v)"
+                          @update:model-value="
+                            (v: any) => (mediaMinItems = v === '' ? undefined : Number(v))
+                          "
                         />
                       </div>
                       <div>
@@ -1046,7 +1091,9 @@ function close() {
                           :model-value="mediaMaxItems ?? ''"
                           type="number"
                           :placeholder="t('cms.optional', 'Optional')"
-                          @update:model-value="(v: any) => mediaMaxItems = v === '' ? undefined : Number(v)"
+                          @update:model-value="
+                            (v: any) => (mediaMaxItems = v === '' ? undefined : Number(v))
+                          "
                         />
                       </div>
                     </div>
@@ -1108,15 +1155,27 @@ function close() {
                           class="font-mono"
                         />
                         <p class="text-xs text-muted-foreground mt-1">
-                          {{ t('cms.component_ref_hint', 'Key of the reusable section used as component schema') }}
+                          {{
+                            t(
+                              'cms.component_ref_hint',
+                              'Key of the reusable section used as component schema',
+                            )
+                          }}
                         </p>
                       </div>
                       <label class="flex items-center gap-3 cursor-pointer">
-                        <Switch :checked="componentRepeatable" @update:checked="componentRepeatable = $event" />
+                        <Switch
+                          :checked="componentRepeatable"
+                          @update:checked="componentRepeatable = $event"
+                        />
                         <div>
-                          <span class="text-sm text-foreground">{{ t('cms.repeatable', 'Repeatable') }}</span>
+                          <span class="text-sm text-foreground">{{
+                            t('cms.repeatable', 'Repeatable')
+                          }}</span>
                           <p class="text-[10px] text-muted-foreground">
-                            {{ t('cms.repeatable_hint', 'Allow multiple instances of this component') }}
+                            {{
+                              t('cms.repeatable_hint', 'Allow multiple instances of this component')
+                            }}
                           </p>
                         </div>
                       </label>
@@ -1125,15 +1184,28 @@ function close() {
                     <!-- ═══ Condition (all types) ═══ -->
                     <div class="space-y-3 pt-3 border-t border-border">
                       <label class="flex items-center gap-3 cursor-pointer">
-                        <Switch :checked="conditionEnabled" @update:checked="conditionEnabled = $event" />
+                        <Switch
+                          :checked="conditionEnabled"
+                          @update:checked="conditionEnabled = $event"
+                        />
                         <div>
-                          <span class="text-sm text-foreground">{{ t('cms.condition', 'Conditional Visibility') }}</span>
+                          <span class="text-sm text-foreground">{{
+                            t('cms.condition', 'Conditional Visibility')
+                          }}</span>
                           <p class="text-[10px] text-muted-foreground">
-                            {{ t('cms.condition_hint', 'Show/hide this field based on another field\'s value') }}
+                            {{
+                              t(
+                                'cms.condition_hint',
+                                "Show/hide this field based on another field's value",
+                              )
+                            }}
                           </p>
                         </div>
                       </label>
-                      <div v-if="conditionEnabled" class="space-y-3 pl-4 border-l-2 border-primary/20">
+                      <div
+                        v-if="conditionEnabled"
+                        class="space-y-3 pl-4 border-l-2 border-primary/20"
+                      >
                         <div>
                           <label class="text-sm font-medium text-foreground mb-1.5 block">
                             {{ t('cms.condition_field', 'Field Key') }}
@@ -1152,7 +1224,7 @@ function close() {
                             </label>
                             <SelectField
                               v-model="conditionOperator"
-                              :options="conditionOperators.map(op => ({ value: op, label: op }))"
+                              :options="conditionOperators.map((op) => ({ value: op, label: op }))"
                             />
                           </div>
                           <div>
@@ -1196,7 +1268,11 @@ function close() {
                 <Button variant="outline" size="sm" @click="goBack">
                   {{ t('common.cancel', 'Cancel') }}
                 </Button>
-                <Button size="sm" :disabled="!fieldLabel.en.trim() || !!fieldKeyError" @click="handleFinish">
+                <Button
+                  size="sm"
+                  :disabled="!fieldLabel.en.trim() || !!fieldKeyError"
+                  @click="handleFinish"
+                >
                   <span v-if="editingField">{{ t('common.save', 'Save Changes') }}</span>
                   <span v-else>{{ t('cms.finish', 'Finish') }}</span>
                 </Button>

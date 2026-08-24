@@ -34,14 +34,8 @@ const props = withDefaults(
 </script>
 
 <template>
-  <span
-    data-slot="status-badge"
-    :class="cn(statusBadgeVariants({ variant, size }), props.class)"
-  >
-    <span
-      v-if="dot"
-      :class="statusDotVariants({ variant, size, pulse })"
-    />
+  <span data-slot="status-badge" :class="cn(statusBadgeVariants({ variant, size }), props.class)">
+    <span v-if="dot" :class="statusDotVariants({ variant, size, pulse })" />
     <slot>{{ label }}</slot>
   </span>
 </template>

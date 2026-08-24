@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import type { ContextMenuAction } from '@/composables/useContextMenu'
-import {
-  ArrowLeft01Icon,
-  ArrowRight01Icon,
-  Search01Icon,
-} from '@hugeicons/core-free-icons'
+import { ArrowLeft01Icon, ArrowRight01Icon, Search01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useDebounceFn } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
@@ -285,8 +281,7 @@ function handleTableContextMenu(event: MouseEvent) {
     return
   // Walk up from the click target to find the <tr>
   let el = event.target as HTMLElement | null
-  while (el && el.tagName !== 'TR')
-    el = el.parentElement
+  while (el && el.tagName !== 'TR') el = el.parentElement
   if (!el)
     return
   // Map <tr> index → paginatedData row
@@ -369,10 +364,7 @@ function handleTableContextMenu(event: MouseEvent) {
               </DataTableHeader>
             </slot>
           </TableHeader>
-          <TableBody
-            class="bg-transparent border-none"
-            @contextmenu="handleTableContextMenu"
-          >
+          <TableBody class="bg-transparent border-none" @contextmenu="handleTableContextMenu">
             <template v-if="loading">
               <TableRow
                 v-for="i in localPerPage || 5"
@@ -405,12 +397,7 @@ function handleTableContextMenu(event: MouseEvent) {
                 v-for="(row, index) in paginatedData"
                 :key="row.id ? String(row.id) : index"
               >
-                <slot
-                  name="row"
-                  :row="row"
-                  :index="index"
-                  :columns="actualColumns"
-                >
+                <slot name="row" :row="row" :index="index" :columns="actualColumns">
                   <DataTableRow
                     :row="row"
                     :index="index"

@@ -368,7 +368,11 @@ const contextMenuActions = computed(() => {
             <TableCell class="text-center" @click.stop>
               <button
                 class="inline-flex items-center justify-center gap-2 group/toggle mx-auto disabled:opacity-50 disabled:cursor-not-allowed"
-                :title="(row as any).can_toggle === false ? $t('common.action_restricted', 'Action restricted') : ''"
+                :title="
+                  (row as any).can_toggle === false
+                    ? $t('common.action_restricted', 'Action restricted')
+                    : ''
+                "
                 :disabled="publishing === (row as any).id || (row as any).can_toggle === false"
                 @click="handleTogglePublish(row as any)"
               >
@@ -414,7 +418,11 @@ const contextMenuActions = computed(() => {
             <TableCell class="text-center">
               <div class="flex items-center justify-center gap-1">
                 <button
-                  :title="(row as any).can_update === false ? $t('common.action_restricted', 'Action restricted') : $t('cms.edit_content', 'Edit Content')"
+                  :title="
+                    (row as any).can_update === false
+                      ? $t('common.action_restricted', 'Action restricted')
+                      : $t('cms.edit_content', 'Edit Content')
+                  "
                   class="w-8 h-8 flex items-center justify-center rounded-full text-primary/70 hover:bg-primary/10 hover:text-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                   :disabled="(row as any).can_update === false"
                   @click="handleEditContent(row as any)"
@@ -422,7 +430,11 @@ const contextMenuActions = computed(() => {
                   <HugeiconsIcon :icon="ViewIcon" :size="16" :stroke-width="2" />
                 </button>
                 <button
-                  :title="(row as any).can_update === false ? $t('common.action_restricted', 'Action restricted') : $t('cms.edit_structure', 'Edit Structure')"
+                  :title="
+                    (row as any).can_update === false
+                      ? $t('common.action_restricted', 'Action restricted')
+                      : $t('cms.edit_structure', 'Edit Structure')
+                  "
                   class="w-8 h-8 flex items-center justify-center rounded-full text-foreground/50 hover:bg-accent hover:text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                   :disabled="(row as any).can_update === false"
                   @click="handleEditStructure(row as any)"
@@ -430,7 +442,11 @@ const contextMenuActions = computed(() => {
                   <HugeiconsIcon :icon="Edit02Icon" :size="16" :stroke-width="2" />
                 </button>
                 <button
-                  :title="(row as any).can_update === false ? $t('common.action_restricted', 'Action restricted') : $t('cms.duplicate_page', 'Duplicate')"
+                  :title="
+                    (row as any).can_update === false
+                      ? $t('common.action_restricted', 'Action restricted')
+                      : $t('cms.duplicate_page', 'Duplicate')
+                  "
                   class="w-8 h-8 flex items-center justify-center rounded-full text-foreground/50 hover:bg-accent hover:text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                   :class="
                     duplicating === (row as any).id
@@ -443,7 +459,11 @@ const contextMenuActions = computed(() => {
                   <HugeiconsIcon :icon="Copy01Icon" :size="16" :stroke-width="2" />
                 </button>
                 <button
-                  :title="(row as any).can_delete === false ? $t('common.action_restricted', 'Action restricted') : $t('actions.delete')"
+                  :title="
+                    (row as any).can_delete === false
+                      ? $t('common.action_restricted', 'Action restricted')
+                      : $t('actions.delete')
+                  "
                   class="w-8 h-8 flex items-center justify-center rounded-full text-destructive/70 hover:bg-destructive/10 hover:text-destructive transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                   :disabled="(row as any).can_delete === false"
                   @click="handleDelete(row as any)"

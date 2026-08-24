@@ -68,7 +68,10 @@ export function useNotifications() {
   function resendFailed(notification: ManualNotification) {
     confirm(
       t('common.confirm_action', 'Confirm Action'),
-      t('notifications.resend_failed_confirm', 'Are you sure you want to resend to failed recipients?'),
+      t(
+        'notifications.resend_failed_confirm',
+        'Are you sure you want to resend to failed recipients?',
+      ),
       async () => {
         try {
           await notificationsService.resendFailed(notification.id)

@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/uic/accordion'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/uic/accordion'
 </script>
 
 <template>
@@ -17,11 +22,16 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
             </AccordionItem>
             <AccordionItem value="item-2">
               <AccordionTrigger>Is it styled?</AccordionTrigger>
-              <AccordionContent>Yes. It comes with default styles that match the other components.</AccordionContent>
+              <AccordionContent>
+                Yes. It comes with default styles that match the other
+                components.
+              </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-3">
               <AccordionTrigger>Is it animated?</AccordionTrigger>
-              <AccordionContent>Yes. It's animated by default with smooth transitions.</AccordionContent>
+              <AccordionContent>
+                Yes. It's animated by default with smooth transitions.
+              </AccordionContent>
             </AccordionItem>
           </Accordion>
         </div>
@@ -36,11 +46,16 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
             </AccordionItem>
             <AccordionItem value="item-2">
               <AccordionTrigger>Is it styled?</AccordionTrigger>
-              <AccordionContent>Yes. It comes with default styles that match the other components.</AccordionContent>
+              <AccordionContent>
+                Yes. It comes with default styles that match the other
+                components.
+              </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-3">
               <AccordionTrigger>Is it animated?</AccordionTrigger>
-              <AccordionContent>Yes. It's animated by default with smooth transitions.</AccordionContent>
+              <AccordionContent>
+                Yes. It's animated by default with smooth transitions.
+              </AccordionContent>
             </AccordionItem>
           </Accordion>
         </div>

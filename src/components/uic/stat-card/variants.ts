@@ -7,11 +7,15 @@ export const statCardVariants = cva(
     variants: {
       accent: {
         default: '',
-        primary: 'before:absolute before:inset-y-0 before:start-0 before:w-[3px] before:rounded-s-xl before:bg-primary',
-        success: 'before:absolute before:inset-y-0 before:start-0 before:w-[3px] before:rounded-s-xl before:bg-success',
-        warning: 'before:absolute before:inset-y-0 before:start-0 before:w-[3px] before:rounded-s-xl before:bg-warning',
+        primary:
+          'before:absolute before:inset-y-0 before:start-0 before:w-[3px] before:rounded-s-xl before:bg-primary',
+        success:
+          'before:absolute before:inset-y-0 before:start-0 before:w-[3px] before:rounded-s-xl before:bg-success',
+        warning:
+          'before:absolute before:inset-y-0 before:start-0 before:w-[3px] before:rounded-s-xl before:bg-warning',
         info: 'before:absolute before:inset-y-0 before:start-0 before:w-[3px] before:rounded-s-xl before:bg-info',
-        danger: 'before:absolute before:inset-y-0 before:start-0 before:w-[3px] before:rounded-s-xl before:bg-destructive',
+        danger:
+          'before:absolute before:inset-y-0 before:start-0 before:w-[3px] before:rounded-s-xl before:bg-destructive',
       },
       size: {
         sm: 'p-3 gap-2',

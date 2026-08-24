@@ -26,12 +26,9 @@ const props = withDefaults(
 <template>
   <ul
     data-slot="timeline"
-    :class="cn(
-      timelineVariants({ spacing }),
-      'list-none m-0 p-0',
-      line && 'timeline-line',
-      props.class,
-    )"
+    :class="
+      cn(timelineVariants({ spacing }), 'list-none m-0 p-0', line && 'timeline-line', props.class)
+    "
   >
     <slot />
   </ul>

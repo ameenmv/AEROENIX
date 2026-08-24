@@ -55,22 +55,13 @@ defineEmits<{
     @click="$emit('click', $event)"
   >
     <!-- Spinner overlay (replace mode) -->
-    <Spinner
-      v-if="loading && loadingStyle === 'replace'"
-      class="absolute size-4"
-    />
+    <Spinner v-if="loading && loadingStyle === 'replace'" class="absolute size-4" />
 
     <!-- Spinner inline (prepend mode) -->
-    <Spinner
-      v-if="loading && loadingStyle === 'prepend'"
-      class="size-3.5 shrink-0"
-    />
+    <Spinner v-if="loading && loadingStyle === 'prepend'" class="size-3.5 shrink-0" />
 
     <!-- Button content -->
-    <span
-      data-slot="loader-text"
-      :class="cn(loading && loadingStyle === 'replace' && 'invisible')"
-    >
+    <span data-slot="loader-text" :class="cn(loading && loadingStyle === 'replace' && 'invisible')">
       <slot>{{ label }}</slot>
     </span>
   </Button>

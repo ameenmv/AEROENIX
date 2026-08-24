@@ -104,7 +104,11 @@ export function getVariantByColor(color: string): StatusVariant {
  * Otherwise falls back to `status.color`.
  */
 export function resolveStatusVariant(
-  status: { value?: number, label?: string, color?: string, badge?: string } | string | null | undefined,
+  status:
+    | { value?: number, label?: string, color?: string, badge?: string }
+    | string
+    | null
+    | undefined,
   variants?: StatusVariantMap,
 ): StatusVariant {
   if (!status)

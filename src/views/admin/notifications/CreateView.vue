@@ -33,7 +33,10 @@ const sendToOptions = [
   { value: SendTo.ALL, label: t('notifications.send_to.all', 'All') },
   { value: SendTo.SPECIFIC_USER, label: t('notifications.send_to.specific_user', 'Specific User') },
   { value: SendTo.SPECIFIC_ROLE, label: t('notifications.send_to.specific_role', 'Specific Role') },
-  { value: SendTo.SPECIFIC_ADMIN, label: t('notifications.send_to.specific_admin', 'Specific Admin') },
+  {
+    value: SendTo.SPECIFIC_ADMIN,
+    label: t('notifications.send_to.specific_admin', 'Specific Admin'),
+  },
 ]
 
 const channelOptions = [
@@ -50,10 +53,7 @@ const channelOptions = [
       {{ t('actions.create') }} {{ t('notifications.title', 'Notification') }}
     </h1>
 
-    <FormContainer
-      :form="form"
-      @cancel="router.push({ name: 'admin-notifications' })"
-    >
+    <FormContainer :form="form" @cancel="router.push({ name: 'admin-notifications' })">
       <!-- Title (Translatable) -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <InputField
@@ -74,7 +74,8 @@ const channelOptions = [
       <!-- Content (Translatable) -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         <div>
-          <label class="text-sm font-medium">{{ t('notifications.fields.content', 'Content') }} {{ t('common.lang_en', '(EN)') }}</label>
+          <label class="text-sm font-medium">{{ t('notifications.fields.content', 'Content') }}
+            {{ t('common.lang_en', '(EN)') }}</label>
           <textarea
             name="content.en"
             class="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-h-[100px]"
@@ -85,7 +86,8 @@ const channelOptions = [
           </p>
         </div>
         <div>
-          <label class="text-sm font-medium">{{ t('notifications.fields.content', 'Content') }} {{ t('common.lang_ar', '(AR)') }}</label>
+          <label class="text-sm font-medium">{{ t('notifications.fields.content', 'Content') }}
+            {{ t('common.lang_ar', '(AR)') }}</label>
           <textarea
             name="content.ar"
             dir="rtl"
@@ -119,7 +121,9 @@ const channelOptions = [
 
       <!-- Channels (multi-select) -->
       <div class="mt-4">
-        <label class="text-sm font-medium">{{ t('notifications.fields.channels', 'Channels') }}</label>
+        <label class="text-sm font-medium">{{
+          t('notifications.fields.channels', 'Channels')
+        }}</label>
         <div class="flex flex-wrap gap-3 mt-2">
           <label
             v-for="channel in channelOptions"

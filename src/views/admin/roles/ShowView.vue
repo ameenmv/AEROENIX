@@ -42,7 +42,11 @@ const { item, loading } = useDetails<Role>({
           <div class="mt-3 flex items-center gap-2">
             <span
               class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium"
-              :class="item.status?.color === 'green' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-gray-500/10 text-gray-400'"
+              :class="
+                item.status?.color === 'green'
+                  ? 'bg-emerald-500/10 text-emerald-500'
+                  : 'bg-gray-500/10 text-gray-400'
+              "
             >
               <span
                 class="h-1.5 w-1.5 rounded-full"
@@ -50,7 +54,9 @@ const { item, loading } = useDetails<Role>({
               />
               {{ item.status?.badge || item.status_label }}
             </span>
-            <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-blue-500/10 text-blue-500">
+            <span
+              class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-blue-500/10 text-blue-500"
+            >
               {{ item.guard_name }}
             </span>
           </div>
@@ -59,13 +65,17 @@ const { item, loading } = useDetails<Role>({
         <!-- Detail Fields -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <span class="text-sm text-muted-foreground">{{ t('roles.fields.name', 'System Name') }}</span>
+            <span class="text-sm text-muted-foreground">{{
+              t('roles.fields.name', 'System Name')
+            }}</span>
             <p class="font-medium mt-1">
               {{ item.name }}
             </p>
           </div>
           <div>
-            <span class="text-sm text-muted-foreground">{{ t('roles.fields.created_at', 'Created At') }}</span>
+            <span class="text-sm text-muted-foreground">{{
+              t('roles.fields.created_at', 'Created At')
+            }}</span>
             <p class="font-medium mt-1">
               {{ new Date(item.created_at).toLocaleString() }}
             </p>

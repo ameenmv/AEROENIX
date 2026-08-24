@@ -2,7 +2,13 @@
 import type { HTMLAttributes } from 'vue'
 import { useId } from 'reka-ui'
 import { computed } from 'vue'
-import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '@/components/uic/field'
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/uic/field'
 import { RadioGroup, RadioGroupItem } from '@/components/uic/radio-group'
 
 interface RadioOption {
@@ -67,11 +73,7 @@ const groupId = computed(() => props.id || autoId)
       :class="orientation === 'horizontal' ? 'flex flex-row gap-4' : ''"
       @update:model-value="(val) => emit('update:modelValue', val as string)"
     >
-      <Field
-        v-for="option in options"
-        :key="option.value"
-        orientation="horizontal"
-      >
+      <Field v-for="option in options" :key="option.value" orientation="horizontal">
         <RadioGroupItem
           :id="`${groupId}-${option.value}`"
           :value="option.value"

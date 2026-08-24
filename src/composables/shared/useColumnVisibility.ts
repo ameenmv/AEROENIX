@@ -23,7 +23,7 @@ export function useColumnVisibility(storageKey: string, defaultColumns: ColumnCo
   const columns = ref(
     defaultColumns.map(col => ({
       ...col,
-      visible: savedState[col.key] !== undefined ? savedState[col.key] : (col.visible !== false),
+      visible: savedState[col.key] !== undefined ? savedState[col.key] : col.visible !== false,
     })),
   )
 
