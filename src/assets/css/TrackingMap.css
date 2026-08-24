@@ -1,0 +1,2518 @@
+.tracking-map-vue-card {
+  min-height: 80vh;
+  background: var(--background);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.tracking-map-vue {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    'ticker ticker'
+    'sidebar main';
+  gap: 20px;
+  color: var(--foreground);
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+.tracking-map-vue--fullscreen {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  padding: 0;
+  background: transparent;
+  z-index: 9999;
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    'ticker ticker'
+    'sidebar main';
+  gap: 16px;
+}
+
+.tracking-map-vue--fullscreen .tracking-map-vue__main {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.tracking-map-vue--fullscreen .tracking-map-vue__sidebar {
+  display: flex;
+  position: relative;
+  width: 100%;
+  max-height: none;
+  z-index: 10001;
+}
+
+.tracking-map-vue__news-ticker {
+  grid-area: ticker;
+}
+
+.tracking-map-vue__sidebar {
+  grid-area: sidebar;
+}
+
+.tracking-map-vue__main {
+  grid-area: main;
+}
+
+.tracking-map-vue__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 18px;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-soft);
+  min-height: 75vh;
+}
+
+.tracking-map-vue__sidebar-header {
+  display: grid;
+  gap: 14px;
+}
+
+.tracking-map-vue__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tracking-map-vue__brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--muted);
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  color: var(--success);
+  box-shadow: 0 0 20px var(--color-success-opacity-10, rgba(20, 202, 116, 0.1));
+}
+
+.tracking-map-vue__brand-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.tracking-map-vue__brand-subtitle {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tracking-map-vue__control-group {
+  display: grid;
+  gap: 6px;
+}
+
+.tracking-map-vue__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted-foreground);
+  font-weight: 600;
+}
+
+.tracking-map-vue .form-select {
+  width: 100%;
+  background-color: var(--background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+.tracking-map-vue .form-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 117, 255, 0.1);
+}
+
+.tracking-map-vue .form-select option {
+  background-color: var(--card);
+  color: var(--foreground);
+}
+
+.tracking-map-vue__search {
+  position: relative;
+}
+
+.tracking-map-vue__search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+}
+
+.tracking-map-vue__search-input {
+  width: 100%;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px 10px 34px;
+  color: var(--foreground);
+  font-size: 0.85rem;
+}
+
+.tracking-map-vue__search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 117, 255, 0.1);
+}
+
+.tracking-map-vue__filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tracking-map-vue__filter-chip {
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--muted-foreground);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tracking-map-vue__filter-chip--active {
+  border-color: var(--primary);
+  color: var(--foreground);
+  background: rgba(0, 117, 255, 0.1);
+}
+
+.tracking-map-vue__sort {
+  display: grid;
+  gap: 6px;
+}
+
+.tracking-map-vue__action {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--foreground);
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.tracking-map-vue__action:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: var(--accent);
+  border-color: var(--input);
+}
+
+.tracking-map-vue__action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tracking-map-vue__guard-list {
+  display: grid;
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 6px;
+  max-height: 56vh;
+}
+
+.tracking-map-vue__guard-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  transition:
+    border 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.tracking-map-vue__guard-card--active {
+  border-color: var(--primary);
+  background: var(--accent);
+  transform: translateY(-2px);
+}
+
+.tracking-map-vue__guard-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  display: grid;
+  place-items: center;
+  background: var(--background);
+}
+
+.tracking-map-vue__guard-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tracking-map-vue__guard-avatar-fallback {
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.tracking-map-vue__guard-info {
+  display: grid;
+  gap: 4px;
+}
+
+.tracking-map-vue__guard-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.tracking-map-vue__guard-meta {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__guard-status {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--muted-foreground);
+}
+
+.tracking-map-vue__guard-status--online {
+  background: var(--success);
+  box-shadow: 0 0 10px var(--color-success-opacity-10, rgba(20, 202, 116, 0.1));
+}
+
+.tracking-map-vue__guard-status--offline {
+  background: var(--destructive);
+}
+
+.tracking-map-vue__guard-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tracking-map-vue__icon-button {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tracking-map-vue__icon-button:hover {
+  border-color: var(--primary);
+  color: var(--foreground);
+}
+
+.tracking-map-vue__guard-empty {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  text-align: center;
+  padding: 16px;
+}
+
+.tracking-map-vue__sidebar-footer {
+  margin-top: auto;
+}
+
+.tracking-map-vue__status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tracking-map-vue__badge {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__main {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.tracking-map-vue__map-shell {
+  position: relative;
+  display: grid;
+  grid-template-areas: 'stack';
+  min-height: 0;
+}
+
+.tracking-map-vue--fullscreen .tracking-map-vue__map-shell {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-areas: 'stack';
+}
+
+.tracking-map-vue__map-brand {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+.tracking-map-vue__map-brand-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--muted);
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  color: var(--success);
+  box-shadow: 0 0 18px var(--color-success-opacity-10, rgba(20, 202, 116, 0.1));
+}
+
+.tracking-map-vue__map-brand-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.tracking-map-vue__map-brand-subtitle {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__map-overlays {
+  position: relative;
+  display: grid;
+  grid-template-areas: 'stack';
+  grid-area: 1 / 1;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.tracking-map-vue__map-overlay-grid {
+  grid-area: stack;
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) minmax(130px, 210px);
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    'weather stats'
+    'mapviews stats'
+    'mapviews last';
+  gap: 16px;
+  padding: 16px;
+  width: 100%;
+  height: 100%;
+  align-items: start;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.tracking-map-vue--fullscreen .tracking-map-vue__map-overlay-grid {
+  gap: 20px;
+  padding: 20px;
+}
+
+.tracking-map-vue__map-overlay-grid > * {
+  pointer-events: auto;
+}
+
+.tracking-map-vue__weather-card {
+  grid-area: weather;
+}
+
+.tracking-map-vue__map-stats {
+  grid-area: stats;
+}
+
+.tracking-map-vue__map-views {
+  grid-area: mapviews;
+}
+
+.tracking-map-vue__activity-floating {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 8;
+  pointer-events: auto;
+}
+
+.tracking-map-vue__news-ticker {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  border-radius: 16px;
+  background: rgba(22, 22, 22, 0.92);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.4);
+  color: white;
+  overflow: hidden;
+}
+
+.tracking-map-vue__news-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tracking-map-vue__news-logo img {
+  display: block;
+  height: 28px;
+  width: auto;
+}
+
+.tracking-map-vue__news-track {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.tracking-map-vue__news-track-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 40px;
+  white-space: nowrap;
+  animation: tracking-map-vue-ticker var(--ticker-duration, 110s) linear infinite;
+  will-change: transform;
+}
+
+.tracking-map-vue__news-ticker:hover .tracking-map-vue__news-track-inner,
+.tracking-map-vue__news-ticker--paused .tracking-map-vue__news-track-inner {
+  animation-play-state: paused;
+}
+
+.tracking-map-vue__ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+  color: var(--color-light);
+  text-decoration: none;
+}
+
+.tracking-map-vue__ticker-item:hover {
+  color: white;
+}
+
+.tracking-map-vue__ticker-item--breaking {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.tracking-map-vue__ticker-label {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(255, 204, 0, 0.2);
+  border: 1px solid rgba(255, 204, 0, 0.4);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tracking-map-vue__ticker-text {
+  max-width: 480px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tracking-map-vue__news-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--color-light);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.tracking-map-vue__ticker-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tracking-map-vue__ticker-control input[type='range'] {
+  accent-color: var(--info);
+}
+
+.tracking-map-vue__ticker-toggle {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 14px;
+  background: rgba(var(--color-info-rgb, 23, 193, 232), 0.2);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tracking-map-vue__ticker-toggle:hover {
+  background: rgba(var(--color-info-rgb, 23, 193, 232), 0.35);
+}
+
+.tracking-map-vue__ticker-updated {
+  color: var(--color-secondary);
+}
+
+@keyframes tracking-map-vue-ticker {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.tracking-map-vue__map {
+  position: relative;
+  grid-area: stack;
+  z-index: 1;
+  min-height: 70vh;
+  height: 70vh;
+  width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  background: linear-gradient(160deg, rgba(22, 22, 22, 0.9), rgba(2, 6, 23, 0.95));
+  border: 1px solid var(--color-border);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.4);
+  transition:
+    border-radius 0.25s ease,
+    box-shadow 0.25s ease,
+    height 0.25s ease;
+}
+
+.tracking-map-vue--fullscreen .tracking-map-vue__map {
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+
+.tracking-map-vue__map .mapboxgl-map,
+.tracking-map-vue__map .mapboxgl-canvas,
+.tracking-map-vue__map .mapboxgl-canvas-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.tracking-map-vue__map .mapboxgl-map,
+.tracking-map-vue__map .mapboxgl-canvas-container {
+  border-radius: 20px;
+  clip-path: inset(0 round 20px);
+}
+
+.tracking-map-vue--fullscreen .tracking-map-vue__map .mapboxgl-map,
+.tracking-map-vue--fullscreen .tracking-map-vue__map .mapboxgl-canvas-container {
+  border-radius: 0;
+  clip-path: none;
+}
+
+.tracking-map-vue__map-actions {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 7;
+  display: flex;
+  gap: 8px;
+}
+
+.tracking-map-vue__map-action {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(22, 22, 22, 0.75);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid rgba(238, 238, 238, 0.3);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.tracking-map-vue__map-action:hover {
+  background: rgba(var(--color-info-rgb, 23, 193, 232), 0.2);
+  border-color: rgba(var(--color-info-rgb, 23, 193, 232), 0.6);
+  transform: translateY(-1px);
+}
+
+.tracking-map-vue__map-action--active {
+  background: rgba(var(--color-white, 20, 202, 116), 0.2);
+  border-color: rgba(var(--color-white, 20, 202, 116), 0.65);
+  color: white;
+}
+
+.tracking-map-vue__map-stats {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(22, 22, 22, 0.75);
+  border: 1px solid var(--color-border);
+  color: white;
+  z-index: 5;
+  min-width: 130px;
+  max-width: 210px;
+  width: 100%;
+  justify-self: end;
+  backdrop-filter: blur(14px);
+}
+
+.tracking-map-vue__last-activity {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(22, 22, 22, 0.75);
+  border: 1px solid var(--color-border);
+  color: white;
+  z-index: 5;
+  min-width: 180px;
+  backdrop-filter: blur(14px);
+}
+
+.tracking-map-vue__last-activity-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 700;
+}
+
+.tracking-map-vue__last-activity-body {
+  display: grid;
+  gap: 4px;
+}
+
+.tracking-map-vue__last-activity-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.tracking-map-vue__last-activity-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.tracking-map-vue__last-activity-empty {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.tracking-map-vue__map-views {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(22, 22, 22, 0.78);
+  border: 1px solid var(--color-border);
+  z-index: 6;
+  min-width: 220px;
+  max-width: 260px;
+  width: 100%;
+  justify-self: start;
+  backdrop-filter: blur(14px);
+}
+
+.tracking-map-vue__map-views-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--info);
+  font-weight: 700;
+}
+
+.tracking-map-vue__map-views-buttons {
+  display: grid;
+  gap: 8px;
+}
+
+.tracking-map-vue__map-view-button {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  padding: 6px 10px;
+  min-height: 44px;
+  max-height: 52px;
+  align-content: center;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: rgba(22, 22, 22, 0.6);
+  color: var(--color-light);
+  font-size: 0.8rem;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.tracking-map-vue__map-view-button--active {
+  border-color: var(--primary);
+  background: rgba(0, 117, 255, 0.1);
+  color: var(--foreground);
+}
+
+.tracking-map-vue__map-view-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(238, 238, 238, 0.5);
+}
+
+.tracking-map-vue__map-view-title {
+  font-weight: 600;
+}
+
+.tracking-map-vue__map-view-subtitle {
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__weather-card {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  z-index: 5;
+  min-width: 220px;
+  max-width: 260px;
+  backdrop-filter: blur(14px);
+}
+
+.tracking-map-vue__activity-panel {
+  width: min(380px, 92%);
+  min-width: 260px;
+  max-width: 380px;
+  max-height: min(60vh, 420px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 18px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  z-index: 7;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-soft);
+  transition:
+    max-height 0.25s ease,
+    transform 0.2s ease,
+    background 0.25s ease;
+  overflow: hidden;
+}
+
+.tracking-map-vue__activity-slot {
+  grid-area: last;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.tracking-map-vue__activity-floating {
+  display: block;
+}
+
+.tracking-map-vue--fullscreen .tracking-map-vue__activity-panel {
+  width: min(380px, 90vw);
+  max-height: min(65vh, 520px);
+}
+
+.tracking-map-vue--fullscreen
+  .tracking-map-vue__activity-panel:not(.tracking-map-vue__activity-panel--collapsed) {
+  max-height: calc(100% - 32px);
+}
+
+.tracking-map-vue__activity-panel--collapsed {
+  max-height: none;
+}
+
+.tracking-map-vue__activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.tracking-map-vue__activity-heading {
+  display: grid;
+  gap: 4px;
+}
+
+.tracking-map-vue__activity-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.tracking-map-vue__activity-subtitle {
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__activity-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__activity-preview-name {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.tracking-map-vue__activity-preview-type,
+.tracking-map-vue__activity-preview-time,
+.tracking-map-vue__activity-preview-empty {
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__activity-toggle {
+  border: none;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(var(--color-info-rgb, 23, 193, 232), 0.18);
+  color: var(--color-light);
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.tracking-map-vue__activity-toggle:hover {
+  background: var(--accent);
+}
+
+.tracking-map-vue__activity-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tracking-map-vue__activity-insights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.tracking-map-vue__activity-insight {
+  display: grid;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 12px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__activity-insight strong {
+  font-size: 1rem;
+  color: var(--foreground);
+  letter-spacing: normal;
+}
+
+.tracking-map-vue__activity-filters {
+  display: grid;
+  gap: 8px;
+}
+
+.tracking-map-vue__activity-status {
+  font-size: 0.75rem;
+  color: var(--color-light);
+}
+
+.tracking-map-vue__activity-status[data-state='error'] {
+  color: #fecaca;
+}
+
+.tracking-map-vue__activity-status[data-state='pending'] {
+  color: #fde68a;
+}
+
+.tracking-map-vue__activity-search {
+  position: relative;
+}
+
+.tracking-map-vue__activity-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  color: rgba(148, 163, 184, 0.8);
+}
+
+.tracking-map-vue__activity-search-input {
+  width: 100%;
+  padding: 8px 10px 8px 28px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 0.78rem;
+}
+
+.tracking-map-vue__activity-search-input:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.6);
+}
+
+.tracking-map-vue__activity-select {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 0.78rem;
+}
+
+.tracking-map-vue__activity-only-alerts {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__activity-list {
+  display: grid;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.tracking-map-vue__activity-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tracking-map-vue__activity-card--alert {
+  border-color: var(--destructive);
+  background: rgba(234, 6, 6, 0.1);
+}
+
+.tracking-map-vue__activity-card:hover {
+  border-color: var(--input);
+  background: var(--accent);
+}
+
+.tracking-map-vue__activity-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(148, 163, 184, 0.25);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.tracking-map-vue__activity-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tracking-map-vue__activity-content {
+  display: grid;
+  gap: 4px;
+}
+
+.tracking-map-vue__activity-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.tracking-map-vue__activity-name {
+  color: var(--foreground);
+}
+
+.tracking-map-vue__activity-type {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: rgba(148, 163, 184, 0.9);
+}
+
+.tracking-map-vue__activity-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.7rem;
+  color: rgba(226, 232, 240, 0.75);
+}
+
+.tracking-map-vue__activity-time {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.tracking-map-vue__activity-location {
+  color: rgba(148, 163, 184, 0.9);
+}
+
+.tracking-map-vue__activity-notification {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.7rem;
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.tracking-map-vue__activity-channel {
+  text-transform: capitalize;
+}
+
+.tracking-map-vue__activity-empty {
+  text-align: center;
+  font-size: 0.75rem;
+  color: rgba(148, 163, 184, 0.8);
+  padding: 12px 0;
+}
+
+.tracking-map-vue__weather-card--rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.tracking-map-vue__weather-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.tracking-map-vue__weather-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--info);
+  font-weight: 700;
+}
+
+.tracking-map-vue__weather-city {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.tracking-map-vue__weather-icon img {
+  width: 42px;
+  height: 42px;
+}
+
+.tracking-map-vue__weather-updated {
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__weather-status {
+  font-size: 0.82rem;
+  color: var(--destructive);
+}
+
+.tracking-map-vue__weather-condition {
+  font-size: 0.8rem;
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.tracking-map-vue__weather-grid {
+  display: grid;
+  gap: 6px;
+}
+
+.tracking-map-vue__weather-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.tracking-map-vue__weather-item span {
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+
+.tracking-map-vue__weather-loading {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__map-stat-title {
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--success);
+  font-weight: 700;
+}
+
+.tracking-map-vue__map-stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.tracking-map-vue__map-stat-row span {
+  font-size: 14px;
+}
+
+.tracking-map-vue__map-stat-row strong {
+  font-size: 16px;
+}
+
+.tracking-map-vue__loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(22, 22, 22, 0.5);
+  color: var(--foreground);
+  font-weight: 600;
+  z-index: 5;
+}
+
+.tracking-map-vue__error {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-danger, rgba(248, 113, 113, 0.4));
+  background: var(--bg-danger-opacity-10, rgba(248, 113, 113, 0.1));
+  color: var(--text-danger, #fecaca);
+  font-size: 0.85rem;
+}
+
+.tracking-map-vue__marker {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--card);
+  border: 2px solid var(--foreground);
+  box-shadow: 0 0 16px var(--foreground);
+  position: absolute;
+  transform: scale(var(--marker-scale, 1));
+  transform-origin: center;
+  transition: transform 0.2s ease;
+}
+
+.tracking-map-vue__marker--inactive {
+  border-color: rgba(148, 163, 184, 0.6);
+  box-shadow: 0 0 10px rgba(148, 163, 184, 0.4);
+  opacity: 0.8;
+}
+
+.tracking-map-vue__marker--selected {
+  box-shadow:
+    0 0 22px var(--primary),
+    0 0 45px var(--primary);
+  transform: scale(calc(var(--marker-scale, 1) * 1.05));
+}
+
+.tracking-map-vue__marker-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.tracking-map-vue__marker-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.tracking-map-vue__marker-shield {
+  font-size: 1rem;
+}
+
+.tracking-map-vue__marker-status {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--background);
+  background: var(--muted-foreground);
+}
+
+.tracking-map-vue__marker-status--live {
+  background: var(--foreground);
+  box-shadow: 0 0 8px var(--foreground);
+}
+
+.tracking-map-vue__marker-status--offline {
+  background: #64748b;
+}
+
+.tracking-map-vue .mapboxgl-popup-content {
+  background: var(--card);
+  color: var(--foreground);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  padding: 16px;
+  width: min(320px, 92vw);
+  max-width: 320px;
+  box-sizing: border-box;
+  backdrop-filter: blur(14px);
+}
+
+.tracking-map-vue .mapboxgl-popup-close-button {
+  color: var(--muted-foreground);
+  font-size: 18px;
+  padding: 2px 6px;
+}
+
+.tracking-map-vue__popup {
+  display: grid;
+  gap: 12px;
+  min-width: 260px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.tracking-map-vue__popup-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tracking-map-vue__popup-state {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tracking-map-vue__popup-state--offline {
+  border-color: rgba(148, 163, 184, 0.45);
+  background: rgba(100, 116, 139, 0.18);
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__popup-state:empty {
+  display: none;
+}
+
+.tracking-map-vue__popup-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.tracking-map-vue__popup-photo,
+.tracking-map-vue__popup-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--muted);
+  color: var(--foreground);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.tracking-map-vue__popup-meta {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tracking-map-vue__popup-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.tracking-map-vue__popup-role {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__popup-stats {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+}
+
+.tracking-map-vue__popup-stat {
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 6px;
+  text-align: left;
+}
+
+.tracking-map-vue__popup-stat strong {
+  font-size: 0.8rem;
+  color: var(--foreground);
+  word-break: break-word;
+}
+
+.tracking-map-vue__popup-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+
+.tracking-map-vue__popup-history {
+  border-radius: 999px;
+  border: 1px solid var(--primary);
+  background: rgba(0, 117, 255, 0.1);
+  color: var(--foreground);
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  width: 100%;
+  text-align: center;
+}
+
+.tracking-map-vue__popup-history:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tracking-map-vue__popup-more {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--foreground);
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  max-width: 100%;
+  width: 100%;
+  text-align: center;
+}
+
+.tracking-map-vue__popup-more:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tracking-map-vue__popup-form {
+  display: grid;
+  gap: 8px;
+}
+
+.tracking-map-vue__popup-label {
+  font-size: 0.75rem;
+  color: var(--foreground);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tracking-map-vue__popup-inputs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  width: 100%;
+}
+
+.tracking-map-vue__popup-input {
+  min-width: 0;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  padding: 8px 10px;
+  font-size: 0.8rem;
+}
+
+.tracking-map-vue__popup-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(0, 117, 255, 0.1);
+}
+
+.tracking-map-vue__popup-button {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.tracking-map-vue__popup-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tracking-map-vue__popup-status {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  word-break: break-word;
+}
+
+.tracking-map-vue__popup-status[data-state='success'] {
+  color: var(--success);
+}
+
+.tracking-map-vue__popup-status[data-state='error'] {
+  color: var(--destructive);
+}
+
+.tracking-map-vue__popup-status[data-state='pending'] {
+  color: var(--warning);
+}
+
+@media (max-width: 360px) {
+  .tracking-map-vue__popup {
+    min-width: 0;
+  }
+
+  .tracking-map-vue__popup-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .tracking-map-vue__popup-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .tracking-map-vue__popup-button {
+    width: 100%;
+    justify-self: stretch;
+  }
+}
+
+.tracking-map-vue__force-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  color: var(--foreground);
+  backdrop-filter: blur(16px);
+}
+
+.tracking-map-vue--fullscreen .tracking-map-vue__force-panel {
+  display: none;
+}
+
+.tracking-map-vue__force-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.tracking-map-vue__force-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.tracking-map-vue__force-time {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  color: var(--primary);
+}
+
+.tracking-map-vue__force-summary {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.tracking-map-vue__force-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tracking-map-vue__force-button {
+  border-radius: 999px;
+  border: 1px solid var(--primary);
+  background: rgba(0, 117, 255, 0.1);
+  color: var(--foreground);
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.tracking-map-vue__force-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tracking-map-vue__status-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tracking-map-vue__status-pill--live {
+  background: var(--color-success-opacity-10, rgba(16, 185, 129, 0.1));
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.tracking-map-vue__status-pill--offline {
+  background: var(--muted);
+  border-color: var(--border);
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__status-pill--failed {
+  background: rgba(234, 6, 6, 0.1);
+  border-color: var(--destructive);
+  color: var(--destructive);
+}
+
+.tracking-map-vue__status-pill--total {
+  background: rgba(0, 117, 255, 0.1);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.tracking-map-vue__force-table {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.tracking-map-vue__force-row {
+  display: grid;
+  grid-template-columns:
+    minmax(160px, 1.1fr) minmax(140px, 0.9fr) minmax(90px, 0.5fr) minmax(140px, 0.9fr)
+    minmax(140px, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.tracking-map-vue__force-row--header {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  color: var(--foreground);
+  background: var(--card);
+  border: 1px solid var(--input);
+}
+
+.tracking-map-vue__force-guard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tracking-map-vue__force-meta {
+  font-size: 0.75rem;
+  color: var(--primary);
+}
+
+.tracking-map-vue__force-contract,
+.tracking-map-vue__force-reason {
+  font-size: 0.8rem;
+  color: var(--foreground);
+}
+
+.tracking-map-vue__force-status {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.tracking-map-vue__force-status--live {
+  background: var(--color-success-opacity-10, rgba(16, 185, 129, 0.1));
+  color: var(--success);
+}
+
+.tracking-map-vue__force-status--offline {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__force-status--failed {
+  background: rgba(234, 6, 6, 0.1);
+  color: var(--destructive);
+}
+
+.tracking-map-vue__force-last {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__force-empty {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__bulk-panel {
+  margin-top: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  color: var(--foreground);
+  backdrop-filter: blur(16px);
+}
+
+.tracking-map-vue__bulk-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tracking-map-vue__bulk-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.tracking-map-vue__bulk-subtitle {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__bulk-count {
+  background: rgba(234, 6, 6, 0.1);
+  border: 1px solid var(--destructive);
+  color: var(--destructive);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.tracking-map-vue__bulk-form {
+  margin-top: 12px;
+  display: grid;
+  gap: 12px;
+}
+
+.tracking-map-vue__bulk-input {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  resize: vertical;
+}
+
+.tracking-map-vue__bulk-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(0, 117, 255, 0.1);
+}
+
+.tracking-map-vue__bulk-button {
+  justify-self: flex-start;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 10px 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.tracking-map-vue__bulk-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tracking-map-vue__bulk-status {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__bulk-status[data-state='success'] {
+  color: var(--success);
+}
+
+.tracking-map-vue__bulk-status[data-state='error'] {
+  color: var(--destructive);
+}
+
+.tracking-map-vue__bulk-status[data-state='warning'] {
+  color: var(--warning);
+}
+
+.tracking-map-vue__bulk-status[data-state='pending'] {
+  color: var(--warning);
+}
+
+.tracking-map-vue__bulk-actions {
+  margin-top: 10px;
+}
+
+.tracking-map-vue__bulk-secondary {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--foreground);
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.tracking-map-vue__bulk-secondary:hover {
+  border-color: var(--primary);
+}
+
+.tracking-map-vue__modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 12000;
+}
+
+.tracking-map-vue__modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(22, 22, 22, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.tracking-map-vue__modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(960px, 92vw);
+  max-height: 85vh;
+  overflow: auto;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  color: var(--foreground);
+  box-shadow: var(--shadow-soft);
+}
+
+.tracking-map-vue__modal-card--wide {
+  width: min(1100px, 94vw);
+}
+
+.tracking-map-vue__modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.tracking-map-vue__modal-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.tracking-map-vue__modal-subtitle {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tracking-map-vue__modal-action {
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.tracking-map-vue__modal-close {
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--foreground);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+.tracking-map-vue__not-seen-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.tracking-map-vue__not-seen-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tracking-map-vue__not-seen-filter {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--foreground);
+  padding: 7px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.tracking-map-vue__not-seen-filter.is-active {
+  border-color: var(--primary);
+  background: rgba(0, 117, 255, 0.1);
+  color: var(--primary);
+}
+
+.tracking-map-vue__not-seen-search {
+  flex: 1;
+  min-width: 220px;
+}
+
+.tracking-map-vue__not-seen-input {
+  width: 100%;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  padding: 9px 16px;
+  font-size: 0.8rem;
+}
+
+.tracking-map-vue__not-seen-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(0, 117, 255, 0.1);
+}
+
+.tracking-map-vue__not-seen-status {
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__not-seen-status[data-state='success'] {
+  color: var(--success);
+}
+
+.tracking-map-vue__not-seen-status[data-state='error'] {
+  color: var(--destructive);
+}
+
+.tracking-map-vue__not-seen-status[data-state='pending'] {
+  color: var(--warning);
+}
+
+.tracking-map-vue__not-seen-list {
+  display: grid;
+  gap: 12px;
+}
+
+.tracking-map-vue__not-seen-card {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(200px, 1.2fr) minmax(200px, 1fr) minmax(200px, 0.8fr);
+  align-items: center;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+.tracking-map-vue__not-seen-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tracking-map-vue__not-seen-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(0, 117, 255, 0.1);
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: 1px solid var(--border);
+}
+
+.tracking-map-vue__not-seen-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tracking-map-vue__not-seen-name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.tracking-map-vue__not-seen-meta {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  color: var(--primary);
+}
+
+.tracking-map-vue__not-seen-details {
+  display: grid;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__not-seen-label {
+  display: block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__not-seen-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.tracking-map-vue__not-seen-action {
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 7px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.tracking-map-vue__not-seen-action--ghost {
+  border-color: var(--border);
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.tracking-map-vue__not-seen-empty {
+  padding: 24px;
+  border-radius: 14px;
+  text-align: center;
+  color: var(--muted-foreground);
+  background: var(--muted);
+  border: 1px dashed var(--border);
+}
+
+.tracking-map-vue__history-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.tracking-map-vue__history-ranges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tracking-map-vue__history-filter {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--foreground);
+  padding: 7px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.tracking-map-vue__history-filter.is-active {
+  border-color: var(--info);
+  background: var(--color-info-opacity-10, rgba(14, 165, 233, 0.1));
+  color: var(--info);
+}
+
+.tracking-map-vue__history-selects {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tracking-map-vue__history-select {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  padding: 7px 14px;
+  font-size: 0.8rem;
+}
+
+.tracking-map-vue__history-refresh {
+  border-radius: 999px;
+  background: var(--success);
+  color: var(--primary-foreground);
+  padding: 7px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.tracking-map-vue__history-status {
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__history-status[data-state='error'] {
+  color: var(--destructive);
+}
+
+.tracking-map-vue__history-status[data-state='pending'] {
+  color: var(--warning);
+}
+
+.tracking-map-vue__history-list {
+  display: grid;
+  gap: 12px;
+}
+
+.tracking-map-vue__history-card {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.35fr) minmax(0, 1fr);
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+.tracking-map-vue__history-time {
+  display: grid;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__history-time strong {
+  color: var(--foreground);
+  font-size: 0.85rem;
+}
+
+.tracking-map-vue__history-type {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.tracking-map-vue__history-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  margin-top: 4px;
+}
+
+.tracking-map-vue__history-context {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__history-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.tracking-map-vue__history-load {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--foreground);
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.tracking-map-vue__history-range {
+  font-size: 0.75rem;
+  color: var(--primary);
+}
+
+.tracking-map-vue__history-empty {
+  padding: 24px;
+  border-radius: 14px;
+  text-align: center;
+  color: var(--muted-foreground);
+  background: var(--muted);
+  border: 1px dashed var(--border);
+}
+
+.tracking-map-vue__routing-controls {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--muted);
+}
+
+.tracking-map-vue__routing-range-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tracking-map-vue__routing-range {
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--muted-foreground);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tracking-map-vue__routing-range.is-active {
+  border-color: var(--primary);
+  color: var(--foreground);
+  background: rgba(0, 117, 255, 0.1);
+}
+
+.tracking-map-vue__routing-custom {
+  display: grid;
+  gap: 8px;
+}
+
+.tracking-map-vue__routing-custom label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__routing-custom input {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--foreground);
+  padding: 8px 10px;
+}
+
+.tracking-map-vue__routing-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.tracking-map-vue__routing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.tracking-map-vue__routing-title {
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.tracking-map-vue__routing-subtitle {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__routing-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.tracking-map-vue__routing-actions button {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--foreground);
+  padding: 6px 12px;
+  font-size: 0.75rem;
+}
+
+.tracking-map-vue__routing-actions button.is-ghost {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.tracking-map-vue__routing-status {
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: #f8fafc;
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.tracking-map-vue__routing-status[data-state='warning'] {
+  background: rgba(248, 113, 113, 0.2);
+  border-color: rgba(248, 113, 113, 0.6);
+}
+
+.tracking-map-vue__routing-status[data-state='error'] {
+  background: rgba(248, 113, 113, 0.25);
+  border-color: rgba(248, 113, 113, 0.75);
+}
+
+.tracking-map-vue__routing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tracking-map-vue__routing-grid span {
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tracking-map-vue__routing-grid strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--foreground);
+}
+
+.tracking-map-vue__routing-grid small {
+  font-size: 0.75rem;
+  color: var(--primary);
+}
+
+.tracking-map-vue__routing-loading {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.tracking-map-vue__playback-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow-soft);
+  z-index: 4;
+}
+
+.tracking-map-vue__playback-controls button {
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--foreground);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+}
+
+.tracking-map-vue__playback-controls button.is-ghost {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.tracking-map-vue__playback-speeds {
+  display: flex;
+  gap: 6px;
+}
+
+.tracking-map-vue__playback-speeds button.is-active {
+  border-color: var(--primary);
+  background: rgba(0, 117, 255, 0.1);
+  color: var(--primary);
+}
+
+.tracking-map-vue__routing-marker {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--foreground);
+  box-shadow: var(--shadow-soft);
+}
+
+.tracking-map-vue__routing-marker--start {
+  background: var(--foreground);
+}
+
+.tracking-map-vue__routing-marker--end {
+  background: var(--foreground);
+}
+
+.tracking-map-vue__routing-marker--playback {
+  width: 14px;
+  height: 14px;
+  background: var(--primary);
+  border-color: var(--background);
+}
+
+@media (max-width: 1200px) {
+  .tracking-map-vue {
+    grid-template-columns: 1fr;
+  }
+
+  .tracking-map-vue__guard-list {
+    max-height: none;
+  }
+
+  .tracking-map-vue__not-seen-card {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+  }
+
+  .tracking-map-vue__not-seen-actions {
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+}

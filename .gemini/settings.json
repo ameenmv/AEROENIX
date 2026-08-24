@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": ["read", "write", "execute"],
+    "deny": []
+  },
+  "config": {
+    "packageManager": "bun",
+    "framework": "vue3",
+    "buildTool": "vite",
+    "language": "typescript",
+    "styling": "tailwindcss-v4",
+    "uiLibrary": "shadcn-vue-reka-ui",
+    "testRunner": "vitest",
+    "linter": "eslint",
+    "formatter": "prettier"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "types": [
+    { "type": "feat", "section": "✨ Features" },
+    { "type": "fix", "section": "🐛 Bug Fixes" },
+    { "type": "perf", "section": "⚡ Performance" },
+    { "type": "refactor", "section": "♻️ Refactoring" },
+    { "type": "ui", "section": "🎨 UI Changes" },
+    { "type": "i18n", "section": "🌐 Internationalization" },
+    { "type": "docs", "section": "📝 Documentation" },
+    { "type": "test", "section": "✅ Tests" },
+    { "type": "build", "section": "📦 Build" },
+    { "type": "ci", "section": "🔧 CI" },
+    { "type": "chore", "section": "🧹 Chores", "hidden": true },
+    { "type": "style", "section": "💄 Styling", "hidden": true },
+    { "type": "revert", "section": "⏪ Reverts" }
+  ],
+  "commitUrlFormat": "{{host}}/{{owner}}/{{repository}}/commit/{{hash}}",
+  "compareUrlFormat": "{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}",
+  "header": "# Changelog\n\nAll notable changes to this project will be documented in this file.\n"
+}

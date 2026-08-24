@@ -1,0 +1,5 @@
+export { default as FileItem } from './FileItem.vue'
+export type { FileInfo } from './FileItem.vue'
+export { default as FileList } from './FileList.vue'
+export { fileItemVariants, fileListVariants } from './variants'
+export type { FileItemVariants, FileListVariants } from './variants'

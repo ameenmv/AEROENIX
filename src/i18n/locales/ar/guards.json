@@ -1,0 +1,7 @@
+{
+  "neoprity_status": {
+    "approved": "مقبول",
+    "rejected": "مرفوض",
+    "pending": "قيد الانتظار"
+  }
+}

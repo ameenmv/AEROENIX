@@ -1,0 +1,7 @@
+{
+  "neoprity_status": {
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "pending": "Pending"
+  }
+}

@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base-Sync | Confirm Changes</title>
+  
+  <!-- Font IBM Plex Sans Arabic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Highlight.js for proper IDE syntax highlighting in Diff -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"IBM Plex Sans Arabic"', 'sans-serif'],
+            mono: ['"Roboto Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace']
+          },
+          colors: {
+            brand: '#ED1F4A', /* NEOP brand color from svg */
+            zinc: {
+              850: '#1f2937', 
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Diff2Html -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/diff2html/bundles/css/diff2html.min.css" />
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/diff2html/bundles/js/diff2html-ui.min.js"></script>
+
+  <!-- Monaco Editor Loader (Must be loaded AFTER diff2html to prevent AMD hijacking) -->
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
+  <!-- Optional Highlight.js bundle for better language support -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    body { 
+      background-color: #0f172a; 
+      color: #f8fafc; 
+      overflow: hidden; 
+      height: 100vh; 
+      display: flex; 
+      flex-direction: column; 
+    }
+    
+    body {
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+    }
+
+    /* Ensure code areas use monospace font, not the body sans-serif */
+    code, pre, .monaco-editor, .monaco-editor *,
+    #monaco-target, #monaco-target *,
+    #diff-render-area code, #diff-render-area pre {
+      font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+    }
+
+    /* diff2html dark theme overrides */
+    body .d2h-wrapper { color: #e4e4e7; }
+    .d2h-file-header { background-color: #09090b !important; border-bottom: 1px solid #27272a !important; color: #f4f4f5 !important; }
+    .d2h-file-wrapper { border: 1px solid #27272a !important; border-radius: 0.5rem; overflow: hidden; margin-bottom: 2rem; background: #09090b !important; font-family: inherit; }
+    .d2h-repo-file { width: 100%; border-collapse: collapse; font-family: inherit; }
+    .d2h-info { background-color: #18181b !important; color: #a1a1aa !important; border-color: #27272a !important; }
+    
+    /* Line styling & backgrounds */
+    .d2h-cntx, .d2h-cntx .d2h-code-side-linenumber, .d2h-cntx .d2h-code-line, .d2h-code-side-line { background-color: #09090b !important; }
+    .d2h-code-side-linenumber { background-color: #121214 !important; border-color: #27272a !important; color: #71717a !important; }
+    .d2h-code-linenumber { background-color: #121214 !important; border-color: #27272a !important; color: #71717a !important; }
+    .d2h-emptyplaceholder, .d2h-code-side-emptyplaceholder { background-color: #18181b !important; border-color: #27272a !important; }
+    
+    .d2h-ins, .d2h-code-side-line.d2h-ins { background-color: rgba(16, 185, 129, 0.1) !important; border-color: rgba(16, 185, 129, 0.2) !important; color: #ecfdf5 !important; }
+    .d2h-del, .d2h-code-side-line.d2h-del { background-color: rgba(239, 68, 68, 0.1) !important; border-color: rgba(239, 68, 68, 0.2) !important; color: #fef2f2 !important; }
+    .d2h-change, .d2h-code-side-line.d2h-change { background-color: rgba(234, 179, 8, 0.1) !important; border-color: rgba(234, 179, 8, 0.2) !important; color: #fef9c3 !important; }
+    
+    /* Code text styling */
+    .d2h-code-line { color: #e4e4e7 !important; font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important; font-size: 13px !important; line-height: 1.6 !important; }
+    .d2h-code-line-ctn { color: #e4e4e7 !important; }
+    .d2h-code-line-prefix { color: #71717a !important; }
+    .hljs { background: transparent !important; padding: 0 !important; font-family: inherit !important; }
+    
+    /* diff2html light borders fix */
+    .d2h-tbody tr td { border-color: #27272a !important; align-items: stretch; }
+    
+    /* Text overrides */
+    .d2h-file-name { color: #f4f4f5 !important; font-weight: 600; font-size: 14px; font-family: inherit; }
+    .d2h-tag { display: none !important; }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #09090b; }
+    ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+    /* Hide removed items */
+    .item-removed { display: none !important; }
+  </style>
+  <style>
+    @keyframes slideDown {
+      from { transform: translate(-50%, -20px); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 font-sans">
+  <div id="app" class="flex flex-col h-screen">
+    <!-- Toast UI -->
+    <div v-if="toastMessage" class="fixed top-4 left-1/2 -translate-x-1/2 bg-zinc-800 text-white px-5 py-2.5 rounded-full shadow-2xl border border-zinc-700 z-[100] text-sm font-medium" style="animation: slideDown 0.2s ease-out">
+      {{ toastMessage }}
+    </div>
+    <!-- Header -->
+    <header class="bg-zinc-950 border-b border-zinc-800 p-4 shrink-0 flex justify-between items-center z-10 shadow-md">
+      <div class="flex items-center gap-4">
+        <!-- NEOP Logo -->
+        <div class="flex items-center justify-center shrink-0">
+          <svg width="120" height="28" viewBox="0 0 571 135" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_54_355)">
+                <path d="M134.99 67.4973V134.99H105.187V67.4973C105.187 57.5012 101.217 47.9145 94.1482 40.8462C87.08 33.778 77.4933 29.8071 67.4972 29.8071C57.5012 29.8071 47.9145 33.778 40.8462 40.8462C33.7779 47.9145 29.8071 57.5012 29.8071 67.4973V134.99H0V67.4973C0.0224185 56.426 2.74968 45.5279 7.94457 35.7511C13.1395 25.9742 20.6446 17.6147 29.8071 11.3999C36.7311 6.7837 44.463 3.51353 52.598 1.76061C62.3944 -0.580402 72.6044 -0.580402 82.4007 1.76061C90.5339 3.51526 98.264 6.78532 105.187 11.3999C114.349 17.6155 121.853 25.9753 127.047 35.752C132.241 45.5288 134.968 56.4264 134.99 67.4973Z" fill="#ffffff" />
+                <path d="M177.338 56.102C179.612 48.468 184.301 41.7774 190.701 37.0353C197.101 32.2932 204.867 29.7554 212.832 29.8029C220.814 29.691 228.611 32.204 235.026 36.9555C241.44 41.7071 246.116 48.434 248.335 56.102H177.338ZM280.334 67.4975C280.485 50.9858 274.635 34.9811 263.87 22.4597C253.106 9.93838 238.16 1.75273 221.813 -0.574758C205.465 -2.90225 188.829 0.786816 174.997 9.80631C161.166 18.8258 151.081 32.5618 146.618 48.4597C142.156 64.3576 143.619 81.3352 150.736 96.2351C157.853 111.135 170.139 122.943 185.31 129.463C200.481 135.983 217.503 136.771 233.211 131.681C248.919 126.59 262.244 115.968 270.707 101.79L245.24 86.6838C241.899 92.3032 237.157 96.9602 231.479 100.2C225.8 103.44 219.379 105.153 212.841 105.17C204.836 105.126 197.058 102.501 190.664 97.6843C184.269 92.8679 179.599 86.1174 177.347 78.4354H279.462C279.991 74.8063 280.285 71.1468 280.342 67.4799" fill="#ffffff" />
+                <path d="M425.662 67.5022C425.661 80.8515 421.702 93.9008 414.285 105C406.868 116.099 396.326 124.75 383.993 129.858C371.66 134.966 358.089 136.303 344.996 133.698C331.903 131.093 319.877 124.665 310.437 115.226C300.998 105.786 294.569 93.7598 291.965 80.667C289.36 67.5742 290.697 54.0031 295.805 41.6698C300.913 29.3364 309.564 18.7948 320.663 11.3778C331.762 3.96073 344.811 0.00142 358.161 0.00054946C367.025 -2.86227e-05 375.803 1.74555 383.993 5.13762C392.183 8.52969 399.625 13.5018 405.893 19.77C412.161 26.0383 417.133 33.4798 420.525 41.6698C423.917 49.8597 425.663 58.6376 425.662 67.5022Z" fill="#ED1F4A" />
+                <path d="M503.503 105.188C493.506 105.188 483.918 101.216 476.849 94.1472C469.78 87.0781 465.809 77.4904 465.809 67.4931C465.809 57.4959 469.78 47.9083 476.849 40.8392C483.918 33.7701 493.506 29.7986 503.503 29.7986C513.5 29.7986 523.088 33.7701 530.157 40.8392C537.226 47.9083 541.198 57.4959 541.198 67.4931C541.198 77.4904 537.226 87.0781 530.157 94.1472C523.088 101.216 513.5 105.188 503.503 105.188ZM503.503 -0.00852602C490.102 0.0713852 477.01 4.02928 465.809 11.3871C456.646 17.6028 449.142 25.9631 443.948 35.7408C438.753 45.5184 436.027 56.4172 436.006 67.4888V134.982H465.809V120.457C476.036 129.969 489.537 135.172 503.503 134.982C512.413 135.054 521.248 133.361 529.5 130.001C537.752 126.641 545.257 121.681 551.583 115.407C557.908 109.132 562.929 101.667 566.355 93.4426C569.782 85.218 571.545 76.3963 571.545 67.4866C571.545 58.5768 569.782 49.7553 566.355 41.5307C562.929 33.306 557.908 25.8411 551.583 19.5665C545.257 13.2918 537.752 8.33162 529.5 4.97193C521.248 1.61224 512.413 -0.0804741 503.503 -0.00852602Z" fill="#ffffff" />
+            </g>
+            <defs>
+                <clipPath id="clip0_54_355"><rect width="571" height="134.999" fill="white" /></clipPath>
+            </defs>
+          </svg>
+        </div>
+        <div class="border-l border-zinc-800 pl-4">
+          <h1 class="text-sm font-bold text-white leading-none">Web Sync</h1>
+          <p class="text-[10px] text-zinc-500 uppercase tracking-widest mt-1">Conflict Resolution</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-xs font-medium bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full" :class="takingCount > 0 ? 'bg-brand' : 'bg-zinc-600'"></span>
+          <span><span class="text-white">{{ takingCount }}</span> <span class="text-zinc-500">of</span> <span class="text-zinc-400">{{ activeTotalFiles }}</span> <span class="text-zinc-500">Incoming</span></span>
+        </div>
+        <button 
+          @click="promptSubmit" 
+          class="bg-brand hover:opacity-90 text-white font-medium py-2 px-6 rounded-md transition-all shadow-[0_4px_14px_rgba(237,31,74,0.3)] hover:shadow-[0_4px_20px_rgba(237,31,74,0.4)]"
+        >
+          Confirm & Select
+        </button>
+      </div>
+    </header>
+
+    <div class="flex overflow-hidden flex-1 relative">
+      <!-- Sidebar / Tree -->
+      <aside class="w-[420px] bg-zinc-950 border-r border-zinc-800 flex flex-col shrink-0 overflow-y-auto relative z-20">
+        
+        <!-- Toggle All Controls -->
+        <div class="px-3 py-3 border-b border-zinc-800 sticky top-0 bg-zinc-950/95 backdrop-blur z-20 flex flex-col gap-2.5 shadow-sm">
+          <!-- Search & Fold & Filter -->
+          <div class="flex items-center gap-2">
+            <div class="relative flex-1">
+              <svg class="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <input v-model="searchQuery" type="text" placeholder="Search files..." class="w-full bg-zinc-900 border border-zinc-800 rounded-md py-1.5 pl-9 pr-3 text-xs text-zinc-300 focus:outline-none focus:border-zinc-700 transition-colors">
+            </div>
+            <select v-model="statusFilter" class="bg-zinc-900 border border-zinc-800 rounded-md py-1.5 px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-700 transition-colors w-24">
+              <option value="all">All</option>
+              <option value="modified">Modified</option>
+              <option value="added">Added</option>
+              <option value="deleted">Deleted</option>
+            </select>
+            <button @click="expandAll" class="p-1.5 text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 rounded border border-zinc-800 transition-colors" title="Expand All">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+            <button @click="collapseAll" class="p-1.5 text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 rounded border border-zinc-800 transition-colors" title="Collapse All">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>
+            </button>
+          </div>
+          
+          <!-- Select All Controls -->
+           <div class="flex bg-zinc-900 rounded border border-zinc-800/80 overflow-hidden w-full">
+             <button @click="selectAllLocal" class="flex-1 px-2 py-1.5 text-[10px] font-bold tracking-wider text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors border-r border-zinc-800/80">ALL LOCAL</button>
+             <button @click="selectAllMixed" class="flex-1 px-2 py-1.5 text-[10px] font-bold tracking-wider text-amber-500/70 hover:text-amber-400 hover:bg-zinc-800 transition-colors border-r border-zinc-800/80">ALL MIXED</button>
+             <button @click="selectAllBase" class="flex-1 px-2 py-1.5 text-[10px] font-bold tracking-wider text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">ALL INCOMING</button>
+           </div>
+        </div>
+
+        <div v-if="loading" class="p-8 text-center text-zinc-500 text-sm">Analyzing repository diffs...</div>
+
+        <!-- Tree View -->
+        <div v-show="!loading" class="flex-1 overflow-y-auto p-1.5 pb-8">
+          <file-tree-item 
+            v-for="node in fileTree" 
+            :key="node.path" 
+            :node="node"
+            :selected-file="selectedFile"
+            :removed-files="removedFiles"
+            :decisions="decisions"
+            @view-file="viewFile"
+            @remove-file="removeFileFromList"
+            @set-decision="setDecision"
+          ></file-tree-item>
+        </div>
+      </aside>
+
+      <!-- Main view -->
+      <main class="flex-1 flex flex-col overflow-hidden bg-[#09090b] relative" id="diff-container">
+        <!-- Tabs -->
+        <div v-show="selectedFile" class="flex items-center gap-1 p-2 bg-zinc-950 border-b border-zinc-800 shrink-0">
+          <button @click="setActiveTab('diff')" :class="activeTab === 'diff' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'" class="px-4 py-1.5 rounded text-sm font-medium transition-colors">Diff Viewer</button>
+          <button @click="setActiveTab('base')" :class="activeTab === 'base' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'" class="px-4 py-1.5 rounded text-sm font-medium transition-colors">Incomming File</button>
+          <button @click="setActiveTab('local')" :class="activeTab === 'local' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'" class="px-4 py-1.5 rounded text-sm font-medium transition-colors">Local File</button>
+          <button @click="setActiveTab('mixed')" :class="activeTab === 'mixed' ? 'bg-brand/20 text-brand border-brand/30' : 'text-zinc-400 hover:text-brand hover:bg-brand/5 border-transparent'" class="border px-4 py-1.5 rounded text-sm font-medium transition-colors flex items-center gap-1.5 ml-2">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+            Mixed Edit
+          </button>
+          <div class="ml-auto flex items-center gap-3 pr-2">
+            <button @click="copyFullFile('base')" class="text-xs flex items-center gap-1 text-zinc-500 hover:text-white transition-colors" title="Copy full incoming base file">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+              Copy Incomming
+            </button>
+            <button @click="copyFullFile('local')" class="text-xs flex items-center gap-1 text-zinc-500 hover:text-white transition-colors" title="Copy full local file">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+              Copy Local
+            </button>
+            <span class="text-xs text-zinc-600 font-mono pl-3 border-l border-zinc-800 truncate max-w-[200px]">
+              {{ selectedFile?.relativePath }}
+            </span>
+          </div>
+        </div>
+
+        <div v-if="!selectedFile && !loading" class="absolute inset-0 flex items-center justify-center text-zinc-600">
+          <div class="text-center">
+            <svg class="w-12 h-12 mx-auto mb-4 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <p class="text-sm font-medium">Select a file from the tree to preview changes.</p>
+          </div>
+        </div>
+        
+        <div id="diff-render-area" 
+             class="overflow-auto bg-[#09090b]" 
+             :class="{'flex-1': activeTab === 'diff', 'h-1/2 border-b-4 border-zinc-800': activeTab === 'mixed', 'hidden': !selectedFile || (activeTab !== 'diff' && activeTab !== 'mixed') }">
+        </div>
+        
+        <div id="monaco-container" 
+             class="overflow-hidden relative bg-[#1e1e1e]" 
+             :class="{'flex-1': activeTab === 'base' || activeTab === 'local', 'h-1/2': activeTab === 'mixed', 'hidden': !selectedFile || (activeTab !== 'base' && activeTab !== 'local' && activeTab !== 'mixed') }">
+          <!-- Vue manages this overlay -->
+          <div v-if="loadingEditorContent" class="absolute inset-0 z-10 bg-[#09090b]/80 backdrop-blur-sm flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-brand"></div>
+          </div>
+          <!-- Monaco completely owns this element, Vue ignores its internals -->
+          <div id="monaco-target" class="w-full h-full"></div>
+        </div>
+      </main>
+      <!-- Confirmation Modal -->
+      <div v-if="showConfirmModal" class="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-zinc-900 shadow-2xl p-6 rounded-xl w-[400px] border border-zinc-800">
+          <h2 class="text-xl font-bold mb-4 text-white">Confirm Synchronization</h2>
+          <p class="text-sm text-zinc-400 mb-6">You are about to sync the selected files. Here is the summary of your choices:</p>
+          
+          <div class="space-y-3 mb-6 bg-zinc-950/50 p-4 rounded-lg border border-zinc-800/50">
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-medium text-emerald-400">Incoming Base (Overwrite)</span>
+              <span class="bg-zinc-800 text-white px-2 py-0.5 rounded text-xs font-bold">{{ fileStats.incoming }} files</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-medium text-blue-400">Mixed Edit (Merge)</span>
+              <span class="bg-zinc-800 text-white px-2 py-0.5 rounded text-xs font-bold">{{ fileStats.mixed }} files</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-medium text-zinc-400">Keep Local (Ignore)</span>
+              <span class="bg-zinc-800 text-white px-2 py-0.5 rounded text-xs font-bold">{{ fileStats.local }} files</span>
+            </div>
+          </div>
+
+          <div class="flex gap-3 justify-end mt-4">
+            <button 
+              @click="showConfirmModal = false" 
+              class="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+            >
+              Cancel
+            </button>
+            <button 
+              @click="submit" 
+              :disabled="loading || submitted"
+              class="bg-brand text-white px-5 py-2 rounded text-sm font-semibold hover:bg-brand/90 transition-colors shadow-sm disabled:opacity-50"
+            >
+              Confirm Sync
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success Overlay -->
+      <div v-if="submitted" class="absolute inset-0 bg-zinc-950/90 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-zinc-900 shadow-[0_0_50px_rgba(0,0,0,0.5)] p-8 rounded-xl text-center max-w-sm border border-zinc-800">
+          <div class="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center text-brand mx-auto mb-4 border border-brand/20">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold mb-2 text-white">Selection Confirmed</h2>
+          <p class="text-zinc-400 mb-6 text-sm">You can now close this tab and return to your terminal. The CLI will resume automatically.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, computed, onMounted, nextTick } = Vue
+
+    const FileTreeItem = {
+      name: 'FileTreeItem',
+      props: ['node', 'selectedFile', 'removedFiles', 'decisions'],
+      emits: ['view-file', 'remove-file', 'set-decision'],
+      template: `
+        <div v-if="node.type === 'folder'" class="">
+          <div 
+            @click="node.expanded = !node.expanded"
+            class="flex items-center gap-2 p-2 hover:bg-zinc-800/80 cursor-pointer text-zinc-300 transition-colors border-b border-zinc-800/30 bg-zinc-900/20"
+          >
+            <svg :class="{'rotate-90': node.expanded}" class="w-3.5 h-3.5 transition-transform text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+            <svg class="w-3.5 h-3.5 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+            </svg>
+            <span class="text-[11px] font-semibold tracking-wide truncate">{{ node.name }}</span>
+          </div>
+          <div v-show="node.expanded" class="border-l border-zinc-800 ml-[11px] pl-[5px]">
+            <file-tree-item 
+              v-for="child in node.children" 
+              :key="child.path" 
+              :node="child"
+              :selected-file="selectedFile"
+              :removed-files="removedFiles"
+              :decisions="decisions"
+              @view-file="$emit('view-file', $event)"
+              @remove-file="$emit('remove-file', $event)"
+              @set-decision="(f, d) => $emit('set-decision', f, d)"
+            ></file-tree-item>
+          </div>
+        </div>
+        <div v-else>
+          <div 
+            v-show="!removedFiles.includes(node.path)"
+            class="group flex items-center justify-between p-1.5 my-[1px] hover:bg-zinc-900/60 cursor-pointer border-l-2 rounded-r transition-all relative"
+            :class="[
+              selectedFile === node.file ? 'bg-zinc-900 border-l-brand' : 'border-l-transparent bg-transparent'
+            ]"
+            @click="$emit('view-file', node.file)"
+          >
+            <!-- Left side: Icon & Title -->
+            <div class="flex items-center min-w-0 pr-2 gap-1.5">
+              <div class="w-[6px] h-[6px] rounded-full shrink-0"
+                   :class="{
+                     'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.4)]': node.file.status === 'added',
+                     'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.4)]': node.file.status === 'modified',
+                     'bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.4)]': node.file.status === 'deleted'
+                   }" :title="node.file.status.toUpperCase()"></div>
+              <svg class="w-3 h-3 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              <span class="truncate font-mono text-[10.5px] text-zinc-300 group-hover:text-white transition-colors" :title="node.name">{{ node.name }}</span>
+            </div>
+
+            <!-- Right side: Actions -->
+            <div class="flex items-center shrink-0">
+               <div class="flex bg-zinc-950 rounded border border-zinc-800/80 overflow-hidden" @click.stop>
+                 <button @click="$emit('set-decision', node.file, 'local')"
+                         class="px-1.5 py-0.5 text-[9px] font-bold tracking-wider transition-colors"
+                         :class="decisions[node.path] === 'local' ? 'bg-zinc-700 text-white' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800'" title="Keep Local">
+                    LOCAL
+                 </button>
+                 <div class="w-px bg-zinc-800/80"></div>
+                 <button @click="$emit('set-decision', node.file, 'mixed')"
+                         class="px-1.5 py-0.5 text-[9px] font-bold tracking-wider transition-colors"
+                         :class="decisions[node.path] === 'mixed' ? 'bg-amber-500/20 text-amber-500' : 'text-zinc-500 hover:text-amber-500 hover:bg-zinc-800'" title="Use Mixed Edit">
+                    MIXED
+                 </button>
+                 <div class="w-px bg-zinc-800/80"></div>
+                 <button @click="$emit('set-decision', node.file, 'base')"
+                         class="px-1.5 py-0.5 text-[9px] font-bold tracking-wider transition-colors"
+                         :class="decisions[node.path] === 'base' ? 'bg-brand/20 text-brand' : 'text-zinc-500 hover:text-brand hover:bg-zinc-800'" title="Take Incoming">
+                    INCOMING
+                 </button>
+               </div>
+               
+               <button @click.stop="$emit('remove-file', node.file)" class="ml-1.5 text-zinc-600 hover:text-red-400 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" title="Hide File">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+               </button>
+            </div>
+          </div>
+        </div>
+      `
+    }
+
+    const app = createApp({
+      setup() {
+        const loading = ref(true)
+        const submitted = ref(false)
+        const analysis = ref(null)
+        
+        const decisions = ref({}) // key: filePath, value: 'base' | 'local' | null
+        const removedFiles = ref([]) // files hidden from view entirely
+        const selectedFile = ref(null)
+
+        const searchQuery = ref('')
+        const activeTab = ref('local')
+        const loadingEditorContent = ref(false)
+        const mixedEdits = ref({})
+        const toastMessage = ref('')
+
+        const showToast = (msg) => {
+          toastMessage.value = msg
+          setTimeout(() => {
+            if (toastMessage.value === msg) toastMessage.value = ''
+          }, 3000)
+        }
+        
+        let editorInstance = null
+        let monacoInitialized = false
+
+        const initMonaco = () => {
+          if (monacoInitialized) return Promise.resolve(window.monaco)
+          return new Promise(resolve => {
+            require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs' } });
+            require(['vs/editor/editor.main'], function() {
+              // Define custom One Dark Pro inspired theme
+              window.monaco.editor.defineTheme('onedark', {
+                base: 'vs-dark',
+                inherit: true,
+                rules: [
+                  { token: '', foreground: 'abb2bf', background: '0d1117' },
+                  { token: 'comment', foreground: '5c6370', fontStyle: 'italic' },
+                  { token: 'keyword', foreground: 'c678dd' },
+                  { token: 'keyword.control', foreground: 'c678dd' },
+                  { token: 'storage', foreground: 'c678dd' },
+                  { token: 'storage.type', foreground: 'c678dd' },
+                  { token: 'type', foreground: 'e5c07b' },
+                  { token: 'type.identifier', foreground: 'e5c07b' },
+                  { token: 'string', foreground: '98c379' },
+                  { token: 'string.key.json', foreground: 'e06c75' },
+                  { token: 'string.value.json', foreground: '98c379' },
+                  { token: 'number', foreground: 'd19a66' },
+                  { token: 'number.hex', foreground: 'd19a66' },
+                  { token: 'regexp', foreground: '56b6c2' },
+                  { token: 'variable', foreground: 'e06c75' },
+                  { token: 'variable.predefined', foreground: 'e06c75' },
+                  { token: 'variable.parameter', foreground: 'abb2bf' },
+                  { token: 'constant', foreground: 'd19a66' },
+                  { token: 'tag', foreground: 'e06c75' },
+                  { token: 'attribute.name', foreground: 'd19a66' },
+                  { token: 'attribute.value', foreground: '98c379' },
+                  { token: 'attribute.value.html', foreground: '98c379' },
+                  { token: 'metatag', foreground: 'abb2bf' },
+                  { token: 'metatag.content.html', foreground: 'e06c75' },
+                  { token: 'delimiter', foreground: 'abb2bf' },
+                  { token: 'delimiter.html', foreground: 'abb2bf' },
+                  { token: 'delimiter.xml', foreground: 'abb2bf' },
+                  { token: 'identifier', foreground: 'e06c75' },
+                  { token: 'key', foreground: 'e06c75' },
+                  { token: 'operator', foreground: '56b6c2' },
+                  { token: 'annotation', foreground: 'e5c07b' },
+                ],
+                colors: {
+                  'editor.background': '#0d1117',
+                  'editor.foreground': '#abb2bf',
+                  'editor.lineHighlightBackground': '#161b22',
+                  'editor.selectionBackground': '#264f78',
+                  'editor.inactiveSelectionBackground': '#3a3d41',
+                  'editorLineNumber.foreground': '#3b4048',
+                  'editorLineNumber.activeForeground': '#737984',
+                  'editorIndentGuide.background': '#21262d',
+                  'editorIndentGuide.activeBackground': '#30363d',
+                  'editorCursor.foreground': '#528bff',
+                  'editorWhitespace.foreground': '#3b4048',
+                  'editorBracketMatch.background': '#2c313a',
+                  'editorBracketMatch.border': '#528bff',
+                  'scrollbar.shadow': '#00000000',
+                  'scrollbarSlider.background': '#484f5833',
+                  'scrollbarSlider.hoverBackground': '#484f5866',
+                  'scrollbarSlider.activeBackground': '#484f5899',
+                  'minimap.background': '#0d1117',
+                }
+              });
+              monacoInitialized = true
+              resolve(window.monaco)
+            });
+          })
+        }
+
+        const fetchAnalysis = async () => {
+          try {
+            const res = await fetch('/api/diff')
+            const data = await res.json()
+            analysis.value = data
+            
+            // Auto-decisions: added/modified → incoming, deleted → keep local
+            data.added.forEach(f => {
+              decisions.value[f.relativePath] = 'base'
+            });
+            data.modified.forEach(f => {
+              decisions.value[f.relativePath] = 'base'
+            });
+            data.deleted.forEach(f => {
+              decisions.value[f.relativePath] = 'local'
+            });
+
+            // Build file tree
+            buildTree()
+
+            // Select first file to view
+            if (data.modified.length > 0) viewFile(data.modified[0])
+            else if (data.added.length > 0) viewFile(data.added[0])
+            else if (data.deleted.length > 0) viewFile(data.deleted[0])
+
+          } catch (e) {
+            console.error("Failed to load diff data", e)
+          } finally {
+            loading.value = false
+          }
+        }
+
+        const fileTree = ref([])
+        const statusFilter = ref('all') // can be 'all', 'added', 'modified', 'deleted'
+
+        const filteredFilesList = computed(() => {
+          if (!analysis.value) return []
+          let files = []
+          
+          if (statusFilter.value === 'all') {
+            files = [...analysis.value.added, ...analysis.value.modified, ...analysis.value.deleted]
+          } else {
+            files = [...analysis.value[statusFilter.value]]
+          }
+          
+          if (searchQuery.value) {
+            const q = searchQuery.value.toLowerCase()
+            files = files.filter(f => f.relativePath.toLowerCase().includes(q))
+          }
+          return files
+        })
+
+        Vue.watch([searchQuery, statusFilter], () => {
+          buildTree()
+        })
+
+        const buildTree = () => {
+          if (!analysis.value) return
+          
+          const files = filteredFilesList.value
+          const root = { type: 'folder', name: 'root', path: '', children: [], expanded: true }
+          
+          files.forEach(file => {
+            const parts = file.relativePath.split('/')
+            let current = root
+            let currentPath = ''
+            parts.forEach((part, i) => {
+              currentPath = currentPath ? `${currentPath}/${part}` : part
+              const isFile = i === parts.length - 1
+              let child = current.children.find(c => c.name === part)
+              if (!child) {
+                child = { name: part, path: currentPath, type: isFile ? 'file' : 'folder' }
+                if (isFile) {
+                  child.file = file
+                } else {
+                  child.children = []
+                  child.expanded = true
+                }
+                current.children.push(child)
+              }
+              current = child
+            })
+          })
+          function sortTree(node) {
+            if (node.children) {
+              node.children.sort((a, b) => {
+                if (a.type !== b.type) return a.type === 'folder' ? -1 : 1
+                return a.name.localeCompare(b.name)
+              })
+              node.children.forEach(sortTree)
+            }
+          }
+          sortTree(root)
+          fileTree.value = root.children
+        }
+
+        const expandAll = () => {
+          const traverse = (nodes) => {
+            nodes.forEach(node => {
+              if (node.type === 'folder') {
+                node.expanded = true
+                if (node.children) traverse(node.children)
+              }
+            })
+          }
+          traverse(fileTree.value)
+        }
+
+        const collapseAll = () => {
+          const traverse = (nodes) => {
+            nodes.forEach(node => {
+              if (node.type === 'folder') {
+                node.expanded = false
+                if (node.children) traverse(node.children)
+              }
+            })
+          }
+          traverse(fileTree.value)
+        }
+
+        const takingCount = computed(() => {
+          return Object.values(decisions.value).filter(val => val === 'base' || val === 'mixed').length
+        })
+
+        const activeTotalFiles = computed(() => {
+          if (!analysis.value) return 0
+          const allCount = analysis.value.added.length + analysis.value.modified.length + analysis.value.deleted.length
+          return allCount - removedFiles.value.length
+        })
+
+        const selectAllBase = () => {
+          filteredFilesList.value.forEach(f => {
+            if (!removedFiles.value.includes(f.relativePath)) {
+              decisions.value[f.relativePath] = 'base'
+            }
+          })
+        }
+
+        const selectAllLocal = () => {
+          filteredFilesList.value.forEach(f => {
+            if (!removedFiles.value.includes(f.relativePath)) {
+              decisions.value[f.relativePath] = 'local'
+            }
+          })
+        }
+
+        const selectAllMixed = () => {
+          filteredFilesList.value.forEach(f => {
+            if (!removedFiles.value.includes(f.relativePath)) {
+              decisions.value[f.relativePath] = 'mixed'
+              // Note: since the mixed editor populates upon tab visit, this correctly flags them as mixed
+              // so they get processed, relying on base fallback if unmodified.
+            }
+          })
+        }
+
+        const setDecision = async (file, choice) => {
+          if (decisions.value[file.relativePath] === choice) {
+            delete decisions.value[file.relativePath]
+            selectedFile.value = file
+            if (choice === 'mixed') await setActiveTab('mixed')
+            else if (choice === 'local') await setActiveTab('local')
+            else if (choice === 'base') await setActiveTab('base')
+          } else {
+            decisions.value[file.relativePath] = choice
+            selectedFile.value = file
+            if (choice === 'mixed') await setActiveTab('mixed')
+            else if (choice === 'local') await setActiveTab('local')
+            else if (choice === 'base') await setActiveTab('base')
+          }
+        }
+
+        const removeFileFromList = (file) => {
+          delete decisions.value[file.relativePath]
+          removedFiles.value.push(file.relativePath)
+          if (selectedFile.value === file) {
+            selectedFile.value = null
+            document.getElementById('diff-render-area').innerHTML = ''
+          }
+        }
+
+        const fallbackCopyTextToClipboard = (text) => {
+          const textArea = document.createElement("textarea");
+          textArea.value = text;
+          textArea.style.top = "0";
+          textArea.style.left = "0";
+          textArea.style.position = "fixed";
+          document.body.appendChild(textArea);
+          textArea.focus();
+          textArea.select();
+          try {
+            document.execCommand('copy');
+          } catch (err) {
+            console.error('Fallback copy failed', err);
+          }
+          document.body.removeChild(textArea);
+        }
+
+        const initCopyButtons = () => {
+             const lines = document.querySelectorAll('.d2h-code-side-line, .d2h-code-line');
+             lines.forEach(line => {
+                 if (line.querySelector('.copy-btn')) return;
+                 const contentSpan = line.querySelector('.d2h-code-line-ctn');
+                 if (!contentSpan) return; 
+
+                 const btn = document.createElement('button');
+                 btn.className = 'copy-btn opacity-0 group-hover:opacity-100 absolute right-1 top-1/2 -translate-y-1/2 p-1 bg-zinc-800 text-zinc-400 hover:text-white rounded border border-zinc-700 transition-opacity z-10 flex items-center justify-center';
+                 btn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>';
+                 
+                 btn.onclick = (e) => {
+                     e.stopPropagation();
+                     if (navigator.clipboard && window.isSecureContext) {
+                         navigator.clipboard.writeText(contentSpan.textContent).catch(() => fallbackCopyTextToClipboard(contentSpan.textContent));
+                     } else {
+                         fallbackCopyTextToClipboard(contentSpan.textContent);
+                     }
+                     btn.classList.add('text-brand', 'border-brand');
+                     setTimeout(() => {
+                         btn.classList.remove('text-brand', 'border-brand');
+                     }, 1000);
+                 };
+                 
+                 line.classList.add('relative', 'group');
+                 line.appendChild(btn);
+             });
+        }
+
+        const drawDiff = async (file) => {
+            await nextTick()
+            const targetElement = document.getElementById('diff-render-area')
+            if (!targetElement || !file.diffText) return
+            targetElement.innerHTML = ''
+            const diff2htmlUi = new Diff2HtmlUI(targetElement, file.diffText, {
+              drawFileList: false,
+              matching: 'lines',
+              outputFormat: 'side-by-side',
+              theme: 'dark'
+            });
+            diff2htmlUi.draw();
+            // Force highlight.js on the created diff elements
+            if (window.hljs) {
+              diff2htmlUi.highlightCode();
+            }
+            initCopyButtons();
+        }
+
+        const setActiveTab = async (tab) => {
+          activeTab.value = tab
+          if (!selectedFile.value) return
+
+          if (tab === 'diff' || tab === 'mixed') {
+             await drawDiff(selectedFile.value)
+          } 
+          if (tab !== 'diff') {
+            await loadFileIntoEditor(tab)
+          }
+        }
+
+        const getLanguageFromPath = (path) => {
+            const ext = path.split('.').pop().toLowerCase()
+            const map = {
+                'ts': 'typescript',
+                'js': 'javascript',
+                'vue': 'html',
+                'html': 'html',
+                'css': 'css',
+                'json': 'json',
+                'md': 'markdown'
+            }
+            return map[ext] || 'plaintext'
+        }
+
+        const loadFileIntoEditor = async (tab) => {
+            loadingEditorContent.value = true
+            try {
+                let content = ''
+                if (tab === 'mixed' && mixedEdits.value[selectedFile.value.relativePath] !== undefined) {
+                    content = mixedEdits.value[selectedFile.value.relativePath]
+                } else {
+                    const source = tab === 'base' || tab === 'mixed' ? 'base' : 'local'
+                    // Fetch from API
+                    let res = await fetch(`/api/file?path=${encodeURIComponent(selectedFile.value.relativePath)}&source=${source}`)
+                    if (!res.ok && tab === 'mixed') {
+                        // Fallback to local if base is missing (e.g., a newly added file)
+                        res = await fetch(`/api/file?path=${encodeURIComponent(selectedFile.value.relativePath)}&source=local`)
+                    }
+
+                    if (!res.ok) {
+                        content = '// Error loading file content OR file is deleted'
+                    } else {
+                        const data = await res.json()
+                        content = data.content
+                    }
+                }
+
+                await initMonaco()
+
+                if (editorInstance) {
+                    editorInstance.dispose()
+                }
+
+                const container = document.getElementById('monaco-target')
+                container.innerHTML = '' // Clear if anything there
+                
+                editorInstance = window.monaco.editor.create(container, {
+                    value: content,
+                    language: getLanguageFromPath(selectedFile.value.relativePath),
+                    theme: 'onedark',
+                    automaticLayout: true,
+                    readOnly: tab === 'base' || tab === 'local',
+                    minimap: { enabled: true, maxColumn: 80 },
+                    fontSize: 13,
+                    fontFamily: '"Roboto Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace',
+                    fontLigatures: false
+                })
+
+                if (tab === 'mixed') {
+                    // Initialize so if the user switches away without typing, we don't lose the base loading
+                    if (mixedEdits.value[selectedFile.value.relativePath] === undefined) {
+                        mixedEdits.value[selectedFile.value.relativePath] = content
+                    }
+                    editorInstance.onDidChangeModelContent(() => {
+                        mixedEdits.value[selectedFile.value.relativePath] = editorInstance.getValue()
+                        decisions.value[selectedFile.value.relativePath] = 'mixed' 
+                    })
+                }
+            } catch (e) {
+                console.error(e)
+            } finally {
+                loadingEditorContent.value = false
+            }
+        }
+
+        const viewFile = async (file) => {
+          selectedFile.value = file
+          await setActiveTab(activeTab.value)
+        }
+
+        const copyFullFile = async (source) => {
+            if (!selectedFile.value) return;
+            try {
+                // Determine actual source based on selection
+                const res = await fetch(`/api/file?path=${encodeURIComponent(selectedFile.value.relativePath)}&source=${source}`)
+                if (!res.ok) {
+                    showToast(`Failed to load ${source} file content.`)
+                    return;
+                }
+                const data = await res.json()
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(data.content).catch(() => fallbackCopyTextToClipboard(data.content))
+                } else {
+                    fallbackCopyTextToClipboard(data.content)
+                }
+                showToast(`Copied full ${source} file to clipboard!`)
+            } catch (e) {
+                console.error('Copy failed:', e)
+                showToast(`Failed to copy, try manually selecting.`)
+            }
+        }
+
+        const submit = async () => {
+          const toSync = Object.keys(decisions.value).filter(k => decisions.value[k] === 'base' || decisions.value[k] === 'mixed')
+
+          try {
+            await fetch('/api/submit', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ selected: toSync, mixedEdits: mixedEdits.value })
+            })
+            submitted.value = true
+            showConfirmModal.value = false
+          } catch(e) {
+            showToast('Failed to submit back to CLI! Check terminal.')
+          }
+        }
+
+        const showConfirmModal = ref(false)
+        const fileStats = computed(() => {
+            const stats = { incoming: 0, mixed: 0, local: 0 }
+            if (!analysis.value) return stats
+            const all = [...analysis.value.added, ...analysis.value.modified, ...analysis.value.deleted]
+            all.forEach(f => {
+                if (removedFiles.value.includes(f.relativePath)) return
+                const dec = decisions.value[f.relativePath]
+                if (dec === 'base') stats.incoming++
+                else if (dec === 'mixed') stats.mixed++
+                else if (dec === 'local' || !dec) stats.local++
+            })
+            return stats
+        })
+
+        const promptSubmit = () => {
+            showConfirmModal.value = true
+        }
+
+        onMounted(() => {
+          fetchAnalysis()
+        })
+
+        return {
+          loading, submitted, fileTree, takingCount, activeTotalFiles,
+          decisions, removedFiles, selectedFile, searchQuery, statusFilter, activeTab, loadingEditorContent, toastMessage,
+          showConfirmModal, fileStats, promptSubmit,
+          viewFile, selectAllBase, selectAllLocal, selectAllMixed, setDecision, removeFileFromList, submit,
+          expandAll, collapseAll, setActiveTab, copyFullFile
+        }
+      }
+    })
+
+    app.component('file-tree-item', FileTreeItem)
+    app.mount('#app')
+  </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "title": "Users",
+  "subtitle": "Manage platform users",
+  "fields": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "role": "Role",
+    "status": "Status",
+    "is_verified": "Verified",
+    "last_login_at": "Last Login",
+    "created_at": "Created At"
+  },
+  "roles": {
+    "admin": "Admin",
+    "editor": "Editor",
+    "viewer": "Viewer",
+    "user": "User"
+  },
+  "statuses": {
+    "active": "Active",
+    "inactive": "Inactive"
+  }
+}

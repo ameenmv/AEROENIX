@@ -1,0 +1,53 @@
+{
+  "title": "Content Editor",
+  "edit_page_content": "Edit Page Content",
+  "saving": "Saving...",
+  "save_changes": "Save Changes",
+  "saved_successfully": "Saved successfully",
+  "published": "Published",
+  "content_html": "Content (HTML)",
+  "last_updated": "Last Updated",
+  "video_url": "Video URL",
+  "image_url": "Image URL",
+  "pages": {
+    "home": "Home Page",
+    "about": "About Us",
+    "services": "Our Services",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions"
+  },
+  "sections": {
+    "hero": "Hero Section",
+    "about": "About Section",
+    "travels": "Travels Section",
+    "podcast": "Podcast Section",
+    "shop": "Shop Section",
+    "services": "Services Section",
+    "clients": "Clients Section",
+    "content": "Content Section",
+    "middle": "Middle Section",
+    "profile": "Profile Section"
+  },
+  "fields": {
+    "line1": "Line 1",
+    "line2": "Line 2",
+    "line3": "Line 3",
+    "heading1": "Heading 1",
+    "heading2": "Heading 2",
+    "heading3": "Heading 3",
+    "description": "Description",
+    "cta_text": "CTA Text",
+    "cta_url": "CTA URL",
+    "title": "Title",
+    "title1": "Title 1",
+    "title2": "Title 2",
+    "title3": "Title 3",
+    "subtitle": "Subtitle",
+    "label": "Label",
+    "heading": "Heading",
+    "section_title": "Section Title",
+    "quote": "Quote",
+    "intro": "Intro",
+    "bio": "Bio"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "title": "المستخدمين",
+  "subtitle": "إدارة مستخدمي المنصة",
+  "fields": {
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "role": "الدور",
+    "status": "الحالة",
+    "is_verified": "موثق",
+    "last_login_at": "آخر تسجيل دخول",
+    "created_at": "تاريخ الإنشاء"
+  },
+  "roles": {
+    "admin": "مدير",
+    "editor": "محرر",
+    "viewer": "مشاهد",
+    "user": "مستخدم"
+  },
+  "statuses": {
+    "active": "نشط",
+    "inactive": "غير نشط"
+  }
+}
