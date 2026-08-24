@@ -135,6 +135,11 @@ router.beforeEach((to, _from, next) => {
     const currentLang = (to.params.lang as string) || savedLocale
     return next({ path: `/${currentLang}/admin/login` })
   }
+
+  if (isAuthRoute && token) {
+    const currentLang = (to.params.lang as string) || savedLocale
+    return next({ path: `/${currentLang}/admin/dashboard` })
+  }
   // Permission guard (optional per-route)
   if (to.meta.permission) {
     const permissions: string[] = JSON.parse(localStorage.getItem('permissions') || '[]')
