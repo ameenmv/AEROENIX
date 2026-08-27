@@ -120,7 +120,7 @@
   "auth.login_title": "تسجيل دخول المشرف",
   "auth.login_subtitle": "أدخل بيانات الدخول للوصول إلى لوحة الإدارة",
   "auth.email_label": "البريد الإلكتروني",
-  "auth.email_placeholder": "مثال admin@seem.com",
+  "auth.email_placeholder": "مثال admin@aeroenix.com",
   "auth.password_label": "كلمة المرور",
   "auth.stay_signed_in": "البقاء مسجل الدخول",
   "auth.forgot_password": "نسيت كلمة المرور؟",

@@ -39,7 +39,7 @@ onMounted(() => {
       <div
         class="neop-logo__dot w-6 h-6 rounded-full bg-primary flex-shrink-0 shadow-lg shadow-primary/30"
       />
-      <span class="neop-logo__text text-2xl font-bold tracking-[0.2em] uppercase text-foreground">
+      <span class="neop-logo__text text-xl font-bold tracking-widest uppercase text-foreground">
         <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
         Aeroenix
       </span>
