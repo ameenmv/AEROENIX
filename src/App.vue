@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { RouterView, useRoute } from 'vue-router'
 import { Toaster } from '@/components/uic/sonner'
 import AdminLayout from './components/layout/AdminLayout.vue'
 import AuthLayout from './components/layout/AuthLayout.vue'
 import BlankLayout from './components/layout/BlankLayout.vue'
+import { useAuthStore } from '@/stores'
 
 const route = useRoute()
 const layout = computed(() => {
@@ -15,6 +16,17 @@ const layout = computed(() => {
   if (route.matched.length === 0)
     return BlankLayout
   return AdminLayout
+})
+
+onMounted(() => {
+  const authStore = useAuthStore()
+  if (authStore.token) {
+    // Refresh user details (and hotels) from the backend on page load
+    authStore.fetchMe().catch(() => {
+      // If fetching fails (e.g. invalid token), logout silently
+      authStore.logout()
+    })
+  }
 })
 </script>
 

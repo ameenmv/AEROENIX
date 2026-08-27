@@ -226,6 +226,13 @@ export const useAuthStore = defineStore('auth', () => {
     syncPermissions(data.permissions || data.user?.permissions || [])
     authStep.value = 'complete'
     clearOtpState()
+
+    // Asynchronously fetch full profile (including hotels) after successful auth
+    if (token.value) {
+      setTimeout(() => {
+        fetchMe().catch(console.error)
+      }, 50)
+    }
   }
 
   /** Clear all OTP-related transient state */
