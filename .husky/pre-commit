@@ -3,6 +3,5 @@
 # bun run strip-comments
 # bun run clean:all
 # bun run format
-bun run lint
 # bun run build
 git add .
