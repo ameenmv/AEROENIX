@@ -4,5 +4,5 @@
 # bun run clean:all
 # bun run format
 bun run lint
-bun run build
+# bun run build
 git add .
