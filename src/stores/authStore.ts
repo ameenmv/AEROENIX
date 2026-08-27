@@ -458,20 +458,13 @@ export const useAuthStore = defineStore('auth', () => {
   // ─── Password Reset Flow ──────────────────────────────────────────────────
 
   /**
-   * Step 1: Request password reset — sends OTP to email/phone.
-   * Returns the OTP challenge token so the caller can pass it via router.
+   * Request password reset — sends a reset link to email.
+   * Returns the success message.
    */
   async function forgotPassword(data: ForgotPasswordPayload): Promise<string> {
     return withLoading(async () => {
       const response = await authService.forgotPassword(data)
-      otpIdentifier.value = data.identifier || data.phone || ''
-      setOtpChallenge({
-        token: response.token,
-        expires_at: response.expires_at,
-        resend_available_at: response.resend_available_at,
-        locked_until: response.locked_until,
-      })
-      return response.token
+      return response.message
     })
   }
 
@@ -637,7 +630,10 @@ export const useAuthStore = defineStore('auth', () => {
   async function logout(): Promise<void> {
     try {
       if (token.value) {
-        await authService.logout()
+        const res = await authService.logout()
+        const { useSonarStore } = await import('@/stores/sonar')
+        const sonar = useSonarStore()
+        sonar.success('Logout Successful', res.message || 'You have been successfully logged out.')
       }
     }
     catch {

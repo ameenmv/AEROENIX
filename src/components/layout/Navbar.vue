@@ -50,7 +50,7 @@ const { toggleBar: toggleA11yBar, prefs: a11yPrefs } = useAccessibility()
 
 async function handleLogout() {
   await authStore.logout()
-  router.push('/')
+  router.push(`/${locale.value}/admin/login`)
 }
 
 function switchLocale(lang: 'en' | 'ar') {

@@ -71,10 +71,9 @@ export const AUTH_ENDPOINTS = {
   OTP_VERIFY: `${BASE}/otp/verify`,
   OTP_RESEND: `${BASE}/otp/resend`,
 
-  // Password Reset (3-step)
-  PASSWORD_FORGOT: `${BASE}/password/forgot`,
-  PASSWORD_VERIFY_OTP: `${BASE}/password/verify-otp`,
-  PASSWORD_RESET: `${BASE}/password/reset`,
+  // Password Reset
+  PASSWORD_FORGOT: `${BASE}/forgot-password`,
+  PASSWORD_RESET: `${BASE}/reset-password`,
 
   // Protected
   ME: `${BASE}/me`,
@@ -215,8 +214,13 @@ export const authService = {
       }
       return direct
     }
-    const res = await api.post<ApiSuccessResponse<LoginResponse>>(AUTH_ENDPOINTS.LOGIN, credentials)
-    return res.data.data
+    const res = await api.post<ApiSuccessResponse<any>>(AUTH_ENDPOINTS.LOGIN, credentials)
+    const data = res.data.data
+    // Map backend 'token' to 'access_token' for direct login response
+    if (data && data.token && !data.requires_otp) {
+      data.access_token = data.token
+    }
+    return data as LoginResponse
   },
 
   // ─── Registration ─────────────────────────────────────────────────────────
@@ -287,25 +291,21 @@ export const authService = {
     return res.data.data
   },
 
-  // ─── Password Reset (3-step flow) ─────────────────────────────────────────
+  // ─── Password Reset ─────────────────────────────────────────
 
   /** POST /auth/password/forgot — initiate password reset (public) */
   async forgotPassword(data: ForgotPasswordPayload): Promise<ForgotPasswordResponse> {
     if (isMock) {
       await mockDelay(null, 400)
       return {
-        message: 'Password reset OTP sent',
-        token: mockUuid(),
-        expires_at: isoFromNow(5),
-        resend_available_at: isoFromNow(1),
-        locked_until: null,
+        message: 'Password reset link sent to your email',
       }
     }
-    const res = await api.post<ApiSuccessResponse<ForgotPasswordResponse>>(
+    const res = await api.post<ApiSuccessResponse<any>>(
       AUTH_ENDPOINTS.PASSWORD_FORGOT,
       data,
     )
-    return res.data.data
+    return { message: res.data.message }
   },
 
   /** POST /auth/password/verify-otp — verify reset OTP (public) */
@@ -323,11 +323,11 @@ export const authService = {
   async resetPassword(data: ResetPasswordPayload): Promise<ResetPasswordResponse> {
     if (isMock)
       return mockDelay({ message: 'Password reset successful' })
-    const res = await api.post<ApiSuccessResponse<ResetPasswordResponse>>(
+    const res = await api.post<ApiSuccessResponse<any>>(
       AUTH_ENDPOINTS.PASSWORD_RESET,
       data,
     )
-    return res.data.data
+    return { message: res.data.message }
   },
 
   // ─── Profile ──────────────────────────────────────────────────────────────
@@ -336,15 +336,21 @@ export const authService = {
   async me(): Promise<AuthUser> {
     if (isMock)
       return mockDelay(MOCK_USER)
-    const res = await api.get<ApiSuccessResponse<AuthUser>>(AUTH_ENDPOINTS.ME)
-    return res.data.data
+    const res = await api.get<ApiSuccessResponse<{ user?: AuthUser; hotels?: any[] }>>(AUTH_ENDPOINTS.ME)
+    const data = res.data.data as any
+    // If backend wraps the user in a `user` key, extract it and merge hotels
+    if (data && data.user) {
+      return { ...data.user, hotels: data.hotels || [] }
+    }
+    return data
   },
 
   /** POST /auth/logout — revoke bearer token (protected) */
-  async logout(): Promise<void> {
+  async logout(): Promise<{ message?: string }> {
     if (isMock)
-      return mockDelay(undefined)
-    await api.post(AUTH_ENDPOINTS.LOGOUT)
+      return mockDelay({ message: 'Logged out successfully' })
+    const res = await api.post<ApiSuccessResponse<any>>(AUTH_ENDPOINTS.LOGOUT)
+    return { message: res.data?.message }
   },
 
   // ─── Change Password ─────────────────────────────────────────────────────

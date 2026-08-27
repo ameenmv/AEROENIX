@@ -249,18 +249,13 @@ export interface OtpResendResponse {
  * POST /auth/password/forgot — request body.
  */
 export interface ForgotPasswordPayload {
-  identifier?: string
-  phone?: string
+  email: string
 }
 /**
  * POST /auth/password/forgot — response.
  */
 export interface ForgotPasswordResponse {
   message: string
-  token: string
-  expires_at: string
-  resend_available_at: string
-  locked_until: string | null
 }
 /**
  * POST /auth/password/verify-otp — request body.
@@ -280,8 +275,8 @@ export interface ResetOtpVerifyResponse {
  * POST /auth/password/reset — request body.
  */
 export interface ResetPasswordPayload {
-  /** The reset_token from verify-otp step */
-  reset_token: string
+  email: string
+  token: string
   password: string
   password_confirmation: string
 }

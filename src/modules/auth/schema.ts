@@ -26,7 +26,7 @@ export function loginSchema(t: TranslateFn) {
 // ── Forgot Password ─────────────────────────────────────────────────────────
 export function forgotPasswordSchema(t: TranslateFn) {
   return z.object({
-    identifier: z
+    email: z
       .string({ required_error: t('auth.email_required', 'Email is required.') })
       .min(1, t('auth.email_required', 'Email is required.'))
       .email(t('auth.email_invalid', 'Please enter a valid email address.')),

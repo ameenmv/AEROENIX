@@ -13,17 +13,19 @@ import { resetPasswordSchema } from '@/modules/auth/schema'
 import { useAuthStore } from '@/stores'
 
 const showPassword = ref(false)
+const showPasswordConfirm = ref(false)
 const resetSuccess = ref(false)
 const { locale, t } = useI18n()
 const authStore = useAuthStore()
 const router = useRouter()
 const route = useRoute()
 
-// Read the reset_token from the route query (passed by OTP verify page)
+// Read the token and email from the route query (passed via magic link)
 const resetToken = computed(() => (route.query.token as string) || '')
+const resetEmail = computed(() => (route.query.email as string) || '')
 
-// Guard: redirect to forgot password if no reset token in route
-if (!resetToken.value) {
+// Guard: redirect to forgot password if no reset token or email in route
+if (!resetToken.value || !resetEmail.value) {
   const lang = (route.params.lang as string) || 'en'
   router.replace({ path: `/${lang}/admin/forgot-password` })
 }
@@ -40,7 +42,8 @@ const form = useForm({
   },
   mutationFn: data =>
     authStore.resetPassword({
-      reset_token: resetToken.value,
+      email: resetEmail.value,
+      token: resetToken.value,
       password: data.password,
       password_confirmation: data.password_confirmation,
     }),
@@ -120,12 +123,22 @@ const [passwordConfirmation] = form.defineField('password_confirmation')
           <InputField
             id="reset-password-confirm"
             v-model="passwordConfirmation"
-            :type="showPassword ? 'text' : 'password'"
+            :type="showPasswordConfirm ? 'text' : 'password'"
             :label="t('auth.confirm_password_label', 'Confirm Password')"
             :placeholder="t('auth.password_placeholder', '••••••••')"
             :error="form.errors.value.password_confirmation"
             size="lg"
-          />
+          >
+            <template #suffix>
+              <button
+                type="button"
+                class="text-muted-foreground opacity-50 hover:opacity-80 transition-opacity focus:outline-none"
+                @click="showPasswordConfirm = !showPasswordConfirm"
+              >
+                <HugeiconsIcon :icon="showPasswordConfirm ? ViewIcon : ViewOffSlashIcon" :size="22" />
+              </button>
+            </template>
+          </InputField>
           <Btn
             type="submit"
             variant="primary"
@@ -165,7 +178,8 @@ const [passwordConfirmation] = form.defineField('password_confirmation')
       <div class="flex justify-center items-center gap-1 px-5 sm:px-12 pb-6">
         <RouterLink
           :to="`/${locale}/admin/login`"
-          class="text-base font-semibold text-foreground hover:underline"
+          class="text-base font-semibold text-foreground hover:underline transition-all"
+          :class="{ 'opacity-50 pointer-events-none': form.isPending.value }"
         >
           {{ t('auth.back_to_login', 'Back to login') }}
         </RouterLink>

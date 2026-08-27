@@ -15,6 +15,7 @@ const authStore = useAuthStore()
 const { otpIdentifier } = storeToRefs(authStore)
 const router = useRouter()
 const route = useRoute()
+const successMessage = ref('')
 
 // ── useForm: Zod validation + mutation + API error mapping ──────────────────
 const form = useForm({
@@ -23,27 +24,21 @@ const form = useForm({
   action: 'custom',
   showNotifications: false,
   initialValues: {
-    identifier: otpIdentifier.value || '',
+    email: otpIdentifier.value || '',
   },
-  mutationFn: data => authStore.forgotPassword({ identifier: data.identifier }),
-  onSuccess: (_otpChallengeToken?: string | void) => {
-    // We navigate to verify, but we need the identifier.
-    // Since we don't have access to the parsed data directly here easily, we use the value from the form
-    const lang = (route.params.lang as string) || 'en'
+  mutationFn: data => authStore.forgotPassword({ email: data.email }),
+  onSuccess: (message?: string | void) => {
+    successMessage.value = typeof message === 'string' 
+      ? message 
+      : t('auth.reset_link_sent', 'A password reset link has been sent to your email.')
+    
     // eslint-disable-next-line ts/no-use-before-define
-    const currentIdentifier = identifier.value
-    router.push({
-      path: `/${lang}/admin/forgot-password/verify`,
-      query: {
-        token: typeof _otpChallengeToken === 'string' ? _otpChallengeToken : undefined,
-        identifier: currentIdentifier,
-      },
-    })
+    email.value = ''
   },
 })
 
 // defineField for proper reactive validation tracking
-const [identifier] = form.defineField('identifier')
+const [email] = form.defineField('email')
 </script>
 
 <template>
@@ -65,6 +60,17 @@ const [identifier] = form.defineField('identifier')
         </CardDescription>
       </CardHeader>
       <CardContent class="!px-5 sm:!px-12 !pb-0">
+        <!-- Success Alert -->
+        <div v-if="successMessage" class="auth-alert auth-alert--success mb-4">
+          <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          {{ successMessage }}
+        </div>
         <!-- Error Alert (only non-field errors) -->
         <div
           v-if="authStore.error && Object.keys(form.errors.value).length === 0"
@@ -79,14 +85,14 @@ const [identifier] = form.defineField('identifier')
           </svg>
           {{ authStore.error }}
         </div>
-        <form class="flex flex-col gap-6" @submit.prevent="form.onSubmit">
+        <form v-if="!successMessage" class="flex flex-col gap-6" @submit.prevent="form.onSubmit">
           <InputField
-            id="forgot-identifier"
-            v-model="identifier"
+            id="forgot-email"
+            v-model="email"
             type="email"
             :label="t('auth.email_label', 'Email')"
             :placeholder="t('auth.email_placeholder', 'e.g admin@neop.com')"
-            :error="form.errors.value.identifier"
+            :error="form.errors.value.email"
             size="lg"
           />
           <Btn
