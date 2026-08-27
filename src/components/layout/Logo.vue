@@ -34,12 +34,12 @@ onMounted(() => {
     class="neop-logo inline-flex items-center"
     :class="{ 'neop-logo--animated': animated, 'neop-logo--visible': mounted }"
   >
-    <img v-if="iconOnly" src="../../../docs/public/image.png" class="w-6 h-6">
+    <div v-if="iconOnly" class="neop-logo__dot w-6 h-6 rounded-full bg-primary flex-shrink-0 shadow-lg shadow-primary/30" />
     <div v-else class="flex items-center gap-3">
       <div
         class="neop-logo__dot w-6 h-6 rounded-full bg-primary flex-shrink-0 shadow-lg shadow-primary/30"
       />
-      <span class="neop-logo__text text-xl font-bold tracking-widest uppercase text-foreground">
+      <span class="neop-logo__text text-xl font-bold tracking-widest uppercase text-primary">
         <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
         Aeroenix
       </span>
