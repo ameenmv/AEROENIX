@@ -4,6 +4,10 @@ import { useAuthStore } from '@/stores'
 import i18n, { DEFAULT_LOCALE, setLocale, SUPPORTED_LOCALES } from '../i18n'
 import { getModuleRoutes } from './modules'
 
+// Auto-import all modules so they register themselves
+import.meta.glob('../modules/**/index.ts', { eager: true })
+import.meta.glob('../modules/*.ts', { eager: true })
+
 const routes = [
   {
     path: 'admin/login',
