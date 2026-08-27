@@ -255,8 +255,9 @@ function openProfileCtx(event: MouseEvent) {
             class="h-8 gap-2 px-2 hover:bg-accent"
             @contextmenu="openProfileCtx"
           >
-            <div class="w-6 h-6 flex items-center justify-center bg-primary rounded-full shrink-0">
-              <HugeiconsIcon :icon="UserCircleIcon" :size="16" class="text-primary-foreground" />
+            <div class="w-6 h-6 flex items-center justify-center bg-primary rounded-full shrink-0 overflow-hidden">
+              <img v-if="authStore.user?.avatar" :src="authStore.user.avatar" alt="Avatar" class="w-full h-full object-cover">
+              <HugeiconsIcon v-else :icon="UserCircleIcon" :size="16" class="text-primary-foreground" />
             </div>
             <span
               class="text-xs font-medium text-foreground hidden sm:inline-block max-w-[100px] truncate"
@@ -269,9 +270,10 @@ function openProfileCtx(event: MouseEvent) {
           <DropdownMenuLabel class="font-normal px-3 py-2">
             <div class="flex items-center gap-2.5">
               <div
-                class="w-8 h-8 flex items-center justify-center bg-primary rounded-full shrink-0"
+                class="w-8 h-8 flex items-center justify-center bg-primary rounded-full shrink-0 overflow-hidden"
               >
-                <HugeiconsIcon :icon="UserCircleIcon" :size="18" class="text-primary-foreground" />
+                <img v-if="authStore.user?.avatar" :src="authStore.user.avatar" alt="Avatar" class="w-full h-full object-cover">
+                <HugeiconsIcon v-else :icon="UserCircleIcon" :size="18" class="text-primary-foreground" />
               </div>
               <div class="flex flex-col min-w-0">
                 <p class="text-sm font-semibold leading-tight truncate">

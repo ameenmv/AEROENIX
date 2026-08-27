@@ -95,20 +95,6 @@ router.beforeEach((to, _from, next) => {
       return next({ path: targetPath })
     }
   }
-  // ── Mock Auth Bypass ──────────────────────────────────────────────────────
-  // When VITE_MOCK_AUTH is enabled, auto-seed localStorage with mock token
-  // and wildcard permissions so the developer can navigate directly to any
-  // admin route without going through the login page first.
-  const isMockAuth = import.meta.env.VITE_MOCK_AUTH === 'true'
-  if (isMockAuth) {
-    if (!localStorage.getItem('auth_token')) {
-      localStorage.setItem('auth_token', 'mock-bearer-token-for-development')
-    }
-    if (!localStorage.getItem('permissions')) {
-      localStorage.setItem('permissions', JSON.stringify(['*']))
-    }
-  }
-
   // Auth guard for admin routes
   const isAdminRoute = to.path.includes('/admin')
   const isAuthRoute
@@ -116,6 +102,31 @@ router.beforeEach((to, _from, next) => {
       || to.path.includes('/admin/forgot-password')
       || to.path.includes('/admin/reset-password')
       || to.path.includes('/admin/otp')
+
+  // ── Mock Auth Bypass ──────────────────────────────────────────────────────
+  // When VITE_MOCK_AUTH is enabled, auto-seed localStorage with mock token
+  // and wildcard permissions so the developer can navigate directly to any
+  // admin route without going through the login page first.
+  const isMockAuth = import.meta.env.VITE_MOCK_AUTH === 'true'
+  if (isMockAuth && !isAuthRoute) {
+    if (!localStorage.getItem('auth_token')) {
+      localStorage.setItem('auth_token', 'mock-bearer-token-for-development')
+    }
+    if (!localStorage.getItem('permissions')) {
+      localStorage.setItem('permissions', JSON.stringify(['*']))
+    }
+    if (!localStorage.getItem('auth_user')) {
+      localStorage.setItem('auth_user', JSON.stringify({
+        id: 1,
+        name: 'Aeroenix Admin',
+        email: 'admin@aeroenix.com',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aeroenix',
+        role: 'super-admin',
+        roles: ['super_admin'],
+        permissions: ['*'],
+      }))
+    }
+  }
 
   let token = localStorage.getItem('auth_token')
 

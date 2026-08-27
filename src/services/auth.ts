@@ -130,15 +130,15 @@ function isoFromNow(minutes: number): string {
 
 const MOCK_USER: AuthUser = {
   id: 1,
-  name: 'Mock Admin',
-  email: 'admin@seen.com',
-  phone: null,
-  avatar: null,
+  name: 'Aeroenix Admin',
+  email: 'admin@aeroenix.com',
+  phone: '+1 (555) 000-0000',
+  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aeroenix',
   role: 'super-admin',
   roles: ['super_admin'],
   status: 'active',
   email_verified_at: '2026-01-01T00:00:00Z',
-  two_factor_enabled: true,
+  two_factor_enabled: false,
   permissions: ['*'],
   created_at: '2026-01-01T00:00:00Z',
 }

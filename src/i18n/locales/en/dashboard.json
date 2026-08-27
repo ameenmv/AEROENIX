@@ -1,0 +1,10 @@
+{
+  "total_flights": "Total Flights",
+  "active_users": "Active Passengers",
+  "revenue": "Total Revenue",
+  "system_health": "System Health",
+  "activity_overview": "Activity Overview",
+  "activity_subtitle": "Daily flight and passenger metrics.",
+  "recent_activity": "Recent Activity",
+  "recent_activity_subtitle": "Latest actions in the system."
+}

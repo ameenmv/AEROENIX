@@ -53,18 +53,16 @@ const [remember] = form.defineField('remember')
 
 <template>
   <AuthLayout>
-    <Card
-      class="w-full max-w-[547px] !rounded-3xl !border-border !shadow-[0_4px_20px_rgba(148,163,184,0.1)]"
-    >
-      <CardHeader class="!px-5 sm:!px-12 !pt-8 !pb-0 text-center">
-        <CardTitle class="!text-[32px] !leading-[48px] font-semibold !text-foreground">
-          {{ t('auth.login_title', 'Super Admin Login') }}
+    <Card class="w-full border-none shadow-none bg-transparent">
+      <CardHeader class="!px-0 !pt-0 !pb-8 text-left">
+        <CardTitle class="!text-[32px] !leading-[1.2] font-bold !text-foreground tracking-tight">
+          {{ t('auth.login_title', 'Sign In') }}
         </CardTitle>
-        <CardDescription class="!text-sm font-medium !text-foreground/80">
-          {{ t('auth.login_subtitle', 'Enter your credentials to access the admin panel') }}
+        <CardDescription class="text-base mt-2 font-medium !text-muted-foreground">
+          {{ t('auth.login_subtitle', 'Welcome back! Please enter your details.') }}
         </CardDescription>
       </CardHeader>
-      <CardContent class="!px-5 sm:!px-12 !pb-0">
+      <CardContent class="!px-0 !pb-0">
         <!-- Error Alert (only non-field errors like "Invalid credentials") -->
         <div
           v-if="authStore.error && Object.keys(form.errors.value).length === 0"
@@ -136,7 +134,7 @@ const [remember] = form.defineField('remember')
           <Btn
             type="submit"
             variant="primary"
-            class="auth-btn-primary w-full"
+            class="auth-btn-primary w-full h-11 text-base shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-200"
             :disabled="form.isPending.value"
           >
             <svg
