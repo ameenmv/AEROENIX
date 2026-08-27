@@ -99,10 +99,9 @@ export const AUTH_ENDPOINTS = {
 
 /**
  * Toggle mock mode for the auth service.
- * Separated from module-level useMock. Controlled via env var VITE_MOCK_AUTH.
- * Set to `true` to bypass API calls and use mock data during development.
+ * Controlled via env var VITE_MOCK_AUTH (defaults to true if not explicitly false).
  */
-const isMock = import.meta.env.VITE_MOCK_AUTH === 'true'
+const isMock = import.meta.env.VITE_MOCK_AUTH !== 'false'
 
 /** Simulates a network delay for mock responses */
 function mockDelay<T>(data: T, ms = 400): Promise<T> {

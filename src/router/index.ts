@@ -107,7 +107,7 @@ router.beforeEach((to, _from, next) => {
   // When VITE_MOCK_AUTH is enabled, auto-seed localStorage with mock token
   // and wildcard permissions so the developer can navigate directly to any
   // admin route without going through the login page first.
-  const isMockAuth = import.meta.env.VITE_MOCK_AUTH === 'true'
+  const isMockAuth = import.meta.env.VITE_MOCK_AUTH !== 'false'
   if (isMockAuth && !isAuthRoute) {
     if (!localStorage.getItem('auth_token')) {
       localStorage.setItem('auth_token', 'mock-bearer-token-for-development')

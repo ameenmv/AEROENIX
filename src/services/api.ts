@@ -130,7 +130,8 @@ api.interceptors.response.use(
     switch (status) {
       // ── 401 Unauthenticated ─────────────────────────────────────────
       case 401: {
-        if (import.meta.env.VITE_MOCK_AUTH === 'true') {
+        // Skip redirect in mock mode
+        if (import.meta.env.VITE_MOCK_AUTH !== 'false') {
           console.warn('[Mock Auth] Ignored 401 Unauthorized from real API.')
           break
         }
