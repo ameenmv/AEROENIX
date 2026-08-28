@@ -494,20 +494,33 @@
 <!-- ═══════════════════════════════════════════════════════════════════════════ -->
 <!-- INBOX (3-column) -->
 <!-- ═══════════════════════════════════════════════════════════════════════════ -->
-<div x-show="tab==='inbox'" x-transition.opacity class="flex h-full" style="display:none">
+<div x-show="tab==='inbox'" x-transition.opacity class="flex h-full" style="display:none" x-data="{
+    activeFilter: 'all',
+    chats: [
+        {name:'Mohamed Ali',msg:'I want to book a room for Friday',time:'2m',ch:'whatsapp',unread:2,status:'bot'},
+        {name:'Fatma Hassan',msg:'Is there availability next weekend?',time:'15m',ch:'messenger',unread:1,status:'human'},
+        {name:'John Smith',msg:'Thank you! See you soon',time:'1h',ch:'instagram',unread:0,status:'resolved'},
+        {name:'Aisha Youssef',msg:'Can you send the location?',time:'3h',ch:'whatsapp',unread:0,status:'bot'}
+    ]
+}">
     <!-- Conversations List -->
     <div class="w-80 border-r border-slate-800/80 flex flex-col h-full shrink-0">
-        <div class="p-4 border-b border-slate-800/50"><div class="glass flex items-center px-3 py-2 rounded-xl"><i class="ph ph-magnifying-glass text-slate-500 mr-2"></i><input type="text" placeholder="Search conversations..." class="bg-transparent border-none outline-none text-white w-full text-sm placeholder:text-slate-600"></div></div>
+        <div class="p-4 border-b border-slate-800/50 space-y-3">
+            <div class="glass flex items-center px-3 py-2 rounded-xl"><i class="ph ph-magnifying-glass text-slate-500 mr-2"></i><input type="text" placeholder="Search conversations..." class="bg-transparent border-none outline-none text-white w-full text-sm placeholder:text-slate-600"></div>
+            <!-- Filters -->
+            <div class="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
+                <button @click="activeFilter='all'" :class="activeFilter==='all' ? 'bg-slate-700 text-white' : 'bg-slate-800/50 text-slate-400 hover:text-white'" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap"><i class="ph ph-chats"></i> All</button>
+                <button @click="activeFilter='whatsapp'" :class="activeFilter==='whatsapp' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800/50 text-slate-400 hover:text-emerald-400 border border-transparent'" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap"><i class="ph ph-whatsapp-logo text-sm"></i> WhatsApp</button>
+                <button @click="activeFilter='messenger'" :class="activeFilter==='messenger' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-slate-800/50 text-slate-400 hover:text-blue-400 border border-transparent'" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap"><i class="ph ph-messenger-logo text-sm"></i> Messenger</button>
+                <button @click="activeFilter='instagram'" :class="activeFilter==='instagram' ? 'bg-pink-500/20 text-pink-400 border border-pink-500/30' : 'bg-slate-800/50 text-slate-400 hover:text-pink-400 border border-transparent'" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap"><i class="ph ph-instagram-logo text-sm"></i> Instagram</button>
+            </div>
+        </div>
         <div class="flex-1 overflow-y-auto">
-            <template x-for="(c,i) in [
-                {name:'Mohamed Ali',msg:'I want to book a room for Friday',time:'2m',ch:'whatsapp',unread:2,status:'bot'},
-                {name:'Fatma Hassan',msg:'Is there availability next weekend?',time:'15m',ch:'messenger',unread:1,status:'human'},
-                {name:'John Smith',msg:'Thank you! See you soon',time:'1h',ch:'instagram',unread:0,status:'resolved'}
-            ]">
-                <div @click="selectedChat=i" :class="selectedChat===i?'bg-primary/10 border-l-2 border-l-primary':'border-l-2 border-l-transparent hover:bg-slate-800/40'" class="px-4 py-3 cursor-pointer transition-colors">
+            <template x-for="(c,i) in chats.filter(chat => activeFilter === 'all' || chat.ch === activeFilter)">
+                <div @click="selectedChat=c.name" :class="selectedChat===c.name?'bg-primary/10 border-l-2 border-l-primary':'border-l-2 border-l-transparent hover:bg-slate-800/40'" class="px-4 py-3 cursor-pointer transition-colors">
                     <div class="flex items-center gap-3">
                         <div class="relative"><div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-sm" x-text="c.name.split(' ').map(w=>w[0]).join('')"></div>
-                            <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center" :class="c.ch==='whatsapp'?'bg-green-500':'c.ch==='messenger'?'bg-blue-500':'bg-pink-500'"><i :class="'ph ph-'+c.ch+'-logo text-[10px] text-white'"></i></div>
+                            <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center" :class="c.ch==='whatsapp'?'bg-green-500':(c.ch==='messenger'?'bg-blue-500':'bg-pink-500')"><i :class="'ph ph-'+c.ch+'-logo text-[10px] text-white'"></i></div>
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex justify-between items-center"><span class="text-sm font-semibold text-white truncate" x-text="c.name"></span><span class="text-[10px] text-slate-500" x-text="c.time"></span></div>
@@ -517,6 +530,10 @@
                     </div>
                 </div>
             </template>
+            <div x-show="chats.filter(chat => activeFilter === 'all' || chat.ch === activeFilter).length === 0" class="p-8 text-center text-slate-500">
+                <i class="ph ph-chats-teardrop text-3xl mb-2 opacity-50 block mx-auto"></i>
+                <div class="text-sm mt-2">No conversations found.</div>
+            </div>
         </div>
     </div>
 
