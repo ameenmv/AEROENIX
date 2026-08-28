@@ -12,7 +12,7 @@
  * ──────────────────────────────────────────────────────────────────────────────
  */
 /** API version prefix — matches backend route aggregator */
-export const API_ENDPOINTS = {
+export const API_ENDPOINTS = { 
   // ── Auth (routes/api/auth.php) ─────────────────────────────────
   AUTH: {
     CONFIG: `/auth/config`,
