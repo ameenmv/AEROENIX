@@ -684,72 +684,91 @@ export const useAuthStore = defineStore('auth', () => {
     return Math.max(0, Math.floor(remaining / 1000))
   }
 
-  // ── Return ──────────────────────────────────────────────────────────────────
-
-  return {
-    // State
-    token,
-    user,
-    authConfig,
-    authStep,
-    otpToken,
-    otpExpiresAt,
-    otpResendAvailableAt,
-    otpLockedUntil,
-    otpMessage,
-    otpIdentifier,
-    resetToken,
-    isLoading,
-    isResending,
-    error,
-    fieldErrors,
-    tokenIssuedAt,
-
-    // Computed
-    isAuthenticated,
-    isBuilderLocked,
-    requiresOtp,
-    requiresTotp,
-    hasUser,
-    sessionTtlMs,
-
-    // Auth flow
-    fetchConfig,
-    login,
-    verifyOtp,
-    resendOtp,
-    register,
-    logout,
-
-    // Password reset
-    forgotPassword,
-    verifyResetOtp,
-    resetPassword,
-
-    // Change password
-    changePassword,
-    verifyChangePassword,
-
-    // 2FA
-    toggle2fa,
-
-    // Social
-    socialRedirect,
-    socialCallback,
-
-    // TOTP
-    setupTotp,
-    confirmTotp,
-    disableTotp,
-
-    // Profile
-    fetchMe,
-
-    // Utilities
-    clearError,
-    resetStep,
-    remainingSessionSeconds,
-    isSessionExpired,
-    startSessionTimer,
-  }
+    // ─── Invitation ─────────────────────────────────────────────────────────────
+    
+    async function acceptInvitation(data: import('@/types/auth').AcceptInvitationPayload): Promise<import('@/types/auth').AcceptInvitationResponse> {
+      return withLoading(async () => {
+        const response = await authService.acceptInvitation(data)
+  
+        // Some guards auto-login after accepting invitation
+        if (response.token || response.user) {
+          completeAuth({
+            token: response.token,
+            user: response.user,
+          })
+        }
+  
+        return response
+      })
+    }
+  
+    // ── Return ──────────────────────────────────────────────────────────────────
+  
+    return {
+      // State
+      token,
+      user,
+      authConfig,
+      authStep,
+      otpToken,
+      otpExpiresAt,
+      otpResendAvailableAt,
+      otpLockedUntil,
+      otpMessage,
+      otpIdentifier,
+      resetToken,
+      isLoading,
+      isResending,
+      error,
+      fieldErrors,
+      tokenIssuedAt,
+  
+      // Computed
+      isAuthenticated,
+      isBuilderLocked,
+      requiresOtp,
+      requiresTotp,
+      hasUser,
+      sessionTtlMs,
+  
+      // Auth flow
+      fetchConfig,
+      login,
+      verifyOtp,
+      resendOtp,
+      register,
+      logout,
+      acceptInvitation,
+  
+      // Password reset
+      forgotPassword,
+      verifyResetOtp,
+      resetPassword,
+  
+      // Change password
+      changePassword,
+      verifyChangePassword,
+  
+      // 2FA
+      toggle2fa,
+  
+      // Social
+      socialRedirect,
+      socialCallback,
+  
+      // TOTP
+      setupTotp,
+      confirmTotp,
+      disableTotp,
+  
+      // Profile
+      fetchMe,
+  
+      // Utilities
+      clearError,
+      resetStep,
+      remainingSessionSeconds,
+      isSessionExpired,
+      startSessionTimer,
+    }
 })

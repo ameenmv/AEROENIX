@@ -394,6 +394,29 @@ export interface SocialCallbackResponse {
   permissions?: string[]
 }
 
+// ── Invitation ──────────────────────────────────────────────────────────────
+
+/**
+ * POST /auth/invitations/accept — request body.
+ */
+export interface AcceptInvitationPayload {
+  token: string
+  name: string
+  password: string
+  password_confirmation: string
+}
+
+/**
+ * POST /auth/invitations/accept — response.
+ */
+export interface AcceptInvitationResponse {
+  message: string
+  /** Auto-login returns user profile */
+  user?: AuthUser
+  /** Note: Currently backend returns the user under data.user, but we might also get token if auto-login emits it, or it relies on cookie */
+  token?: string
+}
+
 // ── Generic Message Response ────────────────────────────────────────────────
 /** Simple { message } response used by many auth endpoints */
 export interface MessageResponse {

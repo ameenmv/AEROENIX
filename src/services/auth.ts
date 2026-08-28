@@ -431,6 +431,25 @@ export const authService = {
     return res.data.data
   },
 
+  // ─── Invitation ───────────────────────────────────────────────────────────
+
+  /** POST /auth/invitations/accept — accept invitation and set password (public) */
+  async acceptInvitation(data: AcceptInvitationPayload): Promise<AcceptInvitationResponse> {
+    if (isMock) {
+      await mockDelay(null, 400)
+      return {
+        message: 'Invitation accepted successfully.',
+        user: MOCK_USER,
+        token: MOCK_TOKEN,
+      }
+    }
+    const res = await api.post<ApiSuccessResponse<AcceptInvitationResponse>>(
+      '/auth/invitations/accept',
+      data,
+    )
+    return res.data.data
+  },
+
   // ─── Social Login ─────────────────────────────────────────────────────────
 
   /** POST /auth/social/{provider}/redirect — get OAuth redirect URL (public) */

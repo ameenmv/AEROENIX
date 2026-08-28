@@ -52,3 +52,26 @@ export function resetPasswordSchema(t: TranslateFn) {
       path: ['password_confirmation'],
     })
 }
+
+// ── Accept Invitation ───────────────────────────────────────────────────────
+export function acceptInvitationSchema(t: TranslateFn) {
+  return z
+    .object({
+      name: z
+        .string({ required_error: t('auth.name_required', 'Name is required.') })
+        .min(2, t('auth.name_min', 'Name must be at least 2 characters.')),
+      password: z
+        .string({ required_error: t('auth.password_required', 'Password is required.') })
+        .min(1, t('auth.password_required', 'Password is required.'))
+        .min(8, t('auth.password_min_reset', 'Password must be at least 8 characters.')),
+      password_confirmation: z
+        .string({
+          required_error: t('auth.confirm_password_required', 'Password confirmation is required.'),
+        })
+        .min(1, t('auth.confirm_password_required', 'Password confirmation is required.')),
+    })
+    .refine(data => data.password === data.password_confirmation, {
+      message: t('auth.passwords_mismatch', 'Passwords do not match.'),
+      path: ['password_confirmation'],
+    })
+}

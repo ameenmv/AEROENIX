@@ -28,6 +28,12 @@ const routes = [
     meta: { layout: 'blank', breadcrumbKey: 'auth.verify_code_title' },
   },
   {
+    path: 'admin/set-password',
+    name: 'admin-set-password',
+    component: () => import('../views/admin/auth/AcceptInvitationView.vue'),
+    meta: { layout: 'blank', breadcrumbKey: 'auth.set_password_title' },
+  },
+  {
     path: 'admin/reset-password',
     name: 'admin-reset-password',
     component: () => import('../views/admin/auth/ResetPasswordView.vue'),
@@ -105,6 +111,7 @@ router.beforeEach((to, _from, next) => {
     = to.path.includes('/admin/login')
       || to.path.includes('/admin/forgot-password')
       || to.path.includes('/admin/reset-password')
+      || to.path.includes('/admin/set-password')
       || to.path.includes('/admin/otp')
 
   // ── Mock Auth Bypass ──────────────────────────────────────────────────────

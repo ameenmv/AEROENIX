@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aeroenix Dashboard — Full Prototype</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#6366f1',
+                        dark: '#0f172a',
+                        darker: '#020617',
+                        card: '#1e293b',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .glass { background: rgba(30,41,59,0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+        .glow-blue { box-shadow: 0 0 20px rgba(59,130,246,0.3); }
+        .glow-green { box-shadow: 0 0 20px rgba(16,185,129,0.3); }
+        .custom-checkbox { appearance:none; width:1.15em; height:1.15em; border:1px solid rgba(148,163,184,0.3); border-radius:0.2em; background:rgba(15,23,42,0.5); display:grid; place-content:center; cursor:pointer; transition:all 0.15s; }
+        .custom-checkbox::before { content:""; width:0.6em; height:0.6em; clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%); transform:scale(0); transition:0.1s transform; background:white; }
+        .custom-checkbox:checked { background:#3b82f6; border-color:#3b82f6; }
+        .custom-checkbox:checked::before { transform:scale(1); }
+        .custom-checkbox:disabled { opacity:0.4; cursor:not-allowed; }
+        .msg-guest { background: rgba(30,41,59,0.9); border: 1px solid rgba(255,255,255,0.05); }
+        .msg-bot { background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(99,102,241,0.15)); border: 1px solid rgba(59,130,246,0.2); }
+        .msg-staff { background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(20,184,166,0.15)); border: 1px solid rgba(16,185,129,0.2); }
+        .kanban-card { transition: transform 0.15s, box-shadow 0.15s; }
+        .kanban-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+        .nav-item { transition: all 0.2s; }
+        .sidebar-collapsed .nav-label { display: none; }
+    </style>
+</head>
+<body class="bg-darker text-slate-300 h-screen overflow-hidden flex antialiased selection:bg-primary/30"
+      x-data="{
+          tab: 'dashboard',
+          modal: null,
+          hotelStep: 1,
+          kbTab: 'all',
+          settingsTab: 'general',
+          profileTab: 'role',
+          selectedChat: 0,
+          inboxFilter: 'all',
+          bookingView: 'list',
+          toast: null,
+          showToast(msg, type='success') {
+              this.toast = { msg, type };
+              setTimeout(() => this.toast = null, 3000);
+          }
+      }">
+
+    <!-- Sidebar -->
+    <aside class="w-[260px] glass border-r border-slate-800/80 flex flex-col h-full relative z-30 shrink-0">
+        <div class="h-[72px] flex items-center px-6 border-b border-slate-800/50">
+            <div class="flex items-center gap-3 text-white font-bold text-lg tracking-wide">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20">
+                    <i class="ph ph-buildings text-white text-lg"></i>
+                </div>
+                AEROENIX
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2 mt-1">Overview</div>
+            <button @click="tab='dashboard'" :class="tab==='dashboard' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 border-transparent hover:bg-slate-800/50'" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-sm font-medium">
+                <i class="ph ph-chart-pie-slice text-lg"></i> Dashboard
+            </button>
+
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2 mt-5">Platform</div>
+            <button @click="tab='hotels'" :class="tab==='hotels'||tab==='create-hotel'||tab==='hotel-detail' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 border-transparent hover:bg-slate-800/50'" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-sm font-medium">
+                <i class="ph ph-buildings text-lg"></i> Hotels
+            </button>
+            <button @click="tab='users'" :class="tab==='users' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 border-transparent hover:bg-slate-800/50'" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-sm font-medium">
+                <i class="ph ph-users text-lg"></i> Users
+            </button>
+            <button @click="tab='permissions'" :class="tab==='permissions' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 border-transparent hover:bg-slate-800/50'" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-sm font-medium">
+                <i class="ph ph-shield-check text-lg"></i> Roles & Permissions
+            </button>
+
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2 mt-5">AI & Chatbot</div>
+            <button @click="tab='kb'" :class="tab==='kb' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 border-transparent hover:bg-slate-800/50'" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-sm font-medium">
+                <i class="ph ph-book-open-text text-lg"></i> Knowledge Base
+            </button>
+            <button @click="tab='channels'" :class="tab==='channels' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 border-transparent hover:bg-slate-800/50'" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-sm font-medium">
+                <i class="ph ph-plugs-connected text-lg"></i> Channels
+            </button>
+            <button @click="tab='inbox'" :class="tab==='inbox' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 border-transparent hover:bg-slate-800/50'" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-sm font-medium relative">
+                <i class="ph ph-chats-circle text-lg"></i> Inbox
+                <span class="absolute right-3 top-2.5 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">3</span>
+            </button>
+
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2 mt-5">Operations</div>
+            <button @click="tab='bookings'" :class="tab==='bookings' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 border-transparent hover:bg-slate-800/50'" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-sm font-medium">
+                <i class="ph ph-calendar-check text-lg"></i> Bookings
+            </button>
+            <button @click="tab='leads'" :class="tab==='leads' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 border-transparent hover:bg-slate-800/50'" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-sm font-medium">
+                <i class="ph ph-target text-lg"></i> Leads
+            </button>
+
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2 mt-5">System</div>
+            <button @click="tab='reports'" :class="tab==='reports' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 border-transparent hover:bg-slate-800/50'" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-sm font-medium">
+                <i class="ph ph-chart-line-up text-lg"></i> Reports
+            </button>
+            <button @click="tab='logs'" :class="tab==='logs' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 border-transparent hover:bg-slate-800/50'" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-sm font-medium">
+                <i class="ph ph-list-dashes text-lg"></i> Activity Logs
+            </button>
+            <button @click="tab='settings'" :class="tab==='settings' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 border-transparent hover:bg-slate-800/50'" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-sm font-medium">
+                <i class="ph ph-gear-six text-lg"></i> Settings
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-slate-800/50">
+            <div class="flex items-center gap-3 px-2">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aeroenix" class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700">
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-semibold text-white truncate">Super Admin</div>
+                    <div class="text-[11px] text-slate-500 truncate">admin@aeroenix.com</div>
+                </div>
+                <button class="text-slate-500 hover:text-white"><i class="ph ph-sign-out text-lg"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-1 overflow-y-auto relative h-full">
+        <div class="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-[-20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-secondary/5 blur-[120px] pointer-events-none"></div>
+
+        <div class="relative z-10 min-h-full" :class="tab === 'inbox' ? '' : 'p-8 max-w-7xl mx-auto'">
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- DASHBOARD -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='dashboard'" x-transition.opacity style="display:none">
+    <h1 class="text-3xl font-bold text-white mb-1">Dashboard</h1>
+    <p class="text-slate-400 mb-8">Overview of Qusoor El Arab Camp performance.</p>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-4 gap-5 mb-8">
+        <div class="glass rounded-2xl p-5 hover:border-primary/20 transition-colors">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center"><i class="ph ph-chats-circle text-xl text-blue-400"></i></div>
+                <span class="text-emerald-400 text-xs font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full">+12%</span>
+            </div>
+            <div class="text-2xl font-bold text-white">1,247</div>
+            <div class="text-xs text-slate-500 mt-1">Total Conversations</div>
+        </div>
+        <div class="glass rounded-2xl p-5 hover:border-primary/20 transition-colors">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center"><i class="ph ph-target text-xl text-amber-400"></i></div>
+                <span class="text-emerald-400 text-xs font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full">+8%</span>
+            </div>
+            <div class="text-2xl font-bold text-white">342</div>
+            <div class="text-xs text-slate-500 mt-1">Active Leads</div>
+        </div>
+        <div class="glass rounded-2xl p-5 hover:border-primary/20 transition-colors">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center"><i class="ph ph-calendar-check text-xl text-emerald-400"></i></div>
+                <span class="text-emerald-400 text-xs font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full">+23%</span>
+            </div>
+            <div class="text-2xl font-bold text-white">89</div>
+            <div class="text-xs text-slate-500 mt-1">Bookings This Month</div>
+        </div>
+        <div class="glass rounded-2xl p-5 hover:border-primary/20 transition-colors">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center"><i class="ph ph-robot text-xl text-purple-400"></i></div>
+            </div>
+            <div class="text-2xl font-bold text-white">87%</div>
+            <div class="text-xs text-slate-500 mt-1">Bot Resolution Rate</div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid grid-cols-3 gap-5 mb-8">
+        <div class="glass rounded-2xl p-6 col-span-2">
+            <h3 class="text-sm font-semibold text-white mb-4">Conversations — Last 7 Days</h3>
+            <div class="flex items-end gap-3 h-40">
+                <div class="flex-1 flex flex-col items-center gap-1"><div class="w-full bg-primary/20 rounded-t-lg" style="height:60%"></div><span class="text-[10px] text-slate-500">Mon</span></div>
+                <div class="flex-1 flex flex-col items-center gap-1"><div class="w-full bg-primary/30 rounded-t-lg" style="height:80%"></div><span class="text-[10px] text-slate-500">Tue</span></div>
+                <div class="flex-1 flex flex-col items-center gap-1"><div class="w-full bg-primary/40 rounded-t-lg" style="height:45%"></div><span class="text-[10px] text-slate-500">Wed</span></div>
+                <div class="flex-1 flex flex-col items-center gap-1"><div class="w-full bg-primary/50 rounded-t-lg" style="height:90%"></div><span class="text-[10px] text-slate-500">Thu</span></div>
+                <div class="flex-1 flex flex-col items-center gap-1"><div class="w-full bg-primary/60 rounded-t-lg" style="height:100%"></div><span class="text-[10px] text-slate-500">Fri</span></div>
+                <div class="flex-1 flex flex-col items-center gap-1"><div class="w-full bg-primary/70 rounded-t-lg" style="height:75%"></div><span class="text-[10px] text-slate-500">Sat</span></div>
+                <div class="flex-1 flex flex-col items-center gap-1"><div class="w-full bg-primary rounded-t-lg" style="height:55%"></div><span class="text-[10px] text-slate-500">Sun</span></div>
+            </div>
+        </div>
+        <div class="glass rounded-2xl p-6">
+            <h3 class="text-sm font-semibold text-white mb-4">Channel Distribution</h3>
+            <div class="flex items-center justify-center h-40">
+                <div class="relative w-32 h-32">
+                    <svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" r="15.9" fill="none" stroke="#1e293b" stroke-width="3"/>
+                        <circle cx="18" cy="18" r="15.9" fill="none" stroke="#22c55e" stroke-width="3" stroke-dasharray="50 100" stroke-linecap="round"/>
+                        <circle cx="18" cy="18" r="15.9" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="30 100" stroke-dashoffset="-50" stroke-linecap="round"/>
+                        <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e879f9" stroke-width="3" stroke-dasharray="20 100" stroke-dashoffset="-80" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="flex justify-center gap-4 text-xs mt-2">
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-green-500"></span>WhatsApp 50%</span>
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-blue-500"></span>Messenger 30%</span>
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-fuchsia-400"></span>Instagram 20%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="glass rounded-2xl p-6">
+        <h3 class="text-sm font-semibold text-white mb-4">Recent Activity</h3>
+        <div class="space-y-3">
+            <div class="flex items-center gap-3 text-sm"><div class="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center"><i class="ph ph-check-circle text-emerald-400"></i></div><span class="text-slate-300">Booking <strong class="text-white">#1042</strong> confirmed by <strong class="text-white">Ahmed</strong></span><span class="ml-auto text-xs text-slate-500">2 min ago</span></div>
+            <div class="flex items-center gap-3 text-sm"><div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center"><i class="ph ph-chats-circle text-blue-400"></i></div><span class="text-slate-300">New conversation from <strong class="text-white">WhatsApp</strong> — Guest asking about room prices</span><span class="ml-auto text-xs text-slate-500">5 min ago</span></div>
+            <div class="flex items-center gap-3 text-sm"><div class="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center"><i class="ph ph-hand-grabbing text-amber-400"></i></div><span class="text-slate-300"><strong class="text-white">Sara</strong> took over conversation with guest <strong class="text-white">Mohamed Ali</strong></span><span class="ml-auto text-xs text-slate-500">12 min ago</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- HOTELS LIST -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='hotels'" x-transition.opacity style="display:none">
+    <div class="flex justify-between items-end mb-8">
+        <div><h1 class="text-3xl font-bold text-white mb-1">Hotels</h1><p class="text-slate-400">Manage all registered properties.</p></div>
+        <button @click="tab='create-hotel'; hotelStep=1" class="bg-white text-darker hover:bg-slate-200 font-semibold py-2.5 px-5 rounded-xl shadow-lg transition-all flex items-center gap-2 text-sm"><i class="ph ph-plus-circle text-lg"></i> Add New Hotel</button>
+    </div>
+    <div class="glass rounded-2xl overflow-hidden">
+        <table class="w-full text-left"><thead><tr class="border-b border-slate-700/50 bg-slate-800/30 text-xs uppercase tracking-wider text-slate-400"><th class="py-4 px-6 font-medium">Hotel</th><th class="py-4 px-6 font-medium">Status</th><th class="py-4 px-6 font-medium">Staff</th><th class="py-4 px-6 font-medium">Conversations</th><th class="py-4 px-6 font-medium text-right">Actions</th></tr></thead>
+        <tbody class="divide-y divide-slate-700/30">
+            <tr class="hover:bg-slate-800/40 transition-colors">
+                <td class="py-4 px-6"><div class="flex items-center gap-4"><div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/20 flex items-center justify-center"><i class="ph ph-tent text-xl text-amber-400"></i></div><div><div class="font-semibold text-white">Qusoor El Arab Camp</div><div class="text-xs text-slate-500">Wadi El Rayan, Fayoum</div></div></div></td>
+                <td class="py-4 px-6"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Active</span></td>
+                <td class="py-4 px-6"><div class="flex items-center gap-1.5 text-slate-300"><i class="ph ph-users text-slate-500"></i>8</div></td>
+                <td class="py-4 px-6 text-slate-300 font-medium">1,247</td>
+                <td class="py-4 px-6 text-right"><button @click="tab='hotel-detail'" class="inline-flex items-center gap-1.5 text-slate-300 hover:text-white bg-slate-800 hover:bg-primary border border-slate-700 hover:border-primary px-3.5 py-1.5 rounded-xl text-sm font-medium transition-all hover:glow-blue group"><i class="ph ph-gear text-sm text-slate-400 group-hover:text-white"></i>Manage</button></td>
+            </tr>
+        </tbody></table>
+    </div>
+</div>
+
+<!-- HOTEL DETAIL -->
+<div x-show="tab==='hotel-detail'" x-transition.opacity style="display:none">
+    <div class="flex items-center gap-4 mb-8">
+        <button @click="tab='hotels'" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-slate-400"><i class="ph ph-arrow-left text-xl"></i></button>
+        <div><h1 class="text-3xl font-bold text-white mb-1">Qusoor El Arab Camp</h1><p class="text-slate-400">Wadi El Rayan, Fayoum · <span class="text-emerald-400">Active</span></p></div>
+    </div>
+    <div class="grid grid-cols-3 gap-5 mb-6">
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500 mb-1">Phone</div><div class="text-white font-medium">+201006101223</div></div>
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500 mb-1">Email</div><div class="text-white font-medium">Sabdelazim@hotmail.co.uk</div></div>
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500 mb-1">Currency</div><div class="text-white font-medium">EGP · USD</div></div>
+    </div>
+    <div class="grid grid-cols-2 gap-5">
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500 mb-1">Check-in / Check-out</div><div class="text-white font-medium">1:00 PM → 11:00 AM</div></div>
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500 mb-1">Languages</div><div class="text-white font-medium">Arabic · English</div></div>
+    </div>
+    <div class="glass rounded-2xl p-5 mt-5">
+        <div class="text-xs text-slate-500 mb-2">Description</div>
+        <div class="text-slate-300 text-sm leading-relaxed">A basic simple camp in the middle of the desert that provides a mix of primitive and modern accommodations, Bedouin food, activities for all ages.</div>
+    </div>
+</div>
+
+<!-- CREATE HOTEL -->
+<div x-show="tab==='create-hotel'" x-transition.opacity style="display:none">
+    <div class="flex items-center gap-4 mb-8">
+        <button @click="tab='hotels'" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-slate-400"><i class="ph ph-arrow-left text-xl"></i></button>
+        <div><h1 class="text-3xl font-bold text-white mb-1">Create New Hotel</h1><p class="text-slate-400">Set up a new property and invite its first admin.</p></div>
+    </div>
+    <div class="flex gap-8">
+        <div class="w-56 shrink-0"><div class="glass rounded-2xl p-5 relative">
+            <div class="absolute left-[35px] top-9 bottom-9 w-0.5 bg-slate-700"></div>
+            <template x-for="(s,i) in [{n:'Basic Info'},{n:'Operations'},{n:'Admin User'}]">
+                <div class="relative z-10 flex items-center gap-3 mb-6 last:mb-0" :class="hotelStep>i?'opacity-100':'opacity-40'">
+                    <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs" :class="hotelStep>i?'bg-primary text-white shadow-[0_0_12px_rgba(59,130,246,0.5)]':'bg-slate-800 text-slate-400 border border-slate-600'" x-text="i+1"></div>
+                    <span class="text-sm font-medium" :class="hotelStep>i?'text-white':'text-slate-400'" x-text="s.n"></span>
+                </div>
+            </template>
+        </div></div>
+        <div class="flex-1 glass rounded-2xl p-8">
+            <div x-show="hotelStep===1"><h2 class="text-lg font-bold text-white mb-5">Basic Information</h2>
+                <div class="grid grid-cols-2 gap-5">
+                    <div class="col-span-2"><label class="block text-xs font-medium text-slate-400 mb-1.5">Hotel Name *</label><input type="text" placeholder="e.g. Qusoor El Arab Camp" class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none focus:border-primary text-sm"></div>
+                    <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Country</label><select class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm appearance-none"><option>Egypt</option><option>UAE</option><option>Saudi Arabia</option></select></div>
+                    <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Currency</label><select class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm appearance-none"><option>EGP</option><option>USD</option></select></div>
+                    <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Phone</label><input type="tel" placeholder="+201006101223" class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm"></div>
+                    <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Email</label><input type="email" placeholder="contact@hotel.com" class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm"></div>
+                    <div class="col-span-2"><label class="block text-xs font-medium text-slate-400 mb-1.5">Address</label><textarea rows="2" placeholder="Full property address..." class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm resize-none"></textarea></div>
+                </div>
+            </div>
+            <div x-show="hotelStep===2" style="display:none"><h2 class="text-lg font-bold text-white mb-5">Operational Info</h2>
+                <div class="grid grid-cols-2 gap-5">
+                    <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Check-in Time</label><input type="time" value="13:00" class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm"></div>
+                    <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Check-out Time</label><input type="time" value="11:00" class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm"></div>
+                    <div class="col-span-2"><label class="block text-xs font-medium text-slate-400 mb-1.5">Timezone</label><select class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm appearance-none"><option>Africa/Cairo (UTC+2)</option></select></div>
+                    <div class="col-span-2"><label class="block text-xs font-medium text-slate-400 mb-1.5">Description</label><textarea rows="3" placeholder="Hotel description..." class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm resize-none"></textarea></div>
+                </div>
+            </div>
+            <div x-show="hotelStep===3" style="display:none"><h2 class="text-lg font-bold text-white mb-2">Initial Admin User</h2><p class="text-slate-400 text-sm mb-5">This user receives an email invitation to set their password.</p>
+                <div class="max-w-md space-y-4">
+                    <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Admin Name *</label><input type="text" placeholder="John Doe" class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm"></div>
+                    <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Admin Email *</label><input type="email" placeholder="admin@hotel.com" class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm"></div>
+                    <div class="bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-start gap-3"><i class="ph ph-info text-primary text-lg mt-0.5"></i><p class="text-sm text-primary/80">Auto-assigned <strong>Hotel Admin</strong> role with full permissions.</p></div>
+                </div>
+            </div>
+            <div class="mt-8 pt-5 border-t border-slate-700/50 flex justify-between">
+                <button x-show="hotelStep>1" @click="hotelStep--" class="px-5 py-2 rounded-xl border border-slate-600 text-slate-300 text-sm font-medium hover:bg-slate-800">Back</button><div x-show="hotelStep===1"></div>
+                <button x-show="hotelStep<3" @click="hotelStep++" class="px-5 py-2 rounded-xl bg-primary text-white text-sm font-medium glow-blue">Continue</button>
+                <button x-show="hotelStep===3" @click="tab='hotels'; showToast('Hotel created successfully!')" class="px-5 py-2 rounded-xl bg-emerald-500 text-white text-sm font-medium glow-green flex items-center gap-2"><i class="ph ph-check-circle"></i>Create Hotel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- USERS -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='users'" x-transition.opacity style="display:none">
+    <div class="flex justify-between items-end mb-8">
+        <div><h1 class="text-3xl font-bold text-white mb-1">Users</h1><p class="text-slate-400">Manage staff for Qusoor El Arab Camp.</p></div>
+        <button @click="modal='invite'" class="bg-primary hover:bg-primary/90 text-white font-semibold py-2.5 px-5 rounded-xl glow-blue transition-all flex items-center gap-2 text-sm"><i class="ph ph-envelope-simple text-lg"></i>Invite User</button>
+    </div>
+    <div class="glass rounded-2xl overflow-hidden">
+        <table class="w-full text-left"><thead><tr class="border-b border-slate-700/50 bg-slate-800/30 text-xs uppercase tracking-wider text-slate-400"><th class="py-3 px-6 font-medium">User</th><th class="py-3 px-6 font-medium">Role</th><th class="py-3 px-6 font-medium">Status</th><th class="py-3 px-6 font-medium">Last Active</th><th class="py-3 px-6 font-medium text-right">Actions</th></tr></thead>
+        <tbody class="divide-y divide-slate-700/30">
+            <tr class="hover:bg-slate-800/40"><td class="py-3 px-6"><div class="flex items-center gap-3"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed" class="w-9 h-9 rounded-full bg-slate-700"><div><div class="font-semibold text-white text-sm">Ahmed Hassan</div><div class="text-xs text-slate-500">ahmed@qusoor.com</div></div></div></td><td class="py-3 px-6"><span class="px-2 py-0.5 rounded text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20">Hotel Admin</span></td><td class="py-3 px-6"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs bg-emerald-500/10 text-emerald-400"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Active</span></td><td class="py-3 px-6 text-sm text-slate-400">2 hours ago</td><td class="py-3 px-6 text-right"><button @click="tab='profile'" class="text-slate-400 hover:text-white p-1.5"><i class="ph ph-pencil-simple"></i></button><button class="text-slate-400 hover:text-red-400 p-1.5"><i class="ph ph-prohibit"></i></button></td></tr>
+            <tr class="hover:bg-slate-800/40"><td class="py-3 px-6"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 font-bold text-xs">SM</div><div><div class="font-semibold text-white text-sm">Sara Mohamed</div><div class="text-xs text-slate-500">sara@qusoor.com</div></div></div></td><td class="py-3 px-6"><span class="px-2 py-0.5 rounded text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">Reservation</span></td><td class="py-3 px-6"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs bg-emerald-500/10 text-emerald-400"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Active</span></td><td class="py-3 px-6 text-sm text-slate-400">5 min ago</td><td class="py-3 px-6 text-right"><button class="text-slate-400 hover:text-white p-1.5"><i class="ph ph-pencil-simple"></i></button><button class="text-slate-400 hover:text-red-400 p-1.5"><i class="ph ph-prohibit"></i></button></td></tr>
+            <tr class="hover:bg-slate-800/40"><td class="py-3 px-6"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 font-bold text-xs">YK</div><div><div class="font-semibold text-white text-sm">Youssef Khaled</div><div class="text-xs text-slate-500">youssef@qusoor.com</div></div></div></td><td class="py-3 px-6"><span class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Reception</span></td><td class="py-3 px-6"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs bg-amber-500/10 text-amber-400"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>Invited</span></td><td class="py-3 px-6 text-sm text-slate-400">—</td><td class="py-3 px-6 text-right"><button @click="showToast('Invitation resent!')" class="text-primary text-sm font-medium mr-2">Resend</button><button class="text-slate-400 hover:text-white p-1.5"><i class="ph ph-pencil-simple"></i></button></td></tr>
+        </tbody></table>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- ROLES & PERMISSIONS -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='permissions'" x-transition.opacity style="display:none">
+    <div class="flex justify-between items-end mb-8">
+        <div><h1 class="text-3xl font-bold text-white mb-1">Roles & Permissions</h1><p class="text-slate-400">Granular access control matrix.</p></div>
+        <div class="flex items-center gap-4">
+            <span class="text-xs text-slate-500"><i class="ph ph-info mr-1"></i>Super Admin can toggle permissions instantly</span>
+            <button @click="tab='create-role'" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-semibold py-2.5 px-5 rounded-xl text-sm flex items-center gap-2 transition-all"><i class="ph ph-plus"></i>Custom Role</button>
+        </div>
+    </div>
+    <div class="glass rounded-2xl overflow-hidden">
+        <div class="grid grid-cols-5 bg-slate-800/80 border-b border-slate-700 px-6 py-4 sticky top-0 z-10"><div class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center">Module</div>
+            <div class="text-center"><span class="px-2.5 py-1 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg text-xs font-semibold">Super Admin</span></div>
+            <div class="text-center"><span class="px-2.5 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-lg text-xs font-semibold">Hotel Admin</span></div>
+            <div class="text-center"><span class="px-2.5 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg text-xs font-semibold">Reservation</span></div>
+            <div class="text-center"><span class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-semibold">Reception</span></div>
+        </div>
+        <div class="max-h-[55vh] overflow-y-auto">
+            <template x-for="group in [
+                {label:'Core',icon:'buildings',textColor:'text-primary',rows:[{name:'Hotel Management',desc:'hotel.manage',c:[1,1,0,0]},{name:'Users & Invites',desc:'users.manage',c:[1,1,0,0]}]},
+                {label:'Bookings',icon:'calendar-check',textColor:'text-amber-500',rows:[{name:'View Bookings',desc:'bookings.view',c:[1,1,1,1]},{name:'Confirm / Reject',desc:'bookings.confirm',c:[1,1,1,0]}]},
+                {label:'Knowledge Base',icon:'book-open-text',textColor:'text-cyan-400',rows:[{name:'Edit Articles',desc:'faq.edit',c:[1,1,0,0]},{name:'Approve Articles',desc:'faq.approve',c:[1,1,0,0]}]},
+                {label:'Inbox',icon:'chats-circle',textColor:'text-pink-500',rows:[{name:'View & Reply',desc:'inbox.view',c:[1,1,1,1]},{name:'Takeover',desc:'inbox.takeover',c:[1,1,1,1]}]},
+                {label:'Leads',icon:'target',textColor:'text-orange-400',rows:[{name:'View / Manage',desc:'leads.manage',c:[1,1,1,0]}]},
+                {label:'Reports',icon:'chart-line-up',textColor:'text-violet-400',rows:[{name:'View Reports',desc:'reports.view',c:[1,1,1,0]},{name:'Export CSV',desc:'reports.export',c:[1,1,0,0]}]},
+                {label:'System',icon:'gear-six',textColor:'text-slate-400',rows:[{name:'Activity Logs',desc:'logs.view',c:[1,1,0,0]},{name:'Settings',desc:'settings.manage',c:[1,1,0,0]}]}
+            ]">
+                <div>
+                    <div class="bg-slate-900/30 px-6 py-2 border-b border-slate-800/50"><span class="text-[10px] font-bold uppercase tracking-widest flex items-center gap-2" :class="group.textColor"><i :class="'ph ph-'+group.icon+' text-sm'"></i><span x-text="group.label"></span></span></div>
+                    <template x-for="row in group.rows">
+                        <div class="grid grid-cols-5 px-6 py-3 border-b border-slate-800/40 hover:bg-slate-800/20 items-center">
+                            <div><div class="text-sm font-medium text-slate-200" x-text="row.name"></div><div class="text-[11px] text-slate-500" x-text="row.desc"></div></div>
+                            <template x-for="(v,ci) in row.c">
+                                <div class="flex justify-center">
+                                    <input type="checkbox" class="custom-checkbox" :checked="v===1" @change="showToast('Permission updated')">
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- CREATE CUSTOM ROLE -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='create-role'" x-transition.opacity style="display:none">
+    <div class="flex items-center gap-4 mb-8">
+        <button @click="tab='permissions'" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-slate-400"><i class="ph ph-arrow-left text-xl"></i></button>
+        <div><h1 class="text-3xl font-bold text-white mb-1">Create Custom Role</h1><p class="text-slate-400">Define a new role and assign its specific permissions.</p></div>
+    </div>
+    
+    <div class="glass rounded-2xl p-8 mb-6">
+        <h2 class="text-lg font-bold text-white mb-5">Role Details</h2>
+        <div class="grid grid-cols-2 gap-5 max-w-2xl">
+            <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Role Name *</label><input type="text" placeholder="e.g. Night Shift Manager" class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm focus:border-primary"></div>
+            <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Description</label><input type="text" placeholder="Brief description..." class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm focus:border-primary"></div>
+        </div>
+    </div>
+
+    <div class="glass rounded-2xl p-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-lg font-bold text-white">Assign Permissions</h2>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-6">
+            <template x-for="group in [
+                {label:'Core',icon:'buildings',textColor:'text-primary',rows:[{name:'Hotel Management',desc:'hotel.manage'},{name:'Users & Invites',desc:'users.manage'}]},
+                {label:'Bookings',icon:'calendar-check',textColor:'text-amber-500',rows:[{name:'View Bookings',desc:'bookings.view'},{name:'Confirm / Reject',desc:'bookings.confirm'}]},
+                {label:'Knowledge Base',icon:'book-open-text',textColor:'text-cyan-400',rows:[{name:'Edit Articles',desc:'faq.edit'},{name:'Approve Articles',desc:'faq.approve'}]},
+                {label:'Inbox',icon:'chats-circle',textColor:'text-pink-500',rows:[{name:'View & Reply',desc:'inbox.view'},{name:'Takeover',desc:'inbox.takeover'}]},
+                {label:'Leads',icon:'target',textColor:'text-orange-400',rows:[{name:'View / Manage',desc:'leads.manage'}]},
+                {label:'Reports',icon:'chart-line-up',textColor:'text-violet-400',rows:[{name:'View Reports',desc:'reports.view'},{name:'Export CSV',desc:'reports.export'}]},
+                {label:'System',icon:'gear-six',textColor:'text-slate-400',rows:[{name:'Activity Logs',desc:'logs.view'},{name:'Settings',desc:'settings.manage'}]}
+            ]">
+                <div class="bg-slate-900/30 rounded-xl border border-slate-800/50 overflow-hidden h-fit">
+                    <div class="bg-slate-800/50 px-4 py-3 border-b border-slate-800/50 flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-widest flex items-center gap-2" :class="group.textColor"><i :class="'ph ph-'+group.icon+' text-lg'"></i><span x-text="group.label"></span></span>
+                    </div>
+                    <div class="p-2">
+                        <template x-for="row in group.rows">
+                            <label class="flex items-center justify-between px-3 py-2.5 hover:bg-slate-800/40 rounded-lg cursor-pointer transition-colors">
+                                <div><div class="text-sm font-medium text-slate-200" x-text="row.name"></div><div class="text-[10px] text-slate-500" x-text="row.desc"></div></div>
+                                <input type="checkbox" class="custom-checkbox">
+                            </label>
+                        </template>
+                    </div>
+                </div>
+            </template>
+        </div>
+        
+        <div class="mt-8 pt-6 border-t border-slate-700/50 flex justify-end gap-4">
+            <button @click="tab='permissions'" class="px-6 py-2.5 rounded-xl border border-slate-600 text-slate-300 text-sm font-medium hover:bg-slate-800 transition-colors">Cancel</button>
+            <button @click="tab='permissions'; showToast('Custom role created successfully!')" class="px-6 py-2.5 rounded-xl bg-primary text-white text-sm font-medium glow-blue transition-colors flex items-center gap-2"><i class="ph ph-check-circle text-lg"></i> Create Role</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- KNOWLEDGE BASE -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='kb'" x-transition.opacity style="display:none">
+    <div class="flex justify-between items-end mb-6">
+        <div><h1 class="text-3xl font-bold text-white mb-1">Knowledge Base</h1><p class="text-slate-400">Manage FAQ and AI training data.</p></div>
+        <button @click="modal='kb-create'" class="bg-primary text-white font-semibold py-2.5 px-5 rounded-xl glow-blue text-sm flex items-center gap-2"><i class="ph ph-plus-circle text-lg"></i>Add Article</button>
+    </div>
+    <div class="flex gap-3 mb-6">
+        <button @click="kbTab='all'" :class="kbTab==='all'?'bg-primary/10 text-primary border-primary/20':'bg-slate-800/50 text-slate-400 border-transparent'" class="px-4 py-2 rounded-xl border text-sm font-medium">All (28)</button>
+        <button @click="kbTab='approved'" :class="kbTab==='approved'?'bg-emerald-500/10 text-emerald-400 border-emerald-500/20':'bg-slate-800/50 text-slate-400 border-transparent'" class="px-4 py-2 rounded-xl border text-sm font-medium">Approved (22)</button>
+        <button @click="kbTab='pending'" :class="kbTab==='pending'?'bg-amber-500/10 text-amber-400 border-amber-500/20':'bg-slate-800/50 text-slate-400 border-transparent'" class="px-4 py-2 rounded-xl border text-sm font-medium">Pending (4)</button>
+        <button @click="kbTab='ai'" :class="kbTab==='ai'?'bg-purple-500/10 text-purple-400 border-purple-500/20':'bg-slate-800/50 text-slate-400 border-transparent'" class="px-4 py-2 rounded-xl border text-sm font-medium"><i class="ph ph-sparkle mr-1"></i>AI Suggested (2)</button>
+    </div>
+    <div class="glass rounded-2xl overflow-hidden">
+        <table class="w-full text-left"><thead><tr class="border-b border-slate-700/50 bg-slate-800/30 text-xs uppercase tracking-wider text-slate-400"><th class="py-3 px-6 font-medium">Question</th><th class="py-3 px-6 font-medium">Category</th><th class="py-3 px-6 font-medium">Status</th><th class="py-3 px-6 font-medium">Lang</th><th class="py-3 px-6 font-medium text-right">Actions</th></tr></thead>
+        <tbody class="divide-y divide-slate-700/30">
+            <tr class="hover:bg-slate-800/40"><td class="py-3 px-6 text-sm text-white max-w-xs truncate">Where are you located?</td><td class="py-3 px-6 text-xs text-slate-400">General</td><td class="py-3 px-6"><span class="px-2 py-0.5 rounded text-xs bg-emerald-500/10 text-emerald-400">Approved</span></td><td class="py-3 px-6 text-xs">EN</td><td class="py-3 px-6 text-right"><button class="text-slate-400 hover:text-white p-1.5"><i class="ph ph-pencil-simple"></i></button></td></tr>
+            <tr class="hover:bg-slate-800/40"><td class="py-3 px-6 text-sm text-white max-w-xs truncate">Do you provide food?</td><td class="py-3 px-6 text-xs text-slate-400">Food & Dining</td><td class="py-3 px-6"><span class="px-2 py-0.5 rounded text-xs bg-emerald-500/10 text-emerald-400">Approved</span></td><td class="py-3 px-6 text-xs">EN</td><td class="py-3 px-6 text-right"><button class="text-slate-400 hover:text-white p-1.5"><i class="ph ph-pencil-simple"></i></button></td></tr>
+            <tr class="hover:bg-slate-800/40 bg-amber-500/5"><td class="py-3 px-6 text-sm text-white max-w-xs truncate">Can we do BBQ in the camp?</td><td class="py-3 px-6 text-xs text-slate-400">Policies</td><td class="py-3 px-6"><span class="px-2 py-0.5 rounded text-xs bg-amber-500/10 text-amber-400">Pending</span></td><td class="py-3 px-6 text-xs">EN</td><td class="py-3 px-6 text-right"><button @click="showToast('Article approved!')" class="text-emerald-400 hover:text-emerald-300 p-1.5"><i class="ph ph-check-circle text-lg"></i></button><button class="text-red-400 hover:text-red-300 p-1.5 ml-1"><i class="ph ph-x-circle text-lg"></i></button></td></tr>
+        </tbody></table>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- CHANNELS -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='channels'" x-transition.opacity style="display:none">
+    <h1 class="text-3xl font-bold text-white mb-1">Channels</h1><p class="text-slate-400 mb-8">Connect messaging platforms to your hotel chatbot.</p>
+    <div class="grid grid-cols-3 gap-5">
+        <div class="glass rounded-2xl p-6 hover:border-emerald-500/20 transition-colors group cursor-pointer">
+            <div class="flex items-center gap-3 mb-4"><div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center"><i class="ph ph-whatsapp-logo text-2xl text-green-400"></i></div><div><div class="text-white font-semibold">WhatsApp Business</div><div class="text-xs text-slate-500">+201006101223</div></div></div>
+            <div class="flex items-center justify-between"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs bg-emerald-500/10 text-emerald-400"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Connected</span><span class="text-xs text-slate-500">1.2K msgs/mo</span></div>
+        </div>
+        <div class="glass rounded-2xl p-6 hover:border-blue-500/20 transition-colors group cursor-pointer">
+            <div class="flex items-center gap-3 mb-4"><div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center"><i class="ph ph-messenger-logo text-2xl text-blue-400"></i></div><div><div class="text-white font-semibold">Facebook Messenger</div><div class="text-xs text-slate-500">Qusoor El Arab</div></div></div>
+            <div class="flex items-center justify-between"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs bg-emerald-500/10 text-emerald-400"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Connected</span><span class="text-xs text-slate-500">820 msgs/mo</span></div>
+        </div>
+        <div @click="modal='channel-setup'" class="glass rounded-2xl p-6 hover:border-pink-500/20 transition-colors group cursor-pointer border-dashed">
+            <div class="flex items-center gap-3 mb-4"><div class="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center"><i class="ph ph-instagram-logo text-2xl text-pink-400"></i></div><div><div class="text-white font-semibold">Instagram DM</div><div class="text-xs text-slate-500">@qusoor_el_arab</div></div></div>
+            <div class="flex items-center justify-between"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs bg-slate-500/10 text-slate-400"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Not Connected</span><button class="text-primary text-xs font-medium">Setup →</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- INBOX (3-column) -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='inbox'" x-transition.opacity class="flex h-full" style="display:none">
+    <!-- Conversations List -->
+    <div class="w-80 border-r border-slate-800/80 flex flex-col h-full shrink-0">
+        <div class="p-4 border-b border-slate-800/50"><div class="glass flex items-center px-3 py-2 rounded-xl"><i class="ph ph-magnifying-glass text-slate-500 mr-2"></i><input type="text" placeholder="Search conversations..." class="bg-transparent border-none outline-none text-white w-full text-sm placeholder:text-slate-600"></div></div>
+        <div class="flex-1 overflow-y-auto">
+            <template x-for="(c,i) in [
+                {name:'Mohamed Ali',msg:'I want to book a room for Friday',time:'2m',ch:'whatsapp',unread:2,status:'bot'},
+                {name:'Fatma Hassan',msg:'Is there availability next weekend?',time:'15m',ch:'messenger',unread:1,status:'human'},
+                {name:'John Smith',msg:'Thank you! See you soon',time:'1h',ch:'instagram',unread:0,status:'resolved'}
+            ]">
+                <div @click="selectedChat=i" :class="selectedChat===i?'bg-primary/10 border-l-2 border-l-primary':'border-l-2 border-l-transparent hover:bg-slate-800/40'" class="px-4 py-3 cursor-pointer transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="relative"><div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-sm" x-text="c.name.split(' ').map(w=>w[0]).join('')"></div>
+                            <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center" :class="c.ch==='whatsapp'?'bg-green-500':'c.ch==='messenger'?'bg-blue-500':'bg-pink-500'"><i :class="'ph ph-'+c.ch+'-logo text-[10px] text-white'"></i></div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-center"><span class="text-sm font-semibold text-white truncate" x-text="c.name"></span><span class="text-[10px] text-slate-500" x-text="c.time"></span></div>
+                            <div class="text-xs text-slate-400 truncate" x-text="c.msg"></div>
+                        </div>
+                        <div x-show="c.unread" class="w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center" x-text="c.unread"></div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- Chat Panel -->
+    <div class="flex-1 flex flex-col h-full">
+        <!-- Chat Header -->
+        <div class="h-16 border-b border-slate-800/50 flex items-center justify-between px-6">
+            <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-sm">MA</div><div><div class="text-sm font-semibold text-white">Mohamed Ali</div><div class="text-xs text-slate-500">WhatsApp · Bot handling</div></div></div>
+            <div class="flex items-center gap-2">
+                <button @click="showToast('You took over this conversation','success')" class="px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold hover:bg-amber-500/20 flex items-center gap-1.5"><i class="ph ph-hand-grabbing"></i>Take Over</button>
+                <button class="text-slate-400 hover:text-white p-2"><i class="ph ph-dots-three-outline text-lg"></i></button>
+            </div>
+        </div>
+        <!-- Messages -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-4">
+            <div class="flex justify-start"><div class="msg-guest rounded-2xl rounded-tl-md px-4 py-3 max-w-md"><p class="text-sm text-slate-200">مرحبا، عايز أحجز أوضة يوم الجمعة الجاي لشخصين</p><span class="text-[10px] text-slate-500 mt-1 block">10:32 AM</span></div></div>
+            <div class="flex justify-end"><div class="msg-bot rounded-2xl rounded-tr-md px-4 py-3 max-w-md"><div class="flex items-center gap-1.5 mb-1"><i class="ph ph-robot text-xs text-primary"></i><span class="text-[10px] text-primary font-semibold">Bot</span></div><p class="text-sm text-slate-200">أهلاً وسهلاً! 🏕️ عندنا أوض Double متاحة يوم الجمعة بسعر 3,000 جنيه لليلة. هل تحب أحجزلك؟</p><span class="text-[10px] text-slate-500 mt-1 block">10:32 AM</span></div></div>
+            <div class="flex justify-start"><div class="msg-guest rounded-2xl rounded-tl-md px-4 py-3 max-w-md"><p class="text-sm text-slate-200">أيوا تمام، محتاج أعرف الأول ايه اللي included في السعر</p><span class="text-[10px] text-slate-500 mt-1 block">10:33 AM</span></div></div>
+            <div class="flex justify-end"><div class="msg-bot rounded-2xl rounded-tr-md px-4 py-3 max-w-md"><div class="flex items-center gap-1.5 mb-1"><i class="ph ph-robot text-xs text-primary"></i><span class="text-[10px] text-primary font-semibold">Bot</span></div><p class="text-sm text-slate-200">السعر شامل الفطار وكل الأنشطة المجانية زي sandboarding والـ hiking. الغداء والعشاء بيتطلبوا separately. عايز تكمل الحجز؟ 😊</p><span class="text-[10px] text-slate-500 mt-1 block">10:33 AM</span></div></div>
+        </div>
+        <!-- Input -->
+        <div class="border-t border-slate-800/50 p-4">
+            <div class="glass flex items-center gap-3 px-4 py-3 rounded-2xl">
+                <button class="text-slate-400 hover:text-white"><i class="ph ph-paperclip text-lg"></i></button>
+                <input type="text" placeholder="Type a message..." class="bg-transparent flex-1 outline-none text-white text-sm placeholder:text-slate-500">
+                <button class="w-9 h-9 rounded-xl bg-primary text-white flex items-center justify-center hover:bg-primary/90"><i class="ph ph-paper-plane-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guest Sidebar -->
+    <div class="w-72 border-l border-slate-800/80 overflow-y-auto p-5 shrink-0">
+        <div class="text-center mb-5"><div class="w-16 h-16 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold text-xl mx-auto mb-3">MA</div><div class="text-white font-semibold">Mohamed Ali</div><div class="text-xs text-slate-500">+201234567890</div></div>
+        <div class="space-y-4">
+            <div class="bg-slate-800/50 rounded-xl p-3"><div class="text-[10px] text-slate-500 uppercase font-bold mb-2">Lead Score</div><span class="px-2 py-0.5 rounded text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/20">🔥 Hot</span></div>
+            <div class="bg-slate-800/50 rounded-xl p-3"><div class="text-[10px] text-slate-500 uppercase font-bold mb-2">Stats</div><div class="text-xs text-slate-300 space-y-1"><div class="flex justify-between"><span>Conversations</span><span class="text-white font-medium">3</span></div><div class="flex justify-between"><span>Bookings</span><span class="text-white font-medium">1</span></div><div class="flex justify-between"><span>First Contact</span><span class="text-white font-medium">Aug 15</span></div></div></div>
+            <button @click="showToast('Lead converted to booking!')" class="w-full py-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold hover:bg-emerald-500/20">Convert to Booking</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- BOOKINGS -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='bookings'" x-transition.opacity style="display:none">
+    <div class="flex justify-between items-end mb-8">
+        <div><h1 class="text-3xl font-bold text-white mb-1">Bookings</h1><p class="text-slate-400">Manage guest reservations.</p></div>
+        <div class="flex gap-2">
+            <button @click="bookingView='list'" :class="bookingView==='list'?'bg-primary/10 text-primary':'bg-slate-800 text-slate-400'" class="px-3 py-2 rounded-lg text-sm"><i class="ph ph-list"></i></button>
+            <button @click="bookingView='calendar'" :class="bookingView==='calendar'?'bg-primary/10 text-primary':'bg-slate-800 text-slate-400'" class="px-3 py-2 rounded-lg text-sm"><i class="ph ph-calendar-blank"></i></button>
+        </div>
+    </div>
+    <div class="glass rounded-2xl overflow-hidden">
+        <table class="w-full text-left"><thead><tr class="border-b border-slate-700/50 bg-slate-800/30 text-xs uppercase tracking-wider text-slate-400"><th class="py-3 px-6 font-medium">Guest</th><th class="py-3 px-6 font-medium">Room</th><th class="py-3 px-6 font-medium">Check-in</th><th class="py-3 px-6 font-medium">Check-out</th><th class="py-3 px-6 font-medium">Price</th><th class="py-3 px-6 font-medium">Status</th><th class="py-3 px-6 font-medium text-right">Actions</th></tr></thead>
+        <tbody class="divide-y divide-slate-700/30">
+            <tr class="hover:bg-slate-800/40"><td class="py-3 px-6 text-sm text-white font-medium">Mohamed Ali</td><td class="py-3 px-6 text-sm text-slate-300">Double Room</td><td class="py-3 px-6 text-sm text-slate-300">Sep 5</td><td class="py-3 px-6 text-sm text-slate-300">Sep 6</td><td class="py-3 px-6 text-sm text-white font-medium">EGP 3,000</td><td class="py-3 px-6"><span class="px-2 py-0.5 rounded text-xs bg-amber-500/10 text-amber-400">Pending</span></td><td class="py-3 px-6 text-right"><button @click="showToast('Booking confirmed!')" class="text-emerald-400 hover:text-emerald-300 p-1.5"><i class="ph ph-check-circle text-lg"></i></button><button class="text-red-400 hover:text-red-300 p-1.5"><i class="ph ph-x-circle text-lg"></i></button></td></tr>
+            <tr class="hover:bg-slate-800/40"><td class="py-3 px-6 text-sm text-white font-medium">Fatma Hassan</td><td class="py-3 px-6 text-sm text-slate-300">Qusoor Tent</td><td class="py-3 px-6 text-sm text-slate-300">Sep 12</td><td class="py-3 px-6 text-sm text-slate-300">Sep 13</td><td class="py-3 px-6 text-sm text-white font-medium">EGP 2,000</td><td class="py-3 px-6"><span class="px-2 py-0.5 rounded text-xs bg-emerald-500/10 text-emerald-400">Confirmed</span></td><td class="py-3 px-6 text-right"><button class="text-slate-400 hover:text-white p-1.5"><i class="ph ph-eye"></i></button></td></tr>
+            <tr class="hover:bg-slate-800/40"><td class="py-3 px-6 text-sm text-white font-medium">John Smith</td><td class="py-3 px-6 text-sm text-slate-300">Triple Room</td><td class="py-3 px-6 text-sm text-slate-300">Sep 20</td><td class="py-3 px-6 text-sm text-slate-300">Sep 22</td><td class="py-3 px-6 text-sm text-white font-medium">EGP 8,000</td><td class="py-3 px-6"><span class="px-2 py-0.5 rounded text-xs bg-red-500/10 text-red-400">Rejected</span></td><td class="py-3 px-6 text-right"><button class="text-slate-400 hover:text-white p-1.5"><i class="ph ph-eye"></i></button></td></tr>
+        </tbody></table>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- LEADS (Kanban) -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='leads'" x-transition.opacity style="display:none">
+    <h1 class="text-3xl font-bold text-white mb-1">Leads</h1><p class="text-slate-400 mb-8">Score and classify guest inquiries.</p>
+    <div class="grid grid-cols-3 gap-5">
+        <div><div class="flex items-center gap-2 mb-4"><span class="w-3 h-3 rounded-full bg-red-500"></span><span class="text-sm font-semibold text-white">Hot 🔥</span><span class="text-xs text-slate-500">(3)</span></div>
+            <div class="space-y-3">
+                <div class="glass kanban-card rounded-2xl p-4 cursor-pointer"><div class="flex items-center gap-2 mb-2"><i class="ph ph-whatsapp-logo text-green-400 text-sm"></i><span class="text-sm font-semibold text-white">Mohamed Ali</span></div><p class="text-xs text-slate-400 mb-3">Asking about room prices and availability for next Friday</p><div class="flex justify-between items-center"><span class="text-[10px] text-slate-500">2 min ago</span><span class="px-1.5 py-0.5 rounded text-[10px] bg-amber-500/10 text-amber-400">Booking Inquiry</span></div></div>
+                <div class="glass kanban-card rounded-2xl p-4 cursor-pointer"><div class="flex items-center gap-2 mb-2"><i class="ph ph-messenger-logo text-blue-400 text-sm"></i><span class="text-sm font-semibold text-white">Layla Nasser</span></div><p class="text-xs text-slate-400 mb-3">Wants to book for a group of 15 people</p><div class="flex justify-between items-center"><span class="text-[10px] text-slate-500">30 min ago</span><span class="px-1.5 py-0.5 rounded text-[10px] bg-amber-500/10 text-amber-400">Booking Inquiry</span></div></div>
+            </div>
+        </div>
+        <div><div class="flex items-center gap-2 mb-4"><span class="w-3 h-3 rounded-full bg-amber-400"></span><span class="text-sm font-semibold text-white">Warm 🟡</span><span class="text-xs text-slate-500">(5)</span></div>
+            <div class="space-y-3">
+                <div class="glass kanban-card rounded-2xl p-4 cursor-pointer"><div class="flex items-center gap-2 mb-2"><i class="ph ph-whatsapp-logo text-green-400 text-sm"></i><span class="text-sm font-semibold text-white">Omar Youssef</span></div><p class="text-xs text-slate-400 mb-3">Asking about activities and food options</p><div class="flex justify-between items-center"><span class="text-[10px] text-slate-500">2 hours ago</span><span class="px-1.5 py-0.5 rounded text-[10px] bg-blue-500/10 text-blue-400">Info Request</span></div></div>
+            </div>
+        </div>
+        <div><div class="flex items-center gap-2 mb-4"><span class="w-3 h-3 rounded-full bg-blue-400"></span><span class="text-sm font-semibold text-white">Cold 🔵</span><span class="text-xs text-slate-500">(8)</span></div>
+            <div class="space-y-3">
+                <div class="glass kanban-card rounded-2xl p-4 cursor-pointer"><div class="flex items-center gap-2 mb-2"><i class="ph ph-instagram-logo text-pink-400 text-sm"></i><span class="text-sm font-semibold text-white">Sarah Williams</span></div><p class="text-xs text-slate-400 mb-3">Just browsing, asked about location only</p><div class="flex justify-between items-center"><span class="text-[10px] text-slate-500">1 day ago</span><span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-500/10 text-slate-400">General</span></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- REPORTS -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='reports'" x-transition.opacity style="display:none">
+    <div class="flex justify-between items-end mb-8">
+        <div><h1 class="text-3xl font-bold text-white mb-1">Reports & Analytics</h1><p class="text-slate-400">Performance insights and exports.</p></div>
+        <button @click="showToast('Report exported as CSV!')" class="bg-slate-800 border border-slate-600 text-white font-semibold py-2.5 px-5 rounded-xl text-sm flex items-center gap-2 hover:bg-slate-700"><i class="ph ph-download-simple text-lg"></i>Export CSV</button>
+    </div>
+    <div class="grid grid-cols-4 gap-5 mb-8">
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500 mb-1">Avg Response Time</div><div class="text-2xl font-bold text-white">1.2s</div><span class="text-emerald-400 text-xs">Bot</span></div>
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500 mb-1">Guest Satisfaction</div><div class="text-2xl font-bold text-white">4.7/5</div><span class="text-amber-400 text-xs">⭐⭐⭐⭐⭐</span></div>
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500 mb-1">Bot Mistakes</div><div class="text-2xl font-bold text-white">3</div><span class="text-red-400 text-xs">This month</span></div>
+        <div class="glass rounded-2xl p-5"><div class="text-xs text-slate-500 mb-1">Handover Rate</div><div class="text-2xl font-bold text-white">13%</div><span class="text-blue-400 text-xs">↓ from 18%</span></div>
+    </div>
+    <div class="glass rounded-2xl p-6">
+        <h3 class="text-sm font-semibold text-white mb-4">Lead Funnel — This Month</h3>
+        <div class="space-y-3">
+            <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">Total Conversations</span><span class="text-white font-medium">342</span></div><div class="w-full bg-slate-800 rounded-full h-2"><div class="bg-primary h-2 rounded-full" style="width:100%"></div></div></div>
+            <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">Leads Generated</span><span class="text-white font-medium">128</span></div><div class="w-full bg-slate-800 rounded-full h-2"><div class="bg-amber-400 h-2 rounded-full" style="width:37%"></div></div></div>
+            <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">Bookings Created</span><span class="text-white font-medium">89</span></div><div class="w-full bg-slate-800 rounded-full h-2"><div class="bg-emerald-400 h-2 rounded-full" style="width:26%"></div></div></div>
+            <div><div class="flex justify-between text-sm mb-1"><span class="text-slate-300">Confirmed</span><span class="text-white font-medium">67</span></div><div class="w-full bg-slate-800 rounded-full h-2"><div class="bg-green-500 h-2 rounded-full" style="width:19%"></div></div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- ACTIVITY LOGS -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='logs'" x-transition.opacity style="display:none">
+    <h1 class="text-3xl font-bold text-white mb-1">Activity Logs</h1><p class="text-slate-400 mb-8">Security audit trail of all system actions.</p>
+    <div class="glass rounded-2xl overflow-hidden">
+        <div class="divide-y divide-slate-800/50">
+            <template x-for="log in [
+                {user:'Ahmed',action:'Confirmed booking #1042',icon:'check-circle',color:'emerald',time:'2 min ago'},
+                {user:'Sara',action:'Took over conversation with Mohamed Ali',icon:'hand-grabbing',color:'amber',time:'12 min ago'},
+                {user:'Ahmed',action:'Approved KB article: Can we do BBQ?',icon:'book-open-text',color:'blue',time:'1 hour ago'},
+                {user:'System',action:'New guest registered via WhatsApp',icon:'user-plus',color:'purple',time:'2 hours ago'},
+                {user:'Ahmed',action:'Updated hotel check-in time to 1:00 PM',icon:'gear-six',color:'slate',time:'3 hours ago'},
+                {user:'Sara',action:'Rejected booking #1039 — No availability',icon:'x-circle',color:'red',time:'5 hours ago'},
+                {user:'Ahmed',action:'Invited user youssef@qusoor.com',icon:'envelope-simple',color:'primary',time:'Yesterday'}
+            ]">
+                <div class="flex items-center gap-4 px-6 py-3 hover:bg-slate-800/20">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" :class="'bg-'+log.color+'-500/10'"><i :class="'ph ph-'+log.icon+' text-'+log.color+'-400'"></i></div>
+                    <div class="flex-1 min-w-0"><span class="text-sm text-slate-300"><strong class="text-white" x-text="log.user"></strong> <span x-text="log.action"></span></span></div>
+                    <span class="text-xs text-slate-500 shrink-0" x-text="log.time"></span>
+                </div>
+            </template>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- SETTINGS -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='settings'" x-transition.opacity style="display:none">
+    <h1 class="text-3xl font-bold text-white mb-1">Settings</h1><p class="text-slate-400 mb-8">Configure hotel and chatbot settings.</p>
+    <div class="flex gap-3 mb-6">
+        <button @click="settingsTab='general'" :class="settingsTab==='general'?'bg-primary/10 text-primary border-primary/20':'bg-slate-800/50 text-slate-400 border-transparent'" class="px-4 py-2 rounded-xl border text-sm font-medium">General</button>
+        <button @click="settingsTab='chatbot'" :class="settingsTab==='chatbot'?'bg-primary/10 text-primary border-primary/20':'bg-slate-800/50 text-slate-400 border-transparent'" class="px-4 py-2 rounded-xl border text-sm font-medium">Chatbot AI</button>
+        <button @click="settingsTab='notifications'" :class="settingsTab==='notifications'?'bg-primary/10 text-primary border-primary/20':'bg-slate-800/50 text-slate-400 border-transparent'" class="px-4 py-2 rounded-xl border text-sm font-medium">Notifications</button>
+    </div>
+    <div class="glass rounded-2xl p-8">
+        <div x-show="settingsTab==='general'">
+            <h2 class="text-lg font-bold text-white mb-5">General Settings</h2>
+            <div class="grid grid-cols-2 gap-5 max-w-2xl">
+                <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Hotel Name</label><input type="text" value="Qusoor El Arab Camp" class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm"></div>
+                <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Email</label><input type="email" value="Sabdelazim@hotmail.co.uk" class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm"></div>
+            </div>
+            <button @click="showToast('Settings saved!')" class="mt-6 px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-medium glow-blue">Save Changes</button>
+        </div>
+        <div x-show="settingsTab==='chatbot'" style="display:none">
+            <h2 class="text-lg font-bold text-white mb-5">Chatbot AI Settings</h2>
+            <div class="max-w-2xl space-y-5">
+                <div><label class="block text-xs font-medium text-slate-400 mb-1.5">AI Model</label><select class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm appearance-none"><option>GPT-4o (Recommended)</option><option>Gemini 2.5 Pro</option><option>Claude Sonnet</option></select></div>
+                <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Greeting Message</label><textarea rows="2" class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm resize-none">أهلاً وسهلاً في مخيم قصور العرب! 🏕️ كيف أقدر أساعدك؟</textarea></div>
+                <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Fallback Message (when AI doesn't know)</label><textarea rows="2" class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm resize-none">عذراً، مش متأكد من الإجابة دي. هحولك لأحد فريق العمل يساعدك.</textarea></div>
+            </div>
+            <button @click="showToast('AI settings saved!')" class="mt-6 px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-medium glow-blue">Save Changes</button>
+        </div>
+        <div x-show="settingsTab==='notifications'" style="display:none">
+            <h2 class="text-lg font-bold text-white mb-5">Notification Preferences</h2>
+            <div class="max-w-lg space-y-4">
+                <template x-for="n in [{name:'New Booking Request',on:true},{name:'New Lead (Hot)',on:true},{name:'Human Takeover Triggered',on:true},{name:'Daily Summary Report',on:false},{name:'Guest Feedback Received',on:false}]">
+                    <div class="flex items-center justify-between py-2">
+                        <span class="text-sm text-slate-300" x-text="n.name"></span>
+                        <div @click="n.on=!n.on; showToast('Notification updated')" class="relative w-11 h-6 rounded-full cursor-pointer transition-colors" :class="n.on?'bg-primary/30 border-primary/50':'bg-slate-700 border-slate-600'" style="border-width:1px">
+                            <div class="absolute top-0.5 w-4 h-4 rounded-full transition-all" :class="n.on?'left-6 bg-primary':'left-1 bg-slate-400'"></div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- USER PROFILE -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div x-show="tab==='profile'" x-transition.opacity style="display:none">
+    <div class="flex items-center gap-4 mb-8">
+        <button @click="tab='users'" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-slate-400"><i class="ph ph-arrow-left text-xl"></i></button>
+        <h1 class="text-3xl font-bold text-white">User Profile</h1>
+    </div>
+    <div class="flex gap-6 items-start">
+        <div class="glass rounded-2xl p-6 w-72 shrink-0 text-center">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed" class="w-20 h-20 rounded-full mx-auto mb-3 border-4 border-slate-700/50">
+            <h2 class="text-lg font-bold text-white">Ahmed Hassan</h2>
+            <p class="text-sm text-slate-400 mb-3">Hotel Admin</p>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-emerald-500/10 text-emerald-400"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>Active</span>
+            <div class="mt-5 pt-5 border-t border-slate-700/50 text-left space-y-3">
+                <div><div class="text-[10px] text-slate-500 uppercase font-bold">Email</div><div class="text-sm text-slate-200">ahmed@qusoor.com</div></div>
+                <div><div class="text-[10px] text-slate-500 uppercase font-bold">Phone</div><div class="text-sm text-slate-200">+201006101223</div></div>
+            </div>
+            <div class="mt-5 pt-5 border-t border-slate-700/50 space-y-2">
+                <button class="w-full py-2 rounded-xl bg-slate-800 border border-slate-600 text-white text-xs font-medium hover:bg-slate-700 flex items-center justify-center gap-2"><i class="ph ph-envelope-simple"></i>Reset Password</button>
+                <button class="w-full py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium hover:bg-red-500/20 flex items-center justify-center gap-2"><i class="ph ph-prohibit"></i>Suspend</button>
+            </div>
+        </div>
+        <div class="glass rounded-2xl p-6 flex-1">
+            <div class="flex gap-6 border-b border-slate-700/50 pb-3 mb-5">
+                <button @click="profileTab='role'" :class="profileTab==='role'?'text-primary border-b-2 border-primary':'text-slate-400'" class="font-medium text-sm pb-3 -mb-3">Role & Permissions</button>
+                <button @click="profileTab='activity'" :class="profileTab==='activity'?'text-primary border-b-2 border-primary':'text-slate-400'" class="font-medium text-sm pb-3 -mb-3">Activity Log</button>
+                <button @click="profileTab='convos'" :class="profileTab==='convos'?'text-primary border-b-2 border-primary':'text-slate-400'" class="font-medium text-sm pb-3 -mb-3">Conversations</button>
+            </div>
+            <div x-show="profileTab==='role'">
+                <h3 class="text-sm font-semibold text-white mb-3">Assigned Role</h3>
+                <select class="glass px-4 py-2.5 rounded-xl text-sm text-white outline-none appearance-none w-56 border border-slate-600"><option>Hotel Admin</option><option>Reservation Staff</option><option>Reception Staff</option></select>
+                <h3 class="text-sm font-semibold text-white mt-6 mb-3">Direct Permission Overrides</h3>
+                <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-700/50 space-y-3">
+                    <template x-for="p in [{name:'Export Reports',key:'reports.export',on:true},{name:'Approve FAQ',key:'faq.approve',on:false}]">
+                        <div class="flex items-center justify-between">
+                            <div><div class="text-sm text-white font-medium" x-text="p.name"></div><div class="text-[11px] text-slate-500" x-text="p.key"></div></div>
+                            <div @click="p.on=!p.on; showToast('Permission override updated')" class="relative w-11 h-6 rounded-full cursor-pointer" :class="p.on?'bg-primary/30 border border-primary/50':'bg-slate-700 border border-slate-600'"><div class="absolute top-0.5 w-4 h-4 rounded-full transition-all" :class="p.on?'left-6 bg-primary':'left-1 bg-slate-400'"></div></div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <div x-show="profileTab==='activity'" style="display:none">
+                <div class="space-y-3 text-sm">
+                    <div class="flex items-center gap-3"><div class="w-7 h-7 rounded-full bg-emerald-500/10 flex items-center justify-center"><i class="ph ph-check-circle text-emerald-400 text-sm"></i></div><span class="text-slate-300">Confirmed booking #1042</span><span class="ml-auto text-xs text-slate-500">2 min ago</span></div>
+                    <div class="flex items-center gap-3"><div class="w-7 h-7 rounded-full bg-blue-500/10 flex items-center justify-center"><i class="ph ph-sign-in text-blue-400 text-sm"></i></div><span class="text-slate-300">Logged in</span><span class="ml-auto text-xs text-slate-500">2 hours ago</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </main>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- MODALS -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+    <!-- Invite User Slide-over -->
+    <div x-show="modal==='invite'" class="fixed inset-0 z-50" style="display:none">
+        <div x-transition.opacity class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="modal=null"></div>
+        <div class="absolute inset-y-0 right-0 flex max-w-full pl-10">
+            <div x-transition:enter="transform transition ease-out duration-300" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" class="w-screen max-w-md h-full glass border-l border-slate-700 flex flex-col bg-slate-900/95">
+                <div class="flex items-center justify-between px-6 py-5 border-b border-slate-800"><h2 class="text-lg font-bold text-white">Invite User</h2><button @click="modal=null" class="text-slate-400 hover:text-white"><i class="ph ph-x text-xl"></i></button></div>
+                <div class="flex-1 overflow-y-auto p-6 space-y-5">
+                    <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Email *</label><input type="email" placeholder="user@hotel.com" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none focus:border-primary text-sm"></div>
+                    <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Role</label><select class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm appearance-none"><option>Hotel Admin</option><option>Reservation Staff</option><option>Reception Staff</option></select></div>
+                    <div class="bg-primary/10 border border-primary/20 rounded-xl p-4"><label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" checked class="custom-checkbox"><span class="text-sm text-primary font-medium">Send invite email now</span></label><p class="text-xs text-primary/60 mt-1 ml-7">Secure link valid for 48 hours.</p></div>
+                </div>
+                <div class="border-t border-slate-800 p-6 flex gap-3">
+                    <button @click="modal=null" class="flex-1 border border-slate-600 text-slate-300 py-2.5 rounded-xl text-sm font-medium">Cancel</button>
+                    <button @click="modal=null; showToast('Invitation sent successfully!')" class="flex-1 bg-primary text-white py-2.5 rounded-xl text-sm font-medium glow-blue">Send Invite</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- KB Create Modal -->
+    <div x-show="modal==='kb-create'" class="fixed inset-0 z-50 flex items-center justify-center p-6" style="display:none">
+        <div x-transition.opacity class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="modal=null"></div>
+        <div x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" class="relative w-full max-w-2xl glass bg-slate-900/95 border border-slate-700 rounded-2xl overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b border-slate-800"><h2 class="text-lg font-bold text-white">Add KB Article</h2><button @click="modal=null" class="text-slate-400 hover:text-white bg-slate-800 p-2 rounded-xl"><i class="ph ph-x"></i></button></div>
+            <div class="p-6 space-y-4">
+                <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Question *</label><input type="text" placeholder="What does the guest ask?" class="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm"></div>
+                <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Answer *</label><textarea rows="3" placeholder="The approved answer..." class="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm resize-none"></textarea></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Category</label><select class="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm appearance-none"><option>General</option><option>Rooms & Pricing</option><option>Food & Dining</option><option>Activities</option><option>Policies</option></select></div>
+                    <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Language</label><select class="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm appearance-none"><option>English</option><option>Arabic</option></select></div>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 p-6 flex justify-end gap-3"><button @click="modal=null" class="px-5 py-2 border border-slate-600 text-slate-300 rounded-xl text-sm font-medium">Cancel</button><button @click="modal=null; showToast('Article created!')" class="px-5 py-2 bg-primary text-white rounded-xl text-sm font-medium glow-blue">Save Article</button></div>
+        </div>
+    </div>
+
+    <!-- Channel Setup Modal -->
+    <div x-show="modal==='channel-setup'" class="fixed inset-0 z-50 flex items-center justify-center p-6" style="display:none">
+        <div x-transition.opacity class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="modal=null"></div>
+        <div x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" class="relative w-full max-w-lg glass bg-slate-900/95 border border-slate-700 rounded-2xl overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-5 border-b border-slate-800"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center"><i class="ph ph-instagram-logo text-xl text-pink-400"></i></div><div><h2 class="text-lg font-bold text-white">Connect Instagram</h2><p class="text-xs text-slate-400">Link your Instagram Business account.</p></div></div><button @click="modal=null" class="text-slate-400 hover:text-white"><i class="ph ph-x text-xl"></i></button></div>
+            <div class="p-6 space-y-4">
+                <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Instagram Page ID</label><input type="text" placeholder="Enter your Page ID" class="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm"></div>
+                <div><label class="block text-xs font-medium text-slate-400 mb-1.5">Access Token</label><input type="password" placeholder="••••••••••••" class="w-full bg-slate-800/50 border border-slate-700 text-white rounded-xl px-4 py-2.5 outline-none text-sm"></div>
+            </div>
+            <div class="border-t border-slate-800 p-6 flex justify-end gap-3"><button @click="modal=null" class="px-5 py-2 border border-slate-600 text-slate-300 rounded-xl text-sm font-medium">Cancel</button><button @click="modal=null; showToast('Instagram connected!')" class="px-5 py-2 bg-pink-500 text-white rounded-xl text-sm font-medium">Connect</button></div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- TOAST NOTIFICATION -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <div x-show="toast" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed bottom-6 right-6 z-[60] glass border-slate-600 px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3" style="display:none">
+        <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center"><i class="ph ph-check-fat text-emerald-400 font-bold"></i></div>
+        <div class="text-sm"><span class="font-semibold text-white block" x-text="toast?.msg"></span></div>
+        <button @click="toast=null" class="text-slate-400 hover:text-white ml-2"><i class="ph ph-x"></i></button>
+    </div>
+
+</body>
+</html>
