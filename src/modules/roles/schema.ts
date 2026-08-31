@@ -26,9 +26,5 @@ export function roleFormSchema(t: TranslateFn) {
       .max(1000)
       .optional()
       .or(z.literal('')),
-    permissions: z
-      .array(z.string())
-      .optional()
-      .default([]),
   })
 }

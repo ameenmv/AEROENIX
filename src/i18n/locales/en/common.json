@@ -6,6 +6,7 @@
   "click_to_upload": "Click to upload",
   "confirm_delete": "Are you sure you want to delete this item?",
   "confirm_delete_title": "Confirm Deletion",
+  "confirm_delete_message": "Are you sure you want to delete '{name}'? This action cannot be undone.",
   "create": "Create",
   "dark_mode": "Dark mode",
   "delete": "Delete",

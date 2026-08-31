@@ -51,7 +51,6 @@ const form = useForm({
 })
 
 const [email, emailProps] = form.defineField('email')
-const [name, nameProps] = form.defineField('name')
 const [roleId, roleIdProps] = form.defineField('role_id')
 const [hotelId, hotelIdProps] = form.defineField('hotel_id')
 </script>
@@ -79,15 +78,6 @@ const [hotelId, hotelIdProps] = form.defineField('hotel_id')
         :error="form.displayErrors.value.email"
       />
 
-      <!-- Name (optional) -->
-      <InputField
-        name="name"
-        v-model="name"
-        v-bind="nameProps"
-        :label="t('users.fields.name')"
-        :placeholder="t('users.placeholders.name')"
-        :error="form.displayErrors.value.name"
-      />
 
       <!-- Role -->
       <SelectField

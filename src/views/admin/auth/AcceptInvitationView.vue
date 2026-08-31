@@ -37,6 +37,7 @@ const form = useForm({
   showNotifications: false,
   initialValues: {
     name: '',
+    phone: '',
     password: '',
     password_confirmation: '',
   },
@@ -44,6 +45,7 @@ const form = useForm({
     authStore.acceptInvitation({
       token: invitationToken.value,
       name: data.name,
+      phone: data.phone,
       password: data.password,
       password_confirmation: data.password_confirmation,
     }),
@@ -59,6 +61,7 @@ const form = useForm({
 
 // defineField for proper reactive validation tracking
 const [name] = form.defineField('name')
+const [phone] = form.defineField('phone')
 const [password] = form.defineField('password')
 const [passwordConfirmation] = form.defineField('password_confirmation')
 </script>
@@ -110,6 +113,16 @@ const [passwordConfirmation] = form.defineField('password_confirmation')
             :label="t('auth.name_label', 'Full Name')"
             :placeholder="t('auth.name_placeholder', 'John Doe')"
             :error="form.errors.value.name"
+            autocomplete="off"
+            size="lg"
+          />
+          <InputField
+            id="accept-phone"
+            v-model="phone"
+            type="text"
+            :label="t('auth.phone_label', 'Phone')"
+            :placeholder="t('auth.phone_placeholder', '+20 100 000 0000')"
+            :error="form.errors.value.phone"
             autocomplete="off"
             size="lg"
           />

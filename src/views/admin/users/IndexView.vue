@@ -102,7 +102,8 @@ function handleResendInvitation(invitation: HotelInvitation) {
     t('users.confirm_resend_message', { email: invitation.email }),
     async () => {
       try {
-        await usersService.resendInvitation(invitation.id)
+        const message = await usersService.resendInvitation(invitation.id)
+        toast.success(message)
         queryClient.invalidateQueries({ queryKey: ['users'] })
       }
       catch {

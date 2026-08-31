@@ -142,7 +142,8 @@ export const usersService = {
   /**
    * POST /platform/users/invitations/{id}/resend — resend pending invitation.
    */
-  async resendInvitation(invitationId: number | string): Promise<void> {
-    await api.post(`${ENDPOINT}/invitations/${invitationId}/resend`)
+  async resendInvitation(invitationId: number | string): Promise<string> {
+    const response = await api.post<ApiSuccessResponse<any>>(`${ENDPOINT}/invitations/${invitationId}/resend`)
+    return response.data.message || 'Invitation resent successfully.'
   },
 }

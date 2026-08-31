@@ -32,10 +32,6 @@ export function inviteUserSchema(t: TranslateFn) {
       .number({ required_error: t('validation.required', 'Hotel is required') })
       .int()
       .positive(t('validation.required', 'Please select a hotel')),
-    name: z
-      .string({ required_error: t('validation.required', 'Name is required') })
-      .min(1, t('validation.required', 'Name is required'))
-      .max(255),
   })
 }
 

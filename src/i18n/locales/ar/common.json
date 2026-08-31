@@ -6,6 +6,7 @@
   "click_to_upload": "اضغط للتحميل",
   "confirm_delete": "هل أنت متأكد من حذف هذا العنصر؟",
   "confirm_delete_title": "تأكيد الحذف",
+  "confirm_delete_message": "هل أنت متأكد من حذف '{name}'؟ لا يمكن التراجع عن هذا الإجراء.",
   "create": "إضافة",
   "dark_mode": "الوضع الداكن",
   "delete": "حذف",

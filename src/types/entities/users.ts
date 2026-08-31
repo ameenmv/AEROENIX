@@ -58,7 +58,6 @@ export interface InviteUserPayload {
   email: string
   role_id: number
   hotel_id?: number
-  name?: string
 }
 
 /**

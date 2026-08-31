@@ -120,7 +120,8 @@ export const hotelsService = {
   /**
    * DELETE /platform/hotels/{id} — delete hotel and related records.
    */
-  async delete(id: number | string): Promise<void> {
-    await api.delete(`${ENDPOINT}/${id}`)
+  async delete(id: number | string): Promise<string> {
+    const response = await api.delete<ApiSuccessResponse<any>>(`${ENDPOINT}/${id}`)
+    return response.data.message || 'Hotel deleted successfully.'
   },
 }

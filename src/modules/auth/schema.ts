@@ -60,6 +60,7 @@ export function acceptInvitationSchema(t: TranslateFn) {
       name: z
         .string({ required_error: t('auth.name_required', 'Name is required.') })
         .min(2, t('auth.name_min', 'Name must be at least 2 characters.')),
+      phone: z.string().optional(),
       password: z
         .string({ required_error: t('auth.password_required', 'Password is required.') })
         .min(1, t('auth.password_required', 'Password is required.'))

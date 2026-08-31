@@ -1,23 +1,30 @@
 <script setup lang="ts">
 import type { Hotel } from '@/types/hotel'
-import { Edit02Icon, MoreVerticalIcon, PlusSignIcon, ViewIcon } from '@hugeicons/core-free-icons'
+import { Delete02Icon, Edit02Icon, MoreVerticalIcon, PlusSignIcon, ViewIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
+import ConfirmModal from '@/components/ui/modals/ConfirmModal.vue'
 import { DataTable } from '@/components/ui/tables'
 import { Button } from '@/components/uic/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/uic/dropdown-menu'
 import { TableCell, TableHead, TableRow } from '@/components/uic/table'
+import { useConfirm } from '@/composables/shared/useConfirm'
 import { useTable } from '@/composables/shared/useTable'
 import { hotelsService } from '@/services/hotelsService'
 
 const { t } = useI18n()
 const router = useRouter()
+const queryClient = useQueryClient()
+const { confirmState, confirm, cancel } = useConfirm()
 
 const table = useTable<Hotel>({
   resourceName: 'hotels',
@@ -39,6 +46,27 @@ const table = useTable<Hotel>({
 /** Type-safe row accessor */
 function h(row: any): Hotel {
   return row as Hotel
+}
+
+const deleteMutation = useMutation({
+  mutationFn: (id: string | number) => hotelsService.delete(id),
+  onSuccess: (message) => {
+    toast.success(message)
+    queryClient.invalidateQueries({ queryKey: ['hotels'] })
+  },
+})
+
+function handleDelete(hotel: Hotel) {
+  confirm(
+    t('common.confirm_delete_title', 'Delete confirmation'),
+    t('common.confirm_delete_message', { name: hotel.name }),
+    () => {
+      deleteMutation.mutate(hotel.id, {
+        onSettled: () => cancel(),
+      })
+    },
+    'destructive',
+  )
 }
 </script>
 
@@ -124,6 +152,11 @@ function h(row: any): Hotel {
                       <HugeiconsIcon :icon="Edit02Icon" :size="14" class="mr-2 text-muted-foreground" />
                       {{ t('actions.edit', 'Edit') }}
                     </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem class="text-red-500 focus:text-red-500" @click="handleDelete(h(row))">
+                      <HugeiconsIcon :icon="Delete02Icon" :size="14" class="mr-2" />
+                      {{ t('actions.delete', 'Delete') }}
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -131,6 +164,15 @@ function h(row: any): Hotel {
           </TableRow>
         </template>
       </DataTable>
+
+      <ConfirmModal
+        :show="confirmState.show"
+        :title="confirmState.title"
+        :message="confirmState.message"
+        :variant="confirmState.variant"
+        @confirm="confirmState.callback?.()"
+        @cancel="cancel"
+      />
     </div>
   </ModularView>
 </template>
