@@ -88,7 +88,7 @@ function a(row: any): Admin {
                   :key="role.id"
                   class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-purple-500/10 text-purple-500"
                 >
-                  {{ role.display_name?.en || role.name }}
+                  {{ role.name }}
                 </span>
               </div>
             </TableCell>

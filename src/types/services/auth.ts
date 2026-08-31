@@ -6,8 +6,9 @@
  *
  * Prefer importing directly from '@/types/auth' in new code.
  */
-export type { LoginResponse, AuthUser as User } from '../../types/auth'
 export type {
+  AcceptInvitationPayload,
+  AcceptInvitationResponse,
   AuthConfig,
   AuthStep,
   AuthUser,
@@ -16,22 +17,11 @@ export type {
   ForgotPasswordPayload,
   ForgotPasswordResponse,
   LoginCredentials,
+  LoginResponse,
   MessageResponse,
-  OtpResendPayload,
-  OtpVerifyPayload,
-  OtpVerifyResponse,
-  RegisterPayload,
-  RegisterResponse,
-  ResetOtpVerifyPayload,
-  ResetOtpVerifyResponse,
   ResetPasswordPayload,
   ResetPasswordResponse,
-  SocialCallbackPayload,
-  SocialCallbackResponse,
-  SocialProvider,
-  SocialRedirectPayload,
-  SocialRedirectResponse,
-  TotpConfirmPayload,
-  TotpSetupResponse,
-  VerifyChangePasswordPayload,
 } from '../../types/auth'
+
+/** Backward-compatible alias */
+export type { AuthUser as User } from '../../types/auth'

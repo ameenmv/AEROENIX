@@ -1,0 +1,19 @@
+{
+  "title": "الأدوار والصلاحيات",
+  "subtitle": "إدارة الأدوار وتعيين الصلاحيات",
+  "fields": {
+    "name": "اسم الدور",
+    "description": "الوصف",
+    "permission": "الصلاحية",
+    "permissions": "الصلاحيات"
+  },
+  "placeholders": {
+    "name": "أدخل اسم الدور",
+    "description": "وصف موجز للدور"
+  },
+  "permissions_hint": "اختر صلاحيات هذا الدور",
+  "actions": {
+    "create": "إنشاء دور"
+  },
+  "empty": "لم يتم العثور على أدوار."
+}

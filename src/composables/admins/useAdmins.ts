@@ -25,14 +25,11 @@ export function useAdmins() {
       key: 'roleId',
       type: 'select',
       optionsLoader: async () => {
-        const res = await rolesService.list({ limit: 50 })
+        const res = await rolesService.dropdown({ limit: 50 })
         return {
-          data: res.data.map(role => ({
+          data: res.data.map((role: { id: number; name: string }) => ({
             value: role.id,
-            label:
-              typeof role.display_name === 'object' && role.display_name?.en
-                ? role.display_name.en
-                : role.name,
+            label: role.name,
           })),
         }
       },

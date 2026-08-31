@@ -1,4 +1,4 @@
-import { Building04Icon, Home01Icon, UserGroupIcon } from '@hugeicons/core-free-icons'
+import { Building04Icon, Home01Icon, SecurityLockIcon, UserGroupIcon } from '@hugeicons/core-free-icons'
 
 export interface NavItem {
   name: string
@@ -27,9 +27,18 @@ export const navigationConfig: NavItem[] = [
   },
   {
     name: 'hotels',
-    label: 'Hotels', // TODO: Add i18n key like 'menu.hotels'
+    label: 'menu.hotels',
     icon: Building04Icon,
     to: '/admin/hotels',
     // permission: 'hotels.view',
   },
+  {
+    name: 'roles',
+    label: 'menu.roles',
+    icon: SecurityLockIcon,
+    to: '/admin/roles',
+    createRoute: '/admin/roles/create',
+    // permission: 'roles.view',
+  },
 ]
+

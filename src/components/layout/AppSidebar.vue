@@ -75,11 +75,6 @@ function isItemVisible(item: NavItem) {
   if (!isVisible(item.permission))
     return false
 
-  // Specifically for CMS Builder: only show if the builder is NOT locked
-  if (item.name === 'cms-builder') {
-    return !authStore.isBuilderLocked
-  }
-
   return true
 }
 

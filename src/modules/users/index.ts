@@ -16,7 +16,7 @@ registerModule({
           path: 'create',
           name: 'admin-users-create',
           component: () => import('@/views/admin/users/CreateView.vue'),
-          meta: { openMode: 'modal' },
+          meta: { openMode: 'full' },
         },
         {
           path: ':id',
@@ -28,7 +28,7 @@ registerModule({
           path: ':id/edit',
           name: 'admin-users-edit',
           component: () => import('@/views/admin/users/EditView.vue'),
-          meta: { openMode: 'modal' },
+          meta: { openMode: 'full' },
         },
       ],
     },

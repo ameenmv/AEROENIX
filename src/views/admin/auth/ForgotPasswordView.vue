@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
-import { useRoute, useRouter } from 'vue-router'
 import AuthLayout from '@/components/layout/AuthLayout.vue'
 import { Button as Btn } from '@/components/uic/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/uic/card'
@@ -12,9 +10,6 @@ import { useAuthStore } from '@/stores'
 
 const { locale, t } = useI18n()
 const authStore = useAuthStore()
-const { otpIdentifier } = storeToRefs(authStore)
-const router = useRouter()
-const route = useRoute()
 const successMessage = ref('')
 
 // ── useForm: Zod validation + mutation + API error mapping ──────────────────
@@ -24,7 +19,7 @@ const form = useForm({
   action: 'custom',
   showNotifications: false,
   initialValues: {
-    email: otpIdentifier.value || '',
+    email: '',
   },
   mutationFn: data => authStore.forgotPassword({ email: data.email }),
   onSuccess: (message?: string | void) => {

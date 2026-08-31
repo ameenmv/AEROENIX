@@ -9,8 +9,11 @@ import {
   Wallet01Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import { useI18n } from 'vue-i18n'
 import { Button as Btn } from '@/components/uic/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/uic/card'
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -56,7 +59,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
             </div>
             <p class="text-xs text-emerald-500 flex items-center gap-1 mt-1 font-medium">
               <HugeiconsIcon :icon="ArrowUpRight01Icon" :size="14" />
-              +12.5% from last month
+              {{ $t('dashboard.from_last_month', 'from last month') }}
             </p>
           </CardContent>
         </Card>
@@ -77,7 +80,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
             </div>
             <p class="text-xs text-emerald-500 flex items-center gap-1 mt-1 font-medium">
               <HugeiconsIcon :icon="ArrowUpRight01Icon" :size="14" />
-              +18.1% from last month
+              {{ $t('dashboard.from_last_month', 'from last month') }}
             </p>
           </CardContent>
         </Card>
@@ -98,7 +101,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
             </div>
             <p class="text-xs text-emerald-500 flex items-center gap-1 mt-1 font-medium">
               <HugeiconsIcon :icon="ArrowUpRight01Icon" :size="14" />
-              +8.2% from last month
+              {{ $t('dashboard.from_last_month', 'from last month') }}
             </p>
           </CardContent>
         </Card>
@@ -118,7 +121,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
               99.9%
             </div>
             <p class="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-              All systems operational
+              {{ $t('dashboard.all_systems_operational', 'All systems operational') }}
             </p>
           </CardContent>
         </Card>
@@ -170,7 +173,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
                     Flight from DXB to LHR confirmed by admin.
                   </p>
                   <p class="text-[10px] text-muted-foreground/70 font-semibold uppercase tracking-wider">
-                    {{ i * 15 }} mins ago
+                    {{ $t('dashboard.mins_ago', { count: i * 15 }) }}
                   </p>
                 </div>
               </div>

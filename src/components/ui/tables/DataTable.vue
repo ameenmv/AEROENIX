@@ -9,6 +9,7 @@ import { Button as Btn } from '@/components/uic/button'
 import { Input } from '@/components/uic/input'
 import SelectField from '@/components/uic/select/SelectField.vue'
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/uic/table'
+import { Skeleton } from '@/components/uic/skeleton'
 import { useContextMenu } from '@/composables/useContextMenu'
 import DataTableHeader from './DataTableHeader.vue'
 import DataTableRow from './DataTableRow.vue'
@@ -301,46 +302,34 @@ function handleTableContextMenu(event: MouseEvent) {
 </script>
 
 <template>
-  <div class="space-y-4">
-    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 px-1">
-      <div class="flex items-center gap-2">
-        <SelectField
-          :model-value="localPerPage"
-          :options="perPageOptions"
-          variant="default"
-          size="md"
-          class="w-fit"
-          @update:model-value="handlePerPageChange(Number($event))"
-        />
-        <span class="text-xs text-muted-foreground whitespace-nowrap">{{
-          t('common.entries_per_page')
-        }}</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <div
-          v-if="searchable"
-          class="relative flex items-center flex-1 sm:w-[200px] sm:flex-none h-8"
-        >
-          <div class="absolute left-2.5 flex items-center justify-center pointer-events-none">
-            <HugeiconsIcon
-              :icon="Search01Icon"
-              :size="14"
-              :stroke-width="2"
-              class="text-muted-foreground"
-            />
-          </div>
-          <Input
-            v-model="localSearchQuery"
-            type="text"
-            :placeholder="t('common.search')"
-            class="h-8 w-full pl-8 pr-3 text-xs bg-background border border-border rounded-md focus-visible:ring-1 focus-visible:ring-ring placeholder:text-muted-foreground"
+  <div class="space-y-2">
+    <!-- Search bar -->
+    <div
+      v-if="searchable"
+      class="flex items-center justify-end px-1"
+    >
+      <div class="relative flex items-center w-full sm:w-[220px] h-9">
+        <div class="absolute left-3 flex items-center justify-center pointer-events-none">
+          <HugeiconsIcon
+            :icon="Search01Icon"
+            :size="14"
+            :stroke-width="2"
+            class="text-muted-foreground"
           />
         </div>
+        <Input
+          v-model="localSearchQuery"
+          type="text"
+          :placeholder="t('common.search')"
+          class="h-9 w-full pl-9 pr-3 text-xs bg-card border border-border/50 rounded-lg focus-visible:ring-1 focus-visible:ring-primary/30 placeholder:text-muted-foreground/50"
+        />
       </div>
     </div>
+
+    <!-- Table -->
     <div class="neop-table-container">
-      <div class="overflow-visible">
-        <Table class="neop-table">
+      <div class="overflow-x-auto">
+        <Table class="neop-table border-separate border-spacing-y-2 w-full">
           <TableHeader>
             <slot name="header" :columns="actualColumns">
               <DataTableHeader
@@ -365,33 +354,66 @@ function handleTableContextMenu(event: MouseEvent) {
             </slot>
           </TableHeader>
           <TableBody class="bg-transparent border-none" @contextmenu="handleTableContextMenu">
+            <!-- ── Skeleton loading state ── -->
             <template v-if="loading">
               <TableRow
                 v-for="i in localPerPage || 5"
                 :key="`skeleton-${i}`"
-                class="animate-pulse bg-card border-none pointer-events-none hover:bg-card"
+                class="bg-card border-none pointer-events-none hover:bg-card"
               >
-                <TableCell v-if="props.dragAndDrop?.enabled" class="px-3 py-3" />
-                <TableCell v-if="props.tableEnhancements?.rowSelection" class="px-3 py-3" />
+                <TableCell
+                  v-if="props.dragAndDrop?.enabled"
+                  class="px-4 py-4 first:rounded-l-lg last:rounded-r-lg"
+                />
+                <TableCell
+                  v-if="props.tableEnhancements?.rowSelection"
+                  class="px-4 py-4 first:rounded-l-lg last:rounded-r-lg"
+                >
+                  <Skeleton class="h-4 w-4 rounded" />
+                </TableCell>
                 <template v-if="actualColumns.length > 0">
                   <TableCell
-                    v-for="col in actualColumns"
+                    v-for="(col, colIdx) in actualColumns"
                     :key="`sk-col-${col.key}`"
-                    class="px-3 py-3"
+                    class="px-4 py-4 first:rounded-l-lg last:rounded-r-lg"
+                    :class="col.className || 'text-left'"
                   >
-                    <div class="h-4 bg-muted rounded w-3/4 mx-auto" />
+                    <Skeleton
+                      :class="[
+                        'h-4',
+                        colIdx === 0 ? 'w-32' :
+                        colIdx === actualColumns.length - 1 ? 'w-16' :
+                        i % 2 === 0 ? 'w-24' : 'w-20'
+                      ]"
+                    />
                   </TableCell>
                 </template>
                 <template v-else>
-                  <TableCell v-for="j in 3" :key="`sk-gen-${j}`" class="px-3 py-3">
-                    <div class="h-4 bg-muted rounded w-3/4 mx-auto" />
+                  <TableCell
+                    v-for="j in 4"
+                    :key="`sk-gen-${j}`"
+                    class="px-4 py-4 first:rounded-l-lg last:rounded-r-lg text-left"
+                  >
+                    <Skeleton
+                      :class="[
+                        'h-4',
+                        j === 1 ? 'w-32' : j === 4 ? 'w-16' : 'w-24'
+                      ]"
+                    />
                   </TableCell>
                 </template>
-                <TableCell v-if="$slots.actions" class="px-3 py-3">
-                  <div class="h-8 w-8 bg-muted rounded-full mx-auto" />
+                <TableCell
+                  v-if="$slots.actions"
+                  class="px-4 py-4 first:rounded-l-lg last:rounded-r-lg"
+                >
+                  <div class="flex items-center justify-center">
+                    <Skeleton class="h-7 w-7 rounded-md" />
+                  </div>
                 </TableCell>
               </TableRow>
             </template>
+
+            <!-- ── Data rows ── -->
             <template v-else>
               <template
                 v-for="(row, index) in paginatedData"
@@ -440,15 +462,12 @@ function handleTableContextMenu(event: MouseEvent) {
                   </DataTableRow>
                 </slot>
               </template>
-              <TableRow v-if="paginatedData.length === 0" class="bg-card">
+
+              <!-- Empty state -->
+              <TableRow v-if="paginatedData.length === 0" class="bg-card border-none hover:bg-card">
                 <TableCell
-                  :colspan="
-                    Math.max(actualColumns.length, 3)
-                      + ($slots.actions ? 1 : 0)
-                      + (props.tableEnhancements?.rowSelection ? 1 : 0)
-                      + (props.dragAndDrop?.enabled ? 1 : 0)
-                  "
-                  class="px-3 py-8 text-center text-muted-foreground italic font-light border-none"
+                  colspan="99"
+                  class="px-4 py-12 text-center text-muted-foreground/60 border-none rounded-lg"
                 >
                   {{ t('common.no_data_available') }}
                 </TableCell>
@@ -458,17 +477,27 @@ function handleTableContextMenu(event: MouseEvent) {
         </Table>
       </div>
     </div>
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-2 px-1 py-3">
-      <span class="text-[11px] text-muted-foreground">
-        {{
-          t('common.showing_info', { start: showingStart, end: showingEnd, total: totalEntries })
-        }}
-      </span>
+
+    <!-- Footer: per-page + pagination -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-1 pt-2">
+      <div class="flex items-center gap-2">
+        <SelectField
+          :model-value="localPerPage"
+          :options="perPageOptions"
+          variant="default"
+          size="md"
+          class="w-fit"
+          @update:model-value="handlePerPageChange(Number($event))"
+        />
+        <span class="text-xs text-muted-foreground/60 whitespace-nowrap">{{
+          t('common.entries_per_page')
+        }}</span>
+      </div>
       <div class="flex items-center gap-1">
         <Btn
           variant="outline"
           size="sm"
-          class="flex items-center gap-1 h-7 px-2 text-xs"
+          class="flex items-center gap-1 h-7 px-2.5 text-xs border-border/50"
           :disabled="localPage === 1"
           @click="handlePageChange(localPage - 1)"
         >
@@ -482,7 +511,7 @@ function handleTableContextMenu(event: MouseEvent) {
             :variant="localPage === p ? 'default' : 'ghost'"
             size="icon"
             class="w-7! h-7! rounded-md! text-xs! font-medium!"
-            :class="[localPage === p ? 'shadow' : '']"
+            :class="[localPage === p ? 'shadow-sm' : 'text-muted-foreground']"
             @click="handlePageChange(p)"
           >
             {{ p }}
@@ -491,7 +520,7 @@ function handleTableContextMenu(event: MouseEvent) {
         <Btn
           variant="outline"
           size="sm"
-          class="flex items-center gap-1 h-7 px-2 text-xs"
+          class="flex items-center gap-1 h-7 px-2.5 text-xs border-border/50"
           :disabled="localPage === totalPages"
           @click="handlePageChange(localPage + 1)"
         >
@@ -502,3 +531,4 @@ function handleTableContextMenu(event: MouseEvent) {
     </div>
   </div>
 </template>
+

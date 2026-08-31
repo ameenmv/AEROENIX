@@ -15,38 +15,44 @@ const form = useForm({
   mutationFn: data => rolesService.create(data),
   onSuccess: () => router.push({ name: 'admin-roles' }),
 })
+
+const [name, nameProps] = form.defineField('name')
+const [description, descriptionProps] = form.defineField('description')
 </script>
 
 <template>
   <div class="space-y-6">
     <h1 class="text-2xl font-bold">
-      {{ t('actions.create') }} {{ t('roles.title', 'Role') }}
+      {{ t('roles.actions.create', 'Create Role') }}
     </h1>
 
     <FormContainer :form="form" @cancel="router.push({ name: 'admin-roles' })">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Role Name -->
+      <InputField
+        name="name"
+        v-model="name"
+        v-bind="nameProps"
+        :label="t('roles.fields.name', 'Role Name')"
+        :placeholder="t('roles.placeholders.name', 'e.g. Front Desk Manager')"
+        :error="form.displayErrors.value.name"
+      />
+
+      <!-- Description -->
+      <div class="md:col-span-2">
         <InputField
-          name="display_name.en"
-          :label="`${t('roles.fields.display_name', 'Role Name')} (EN)`"
-          :placeholder="t('roles.placeholders.display_name_en', 'Enter role name in English')"
-          :error="form.errors.value['display_name.en']"
-        />
-        <InputField
-          name="display_name.ar"
-          :label="`${t('roles.fields.display_name', 'Role Name')} (AR)`"
-          :placeholder="t('roles.placeholders.display_name_ar', 'Enter role name in Arabic')"
-          dir="rtl"
-          :error="form.errors.value['display_name.ar']"
+          name="description"
+          v-model="description"
+          v-bind="descriptionProps"
+          :label="t('roles.fields.description', 'Description (Optional)')"
+          :placeholder="t('roles.placeholders.description', 'Brief description of this role')"
+          :error="form.displayErrors.value.description"
         />
       </div>
 
-      <!-- Permissions section placeholder -->
-      <div class="mt-6">
-        <h3 class="text-lg font-semibold mb-4">
-          {{ t('roles.fields.permissions', 'Permissions') }}
-        </h3>
+      <!-- Permissions note -->
+      <div class="md:col-span-2 mt-2">
         <p class="text-sm text-muted-foreground">
-          {{ t('roles.permissions_hint', 'Permissions can be managed after creating the role.') }}
+          {{ t('roles.permissions_hint', 'Permissions can be managed from the roles matrix after creating this role.') }}
         </p>
       </div>
     </FormContainer>

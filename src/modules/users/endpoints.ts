@@ -1,8 +1,13 @@
 /**
- * Users endpoint — used with createService factory.
+ * Users endpoint — aligned with Aeroenix backend.
  *
- * NOTE: Backend does not have admin-managed user routes yet.
- * This endpoint uses the correct prefix convention for when they are added.
- * Users service currently operates in mock mode.
+ * Backend routes: /api/v1/platform/users
+ *   GET    /                                 → users.index
+ *   GET    /{user}                           → users.show
+ *   POST   /invite                           → users.invite
+ *   PUT    /{user}/role                      → users.updateRole
+ *   POST   /{user}/toggle-status             → users.toggleStatus
+ *   DELETE /{user}                           → users.destroy
+ *   POST   /invitations/{invitation}/resend  → users.resendInvitation
  */
-export const USERS_ENDPOINT = '/admin/v1/users'
+export const USERS_ENDPOINT = '/platform/users'

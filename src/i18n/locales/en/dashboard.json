@@ -6,5 +6,8 @@
   "activity_overview": "Activity Overview",
   "activity_subtitle": "Daily flight and passenger metrics.",
   "recent_activity": "Recent Activity",
-  "recent_activity_subtitle": "Latest actions in the system."
+  "recent_activity_subtitle": "Latest actions in the system.",
+  "from_last_month": "from last month",
+  "all_systems_operational": "All systems operational",
+  "mins_ago": "{count} mins ago"
 }

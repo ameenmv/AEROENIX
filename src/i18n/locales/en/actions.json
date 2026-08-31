@@ -4,5 +4,7 @@
   "edit": "Edit",
   "delete": "Delete",
   "back": "Back",
-  "view": "View"
+  "view": "View",
+  "remove": "Remove",
+  "title": "Actions"
 }

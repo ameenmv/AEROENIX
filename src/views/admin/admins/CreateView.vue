@@ -108,7 +108,7 @@ function toggleRole(roleId: number) {
               class="rounded border-border"
               @change="toggleRole(role.id)"
             >
-            {{ role.display_name?.en || role.name }}
+            {{ role.name }}
           </label>
         </div>
         <p v-else class="text-sm text-muted-foreground">

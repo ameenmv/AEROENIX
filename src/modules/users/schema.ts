@@ -5,31 +5,53 @@ type TranslateFn = (key: string, fallback?: string) => string
 
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * User Validation Schema — aligned with backend UserResource fields.
+ * User Validation Schemas — aligned with Aeroenix backend.
  *
- * NOTE: Backend does not have admin-managed user CRUD routes yet.
- * This schema validates the fields that UserResource exposes.
- * Update when backend user admin routes are implemented.
+ * Backend does NOT have admin-managed user CRUD.
+ * Users are created via invitations only (InviteUserRequest).
  * ──────────────────────────────────────────────────────────────────────────────
  */
 
-export function userCreateSchema(t: TranslateFn) {
+/**
+ * Invite user schema — aligned with backend InviteUserRequest.
+ *
+ * Required: email, role_id
+ * Conditional: hotel_id (required for Super Admin, optional for Hotel Admin)
+ * Optional: name
+ */
+export function inviteUserSchema(t: TranslateFn) {
   return z.object({
-    name: z
-      .string({ required_error: t('users.validation.name_required', 'Name is required.') })
-      .min(1, t('users.validation.name_required', 'Name is required.')),
     email: z
-      .string({ required_error: t('users.validation.email_required', 'Email is required.') })
-      .email(t('users.validation.email_invalid', 'Please enter a valid email address.')),
+      .string({ required_error: t('validation.required', 'Email is required') })
+      .email(t('validation.email', 'Please enter a valid email address')),
+    role_id: z
+      .number({ required_error: t('validation.required', 'Role is required') })
+      .int()
+      .positive(t('validation.required', 'Please select a role')),
+    hotel_id: z
+      .number({ required_error: t('validation.required', 'Hotel is required') })
+      .int()
+      .positive(t('validation.required', 'Please select a hotel')),
+    name: z
+      .string({ required_error: t('validation.required', 'Name is required') })
+      .min(1, t('validation.required', 'Name is required'))
+      .max(255),
   })
 }
 
-export function userEditSchema(t: TranslateFn) {
+/**
+ * Update user role schema — aligned with backend UpdateUserRoleRequest.
+ */
+export function updateUserRoleSchema(t: TranslateFn) {
   return z.object({
-    name: z.string().min(1, t('users.validation.name_required', 'Name is required.')).optional(),
-    email: z
-      .string()
-      .email(t('users.validation.email_invalid', 'Please enter a valid email address.'))
+    role_id: z
+      .number({ required_error: t('validation.required', 'Role is required') })
+      .int()
+      .positive(),
+    hotel_id: z
+      .number()
+      .int()
+      .positive()
       .optional(),
   })
 }

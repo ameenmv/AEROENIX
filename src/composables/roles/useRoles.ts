@@ -1,85 +1,74 @@
-import type { Role } from '@/types/entities/role'
-import { useI18n } from 'vue-i18n'
-import { useColumnVisibility } from '@/composables/shared/useColumnVisibility'
-import { useConfirm } from '@/composables/shared/useConfirm'
-import { defineFilters } from '@/composables/shared/useFilters'
-import { useTable } from '@/composables/shared/useTable'
+import type { Role, RolesPermissionsMatrix } from '@/types/entities/role'
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { computed, ref } from 'vue'
 import { rolesService } from '@/services/rolesService'
 
 /**
- * Roles composable — aligned with backend RolesController.
+ * Roles composable — aligned with Aeroenix backend RoleController.
  *
- * Provides:
- * - Table with listing
- * - Delete with confirmation
- * - Toggle status (PATCH /{role}/toggle)
- * - Column visibility
+ * The backend uses a matrix API (GET /platform/roles-permissions)
+ * that returns all roles + all permission modules in a single call.
+ * This composable provides access to that matrix data.
+ *
+ * Operations:
+ * - getMatrix: fetch the full roles-permissions grid
+ * - createRole: create a new custom role
+ * - updatePermissions: update permissions for an existing role
  */
-export function useRoles() {
-  const { t } = useI18n()
+export function useRoles(hotelId?: number) {
+  const queryClient = useQueryClient()
 
-  const filterConfig = defineFilters('roles', [])
-
-  const table = useTable<Role>({
-    resourceName: 'roles',
-    fetchFn: async (params: any) => {
-      const res = await rolesService.list(params)
-      return { data: res.data, total: res.meta?.total ?? 0 }
-    },
-    filterConfig,
-    defaultStatus: 'all',
+  const { data: matrixData, isLoading, error, refetch } = useQuery<RolesPermissionsMatrix>({
+    queryKey: ['roles-permissions', hotelId],
+    queryFn: () => rolesService.getMatrix(hotelId),
   })
 
-  const { confirmState, confirm, cancel: cancelConfirm } = useConfirm()
+  /** All roles from the matrix */
+  const roles = computed<Role[]>(() => matrixData.value?.roles || [])
 
-  function deleteItem(role: Role) {
-    if (!role.can_delete) {
-      return
+  /** All permission modules from the matrix */
+  const modules = computed(() => matrixData.value?.modules || [])
+
+  /** Create a new custom role */
+  const isCreating = ref(false)
+  async function createRole(data: { name: string; description?: string; permissions?: string[] }) {
+    isCreating.value = true
+    try {
+      const role = await rolesService.create({
+        name: data.name,
+        description: data.description,
+        hotel_id: hotelId || null,
+        permissions: data.permissions,
+      })
+      queryClient.invalidateQueries({ queryKey: ['roles-permissions'] })
+      return role
     }
-    confirm(
-      t('common.confirm_action', 'Confirm Action'),
-      t('roles.delete_confirm', 'Are you sure you want to delete this role?'),
-      async () => {
-        try {
-          await rolesService.delete(role.id)
-          table.refresh()
-        }
-        finally {
-          cancelConfirm()
-        }
-      },
-    )
+    finally {
+      isCreating.value = false
+    }
   }
 
-  function toggleStatus(role: Role) {
-    confirm(
-      t('common.confirm_action', 'Confirm Action'),
-      t('roles.toggle_confirm', 'Are you sure you want to toggle this role\'s status?'),
-      async () => {
-        try {
-          await rolesService.toggle(role.id)
-          table.refresh()
-        }
-        finally {
-          cancelConfirm()
-        }
-      },
-    )
+  /** Update permissions for a role */
+  async function updatePermissions(roleId: number, permissions: string[]) {
+    await rolesService.updatePermissions(roleId, {
+      permissions,
+      hotel_id: hotelId,
+    })
+    queryClient.invalidateQueries({ queryKey: ['roles-permissions'] })
   }
-
-  const columnVisibility = useColumnVisibility('dt-cols-roles', [
-    { key: 'name', label: t('roles.fields.name', 'Name') },
-    { key: 'display_name', label: t('roles.fields.display_name', 'Display Name') },
-    { key: 'status', label: t('roles.fields.status', 'Status') },
-  ])
 
   return {
-    filterConfig,
-    table,
-    confirmState,
-    cancelConfirm,
-    deleteItem,
-    toggleStatus,
-    columnVisibility,
+    // Data
+    roles,
+    modules,
+    matrixData,
+    isLoading,
+    error,
+
+    // Actions
+    createRole,
+    updatePermissions,
+    isCreating,
+    refetch,
   }
 }

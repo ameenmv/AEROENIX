@@ -1,14 +1,10 @@
 /**
- * Roles endpoint — used with createService factory.
+ * Roles endpoint — aligned with Aeroenix backend.
  *
- * Backend routes: /api/admin/v1/roles
- *   GET    /                     → roles.index
- *   POST   /                     → roles.store
- *   GET    /{role}               → roles.show
- *   PUT    /{role}               → roles.update
- *   DELETE /{role}               → roles.destroy
- *   PATCH  /{role}/toggle        → roles.toggle
- *   GET    /{role}/permissions   → roles.permissions.index
- *   PATCH  /{role}/permissions   → roles.permissions.sync
+ * Backend routes: /api/v1/platform/roles*
+ *   GET  /roles-permissions           → matrix (all roles + permissions)
+ *   POST /roles                       → create custom role
+ *   PUT  /roles/{role}/permissions    → update role permissions
  */
-export const ROLES_ENDPOINT = '/admin/v1/roles'
+export const ROLES_ENDPOINT = '/platform/roles'
+export const ROLES_PERMISSIONS_ENDPOINT = '/platform/roles-permissions'

@@ -1,0 +1,33 @@
+{
+  "title": "Hotels",
+  "subtitle": "Manage hotels and their settings",
+  "fields": {
+    "name": "Name",
+    "address": "Address",
+    "staff_count": "Staff",
+    "status": "Status",
+    "admin_email": "Admin Email",
+    "country": "Country",
+    "currency": "Currency",
+    "phone": "Phone",
+    "email": "Hotel Email",
+    "check_in_time": "Check-in Time",
+    "check_out_time": "Check-out Time",
+    "timezone": "Timezone",
+    "description": "Description",
+    "created_at": "Created At"
+  },
+  "placeholders": {
+    "name": "Enter hotel name",
+    "address": "Full hotel address",
+    "admin_email": "Email for the hotel admin invitation",
+    "country": "e.g. Saudi Arabia",
+    "currency": "Select currency",
+    "phone": "+966 ...",
+    "email": "info{'@'}hotel.com",
+    "check_in_time": "Select time",
+    "check_out_time": "Select time",
+    "timezone": "Select timezone",
+    "description": "Brief description of the hotel"
+  }
+}

@@ -32,16 +32,10 @@ const form = useForm<string | null>({
     remember: false,
   },
   mutationFn: data => authStore.login(data),
-  onSuccess: (otpChallengeToken) => {
+  onSuccess: () => {
     const lang = (route.params.lang as string) || 'en'
-    if (!otpChallengeToken) {
-      // Direct login — no 2FA
-      router.push({ path: `/${lang}/admin/dashboard` })
-    }
-    else {
-      // 2FA required — pass token via route
-      router.push({ path: `/${lang}/admin/otp`, query: { token: otpChallengeToken } })
-    }
+    // Direct login — Aeroenix backend has no OTP/2FA
+    router.push({ path: `/${lang}/admin/dashboard` })
   },
 })
 
