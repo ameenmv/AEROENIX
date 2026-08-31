@@ -41,6 +41,9 @@ export default defineConfig(({ mode }) => {
           'src/composables/notifications',
           'src/stores/shared',
         ],
+        ignore: [
+          '**/index.ts'
+        ],
       }),
       Components({
         dirs: ['src/components'],
