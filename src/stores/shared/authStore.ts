@@ -264,13 +264,15 @@ export const useAuthStore = defineStore('auth', () => {
 
   /** Logout — revoke token and clear all local state */
   async function logout(): Promise<void> {
+    const permissionStore = usePermissionStore()
     try {
       if (token.value) {
         await authService.logout()
       }
     }
-    catch {
+    catch (e) {
       // Silently fail — we clear state regardless
+      console.warn('Logout API failed:', e)
     }
     finally {
       clearSessionTimer()
@@ -280,7 +282,6 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.removeItem('auth_token')
       tokenIssuedAt.value = 0
       authStep.value = 'credentials'
-      const permissionStore = usePermissionStore()
       permissionStore.clearPermissions()
     }
   }
