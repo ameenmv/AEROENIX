@@ -92,30 +92,39 @@ function togglePermission(action: string, checked: boolean) {
           <span>{{ t('common.loading', 'Loading...') }}</span>
         </div>
 
-        <div v-else-if="matrixData" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 border rounded-lg p-6 bg-card">
-          <div
-            v-for="module in matrixData.modules"
-            :key="module.name"
-            class="space-y-3"
-          >
-            <h4 class="font-semibold text-sm tracking-tight capitalize border-b pb-2">
-              {{ module.name.replace('_', ' ') }}
-            </h4>
-            <div class="space-y-2">
-              <div
-                v-for="p in module.permissions"
-                :key="p.id"
-                class="flex items-center space-x-2"
+        <div v-else-if="matrixData" class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-10 mt-6">
+          <div v-for="mod in matrixData.modules" :key="mod.name" class="flex flex-col">
+            <!-- Module Header -->
+            <div class="flex items-center gap-4 mb-5">
+              <h4 class="text-sm font-bold tracking-tight uppercase text-foreground whitespace-nowrap">{{ mod.name.replace('_', ' ') }}</h4>
+              <div class="h-px bg-border/60 flex-1 min-w-4"></div>
+              <span class="text-xs font-medium text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-md whitespace-nowrap">
+                {{ mod.permissions.length }} {{ t('roles.fields.permissions_count', 'Permissions') }}
+              </span>
+            </div>
+            
+            <!-- Pills Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-3">
+              <button
+                type="button"
+                v-for="perm in mod.permissions"
+                :key="perm.id"
+                @click="togglePermission(perm.action, !selectedPermissions.includes(perm.action))"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-all duration-200 text-left focus:outline-none focus:ring-2 focus:ring-primary/30"
+                :class="selectedPermissions.includes(perm.action)
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400 shadow-sm' 
+                  : 'bg-background border-border/50 text-muted-foreground opacity-60 hover:opacity-100 hover:bg-muted/30'"
               >
-                <Checkbox
-                  :id="p.action"
-                  :checked="selectedPermissions.includes(p.action)"
-                  @update:checked="(val: boolean) => togglePermission(p.action, val)"
-                />
-                <Label :for="p.action" class="text-sm cursor-pointer font-normal">
-                  {{ p.action.split('.')[1] || p.action }}
-                </Label>
-              </div>
+                <div 
+                  class="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold transition-colors"
+                  :class="selectedPermissions.includes(perm.action) ? 'bg-emerald-500 text-white shadow-sm' : 'bg-muted-foreground/20 text-transparent'"
+                >
+                  ✓
+                </div>
+                <span class="text-[13px] font-semibold tracking-wide truncate" :title="perm.action">
+                  {{ perm.action }}
+                </span>
+              </button>
             </div>
           </div>
         </div>
