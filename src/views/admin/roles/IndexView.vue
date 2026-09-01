@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Role } from '@/types/entities/role'
-import { PlusSignIcon, MoreHorizontalIcon, ViewIcon } from '@hugeicons/core-free-icons'
+import { PlusSignIcon, MoreHorizontalIcon, ViewIcon, PencilEdit01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -102,6 +102,12 @@ const { roles, modules, isLoading } = useRoles()
                     >
                       <HugeiconsIcon :icon="ViewIcon" :size="16" />
                       {{ t('actions.view', 'View') }}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      @click="router.push({ name: 'admin-roles-edit', params: { id: String(role.id) } })"
+                    >
+                      <HugeiconsIcon :icon="PencilEdit01Icon" :size="16" />
+                      {{ t('actions.edit', 'Edit') }}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
