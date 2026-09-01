@@ -199,7 +199,7 @@ onMounted(() => {
                   @contextmenu="openSidebarCtx($event, item)"
                 >
                   <RouterLink :to="`${adminPrefix}${item.to?.replace('/admin', '')}`">
-                    <HugeiconsIcon v-if="item.icon" :icon="item.icon" :size="16" />
+                    <HugeiconsIcon v-if="item.icon" :icon="item.icon" :size="20" />
                     <span>{{ t(item.label) }}</span>
                   </RouterLink>
                 </SidebarMenuButton>
@@ -214,11 +214,11 @@ onMounted(() => {
                 <SidebarMenuItem>
                   <CollapsibleTrigger as-child>
                     <SidebarMenuButton :tooltip="t(item.label)">
-                      <HugeiconsIcon v-if="item.icon" :icon="item.icon" :size="16" />
+                      <HugeiconsIcon v-if="item.icon" :icon="item.icon" :size="20" />
                       <span>{{ t(item.label) }}</span>
                       <HugeiconsIcon
                         :icon="ArrowDown01Icon"
-                        :size="16"
+                        :size="18"
                         class="ms-auto transition-transform duration-200"
                         :class="{ 'rotate-180': openMenus[item.name] }"
                       />
@@ -282,7 +282,7 @@ onMounted(() => {
             class="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
             @click="handleLogout"
           >
-            <HugeiconsIcon :icon="Logout02Icon" :size="16" />
+            <HugeiconsIcon :icon="Logout02Icon" :size="20" />
             <span>{{ t('menu.logout') }}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
