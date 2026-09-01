@@ -69,16 +69,14 @@ function togglePermission(action: string, checked: boolean) {
       />
 
       <!-- Description -->
-      <div class="md:col-span-2">
-        <InputField
-          name="description"
-          v-model="description"
-          v-bind="descriptionProps"
-          :label="t('roles.fields.description', 'Description (Optional)')"
-          :placeholder="t('roles.placeholders.description', 'Brief description of this role')"
-          :error="form.displayErrors.value.description"
-        />
-      </div>
+      <InputField
+        name="description"
+        v-model="description"
+        v-bind="descriptionProps"
+        :label="t('roles.fields.description', 'Description (Optional)')"
+        :placeholder="t('roles.placeholders.description', 'Brief description of this role')"
+        :error="form.displayErrors.value.description"
+      />
 
       <!-- Permissions Grid -->
       <div class="md:col-span-2 mt-4 space-y-4">
