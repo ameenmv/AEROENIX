@@ -170,10 +170,10 @@ const [passwordConfirmation] = form.defineField('password_confirmation')
             type="submit"
             variant="primary"
             class="auth-btn-primary w-full"
-            :disabled="form.isPending.value"
+            :disabled="form.isPending"
           >
             <svg
-              v-if="form.isPending.value"
+              v-if="form.isPending"
               class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -194,7 +194,7 @@ const [passwordConfirmation] = form.defineField('password_confirmation')
               />
             </svg>
             {{
-              form.isPending.value
+              form.isPending
                 ? t('auth.accepting', 'Accepting...')
                 : t('auth.accept_invitation_btn', 'Accept Invitation')
             }}
@@ -206,7 +206,7 @@ const [passwordConfirmation] = form.defineField('password_confirmation')
         <RouterLink
           :to="`/${locale}/admin/login`"
           class="text-base font-semibold text-foreground hover:underline transition-all"
-          :class="{ 'opacity-50 pointer-events-none': form.isPending.value }"
+          :class="{ 'opacity-50 pointer-events-none': form.isPending }"
         >
           {{ t('auth.back_to_login', 'Back to login') }}
         </RouterLink>

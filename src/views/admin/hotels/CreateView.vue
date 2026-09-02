@@ -273,10 +273,10 @@ function prevStep() {
               <Button 
                 v-if="currentStep === 3" 
                 type="submit" 
-                :disabled="form.isPending.value" 
+                :disabled="form.isPending" 
                 class="min-w-32 font-bold shadow-md bg-primary hover:bg-primary/90"
               >
-                <span v-if="form.isPending.value" class="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+                <span v-if="form.isPending" class="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
                 {{ t('actions.submit', 'Create Hotel') }}
               </Button>
             </div>

@@ -55,7 +55,7 @@ const formSaving = computed(() => {
   if (props.form?.isPending !== undefined) {
     return typeof props.form.isPending === 'boolean'
       ? props.form.isPending
-      : props.form.isPending.value
+      : props.form.isPending
   }
   return props.saving
 })

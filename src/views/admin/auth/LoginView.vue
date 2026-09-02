@@ -129,10 +129,10 @@ const [remember] = form.defineField('remember')
             type="submit"
             variant="primary"
             class="auth-btn-primary w-full h-11 text-base shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-200"
-            :disabled="form.isPending.value"
+            :disabled="form.isPending"
           >
             <svg
-              v-if="form.isPending.value"
+              v-if="form.isPending"
               class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -153,7 +153,7 @@ const [remember] = form.defineField('remember')
               />
             </svg>
             {{
-              form.isPending.value
+              form.isPending
                 ? t('auth.logging_in', 'Signing in...')
                 : t('auth.login_btn', 'Log In')
             }}
