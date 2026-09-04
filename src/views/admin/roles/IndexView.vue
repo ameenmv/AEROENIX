@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Role } from '@/types/entities/role'
 import { PlusSignIcon, MoreHorizontalIcon, ViewIcon, PencilEdit01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useI18n } from 'vue-i18n'
@@ -18,7 +17,7 @@ import {
 const { t } = useI18n()
 const router = useRouter()
 
-const { roles, modules, isLoading } = useRoles()
+const { roles, isLoading } = useRoles()
 
 
 </script>

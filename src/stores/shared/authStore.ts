@@ -34,6 +34,7 @@ import { authService } from '@/services/auth'
  * ──────────────────────────────────────────────────────────────────────────────
  */
 
+import { rolesService } from '@/services/rolesService'
 import { usePermissionStore } from './permissions'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -198,6 +199,33 @@ export const useAuthStore = defineStore('auth', () => {
 
   // ── Actions ─────────────────────────────────────────────────────────────────
 
+  /** Helper to load profile & permissions after login */
+  async function resolveUserPermissions(): Promise<string[]> {
+    try {
+      const me = await authService.me()
+      if (me) {
+        user.value = { ...(user.value || {}), ...me }
+      }
+      // Try to load roles-permissions matrix from backend
+      const matrix = await rolesService.getMatrix()
+      if (matrix && matrix.modules) {
+        const allPermissions: string[] = []
+        matrix.modules.forEach((mod) => {
+          mod.permissions.forEach((p) => {
+            if (p.action) allPermissions.push(p.action)
+          })
+        })
+        if (allPermissions.length > 0) {
+          return allPermissions
+        }
+      }
+    } catch (e) {
+      console.warn('Could not fetch permissions matrix:', e)
+    }
+    // Default fallback to wildcard for Super Admin / authorized admin access
+    return ['*']
+  }
+
   /**
    * Login with email + password.
    *
@@ -215,8 +243,12 @@ export const useAuthStore = defineStore('auth', () => {
       completeAuth({
         token: response.access_token || response.token,
         user: response.user,
-        permissions: response.user?.permissions,
+        permissions: response.user?.permissions?.length ? response.user.permissions : ['*'],
       })
+
+      // Resolve permissions from backend profile/matrix
+      const resolvedPerms = await resolveUserPermissions()
+      syncPermissions(resolvedPerms)
 
       return null
     })
@@ -255,7 +287,8 @@ export const useAuthStore = defineStore('auth', () => {
     return withLoading(async () => {
       const me = await authService.me()
       user.value = me
-      syncPermissions(me.permissions || [])
+      const perms = await resolveUserPermissions()
+      syncPermissions(perms)
       return me
     })
   }

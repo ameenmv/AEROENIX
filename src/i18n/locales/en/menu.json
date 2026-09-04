@@ -6,5 +6,6 @@
   "settings": "Settings",
   "users": "Users",
   "hotels": "Hotels",
-  "roles": "Roles & Permissions"
+  "roles": "Roles & Permissions",
+  "channels": "Channels"
 }

@@ -43,7 +43,7 @@ export interface CreateRolePayload {
  *   hotel_id: nullable, integer
  */
 export interface UpdateRolePermissionsPayload {
-  permissions: string[]
+  permissions: string[] | number[]
   hotel_id?: number
 }
 

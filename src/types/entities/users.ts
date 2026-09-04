@@ -20,6 +20,7 @@ export interface User {
 
   /** Detail-only fields */
   phone?: string | null
+  created_at?: string | null
   activity_log?: ActivityLogEntry[]
 }
 

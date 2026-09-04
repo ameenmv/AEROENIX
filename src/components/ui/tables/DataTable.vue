@@ -132,23 +132,7 @@ const perPageOptions = [
   { value: 25, label: '25' },
   { value: 50, label: '50' },
 ]
-const showingStart = computed(() => {
-  if (props.serverSide) {
-    return (localPage.value - 1) * localPerPage.value + 1
-  }
-  return (localPage.value - 1) * localPerPage.value + 1
-})
-const showingEnd = computed(() => {
-  if (props.serverSide) {
-    return Math.min(localPage.value * localPerPage.value, props.totalItems || 0)
-  }
-  return Math.min(localPage.value * localPerPage.value, filteredData.value.length)
-})
-const totalEntries = computed(() => {
-  if (props.serverSide)
-    return props.totalItems || 0
-  return filteredData.value.length
-})
+
 
 const actualColumns = computed(() => {
   const cols = props.columns || []

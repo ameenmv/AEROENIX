@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Hotel } from '@/types/hotel'
-import { computed, watch } from 'vue'
+import { watch } from 'vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
@@ -38,8 +38,8 @@ const [currency, currencyProps] = form.defineField('currency')
 const [phone, phoneProps] = form.defineField('phone')
 const [email, emailProps] = form.defineField('email')
 const [address, addressProps] = form.defineField('address')
-const [checkInTime, checkInTimeProps] = form.defineField('check_in_time')
-const [checkOutTime, checkOutTimeProps] = form.defineField('check_out_time')
+const [checkInTime] = form.defineField('check_in_time')
+const [checkOutTime] = form.defineField('check_out_time')
 const [timezone, timezoneProps] = form.defineField('timezone')
 const [description, descriptionProps] = form.defineField('description')
 

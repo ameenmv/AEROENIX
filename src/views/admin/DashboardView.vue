@@ -1,19 +1,34 @@
 <script setup lang="ts">
 import {
   Activity01Icon,
-  Airplane01Icon,
-  ArrowUpRight01Icon,
-  BookOpen01Icon,
-  MoreHorizontalIcon,
+  Building04Icon,
+  MailSend01Icon,
   UserGroupIcon,
-  Wallet01Icon,
+  CheckmarkCircle02Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import { useQuery } from '@tanstack/vue-query'
 import { useI18n } from 'vue-i18n'
-import { Button as Btn } from '@/components/uic/button'
+import { useRouter } from 'vue-router'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/uic/card'
+import { Button as Btn } from '@/components/uic/button'
+import { hotelsService } from '@/services/hotelsService'
+import { usersService } from '@/services/usersService'
 
 const { t } = useI18n()
+const router = useRouter()
+
+// Fetch hotels list for count & overview
+const { data: hotelsData, isLoading: isLoadingHotels } = useQuery({
+  queryKey: ['dashboard-hotels'],
+  queryFn: () => hotelsService.list({ limit: 5 }),
+})
+
+// Fetch users & invitations list for count & overview
+const { data: usersData, isLoading: isLoadingUsers } = useQuery({
+  queryKey: ['dashboard-users'],
+  queryFn: () => usersService.list({ limit: 5 }),
+})
 </script>
 
 <template>
@@ -23,52 +38,48 @@ const { t } = useI18n()
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 class="text-3xl font-bold tracking-tight">
-            {{ $t('common.Dashboard', 'Dashboard Overview') }}
+            {{ t('common.Dashboard', 'Dashboard Overview') }}
           </h1>
           <p class="text-muted-foreground mt-1 text-sm">
-            {{ $t('common.dashboard_subtitle', 'Here is what is happening with Aeroenix today.') }}
+            {{ t('common.dashboard_subtitle', 'Here is what is happening with Aeroenix today.') }}
           </p>
         </div>
         <div class="flex items-center gap-2">
-          <Btn variant="outline" class="gap-2 h-10 px-4">
-            <HugeiconsIcon :icon="BookOpen01Icon" :size="18" />
-            <span>{{ $t('common.documentation', 'View Docs') }}</span>
-          </Btn>
-          <Btn variant="primary" class="gap-2 h-10 px-4 shadow-md shadow-primary/20">
-            <HugeiconsIcon :icon="ArrowUpRight01Icon" :size="18" />
-            <span>{{ $t('common.export', 'Export Report') }}</span>
+          <Btn variant="primary" class="gap-2 h-10 px-4 shadow-md shadow-primary/20" @click="router.push({ name: 'admin-hotels' })">
+            <HugeiconsIcon :icon="Building04Icon" :size="18" />
+            <span>{{ t('hotels.title', 'Manage Hotels') }}</span>
           </Btn>
         </div>
       </div>
 
       <!-- Stats Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Stat 1 -->
-        <Card class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-border/50">
+        <!-- Total Hotels -->
+        <Card class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-border/50 cursor-pointer" @click="router.push({ name: 'admin-hotels' })">
           <CardHeader class="flex flex-row items-center justify-between pb-2">
             <CardTitle class="text-sm font-medium text-muted-foreground">
-              {{ $t('dashboard.total_flights', 'Total Flights') }}
+              {{ t('hotels.title', 'Hotels') }}
             </CardTitle>
             <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-              <HugeiconsIcon :icon="Airplane01Icon" :size="18" />
+              <HugeiconsIcon :icon="Building04Icon" :size="18" />
             </div>
           </CardHeader>
           <CardContent>
             <div class="text-3xl font-bold">
-              1,248
+              <span v-if="isLoadingHotels" class="animate-pulse">...</span>
+              <span v-else>{{ hotelsData?.pagination?.total ?? hotelsData?.data?.length ?? 0 }}</span>
             </div>
-            <p class="text-xs text-emerald-500 flex items-center gap-1 mt-1 font-medium">
-              <HugeiconsIcon :icon="ArrowUpRight01Icon" :size="14" />
-              {{ $t('dashboard.from_last_month', 'from last month') }}
+            <p class="text-xs text-muted-foreground mt-1 font-medium">
+              {{ t('hotels.subtitle', 'Managed properties') }}
             </p>
           </CardContent>
         </Card>
 
-        <!-- Stat 2 -->
-        <Card class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-border/50">
+        <!-- Total Active Users -->
+        <Card class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-border/50 cursor-pointer" @click="router.push({ name: 'admin-users' })">
           <CardHeader class="flex flex-row items-center justify-between pb-2">
             <CardTitle class="text-sm font-medium text-muted-foreground">
-              {{ $t('dashboard.active_users', 'Active Passengers') }}
+              {{ t('users.title', 'System Users') }}
             </CardTitle>
             <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
               <HugeiconsIcon :icon="UserGroupIcon" :size="18" />
@@ -76,105 +87,141 @@ const { t } = useI18n()
           </CardHeader>
           <CardContent>
             <div class="text-3xl font-bold">
-              +14,592
+              <span v-if="isLoadingUsers" class="animate-pulse">...</span>
+              <span v-else>{{ usersData?.pagination?.total ?? usersData?.users?.length ?? 0 }}</span>
             </div>
-            <p class="text-xs text-emerald-500 flex items-center gap-1 mt-1 font-medium">
-              <HugeiconsIcon :icon="ArrowUpRight01Icon" :size="14" />
-              {{ $t('dashboard.from_last_month', 'from last month') }}
+            <p class="text-xs text-muted-foreground mt-1 font-medium">
+              {{ t('users.subtitle', 'Active staff & admins') }}
             </p>
           </CardContent>
         </Card>
 
-        <!-- Stat 3 -->
-        <Card class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-border/50">
+        <!-- Pending Invitations -->
+        <Card class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-border/50 cursor-pointer" @click="router.push({ name: 'admin-users' })">
           <CardHeader class="flex flex-row items-center justify-between pb-2">
             <CardTitle class="text-sm font-medium text-muted-foreground">
-              {{ $t('dashboard.revenue', 'Total Revenue') }}
+              {{ t('users.tabs.invitations', 'Pending Invitations') }}
             </CardTitle>
-            <div class="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-              <HugeiconsIcon :icon="Wallet01Icon" :size="18" />
+            <div class="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500">
+              <HugeiconsIcon :icon="MailSend01Icon" :size="18" />
             </div>
           </CardHeader>
           <CardContent>
             <div class="text-3xl font-bold">
-              $1.4M
+              <span v-if="isLoadingUsers" class="animate-pulse">...</span>
+              <span v-else>{{ usersData?.invitations?.length ?? 0 }}</span>
             </div>
-            <p class="text-xs text-emerald-500 flex items-center gap-1 mt-1 font-medium">
-              <HugeiconsIcon :icon="ArrowUpRight01Icon" :size="14" />
-              {{ $t('dashboard.from_last_month', 'from last month') }}
+            <p class="text-xs text-amber-500 mt-1 font-medium">
+              {{ t('users.status.invited', 'Awaiting acceptance') }}
             </p>
           </CardContent>
         </Card>
 
-        <!-- Stat 4 -->
+        <!-- System Health -->
         <Card class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-border/50">
           <CardHeader class="flex flex-row items-center justify-between pb-2">
             <CardTitle class="text-sm font-medium text-muted-foreground">
-              {{ $t('dashboard.system_health', 'System Health') }}
+              {{ t('dashboard.system_health', 'System Health') }}
             </CardTitle>
-            <div class="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500">
+            <div class="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
               <HugeiconsIcon :icon="Activity01Icon" :size="18" />
             </div>
           </CardHeader>
           <CardContent>
-            <div class="text-3xl font-bold">
-              99.9%
+            <div class="text-3xl font-bold text-emerald-500 flex items-center gap-2">
+              <HugeiconsIcon :icon="CheckmarkCircle02Icon" :size="24" />
+              <span>100%</span>
             </div>
-            <p class="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-              {{ $t('dashboard.all_systems_operational', 'All systems operational') }}
+            <p class="text-xs text-muted-foreground mt-1">
+              {{ t('dashboard.all_systems_operational', 'All systems operational') }}
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <!-- Main Content Area -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Chart Placeholder -->
-        <Card class="col-span-1 lg:col-span-2 border-border/50 shadow-sm flex flex-col group">
-          <CardHeader class="pb-2 flex flex-row items-center justify-between">
+      <!-- Main Overview Tables -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Recent Hotels -->
+        <Card class="border-border/50 shadow-sm">
+          <CardHeader class="flex flex-row items-center justify-between">
             <div>
-              <CardTitle>{{ $t('dashboard.activity_overview', 'Activity Overview') }}</CardTitle>
-              <CardDescription>{{ $t('dashboard.activity_subtitle', 'Daily flight and passenger metrics.') }}</CardDescription>
+              <CardTitle>{{ t('hotels.title', 'Hotels Overview') }}</CardTitle>
+              <CardDescription>{{ t('hotels.subtitle', 'Recently created hotel properties') }}</CardDescription>
             </div>
-            <Btn variant="ghost" size="icon" class="text-muted-foreground hover:bg-muted">
-              <HugeiconsIcon :icon="MoreHorizontalIcon" :size="20" />
+            <Btn variant="outline" size="sm" @click="router.push({ name: 'admin-hotels' })">
+              {{ t('actions.view', 'View All') }}
             </Btn>
           </CardHeader>
-          <CardContent class="flex-1 flex flex-col items-center justify-center min-h-[300px] border-t border-border/40 mt-4 pt-8 text-muted-foreground">
-            <!-- Simulated Chart Area -->
-            <div class="w-full h-full flex items-end justify-between gap-1 sm:gap-2 px-1 sm:px-4 pb-4 opacity-80 group-hover:opacity-100 transition-opacity">
-              <div v-for="i in 20" :key="i" class="w-full bg-primary/20 rounded-t-md hover:bg-primary transition-colors cursor-pointer relative group/bar" :style="`height: ${Math.max(20, Math.random() * 100)}%`">
-                <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-popover text-popover-foreground text-[10px] px-2 py-1 rounded shadow-md opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                  {{ Math.floor(Math.random() * 500) + 100 }}
+          <CardContent>
+            <div v-if="isLoadingHotels" class="py-8 text-center text-muted-foreground text-sm">
+              Loading hotels...
+            </div>
+            <div v-else-if="!hotelsData?.data?.length" class="py-8 text-center text-muted-foreground text-sm">
+              No hotels configured yet.
+            </div>
+            <div v-else class="space-y-4 pt-2">
+              <div
+                v-for="hotel in hotelsData.data"
+                :key="hotel.id"
+                class="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/60 transition-colors cursor-pointer"
+                @click="router.push({ name: 'admin-hotels-show', params: { id: hotel.id } })"
+              >
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold">
+                    {{ hotel.name.substring(0, 2).toUpperCase() }}
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-foreground leading-tight">{{ hotel.name }}</p>
+                    <p class="text-xs text-muted-foreground mt-0.5">{{ hotel.address || 'No address specified' }}</p>
+                  </div>
                 </div>
+                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium capitalize" :class="hotel.status === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'">
+                  {{ hotel.status }}
+                </span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <!-- Recent Activity Feed -->
+        <!-- Recent Users -->
         <Card class="border-border/50 shadow-sm">
-          <CardHeader>
-            <CardTitle>{{ $t('dashboard.recent_activity', 'Recent Activity') }}</CardTitle>
-            <CardDescription>{{ $t('dashboard.recent_activity_subtitle', 'Latest actions in the system.') }}</CardDescription>
+          <CardHeader class="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>{{ t('users.title', 'Recent Users') }}</CardTitle>
+              <CardDescription>{{ t('users.subtitle', 'Active platform administrators & staff') }}</CardDescription>
+            </div>
+            <Btn variant="outline" size="sm" @click="router.push({ name: 'admin-users' })">
+              {{ t('actions.view', 'View All') }}
+            </Btn>
           </CardHeader>
           <CardContent>
-            <div class="space-y-6 pt-2">
-              <div v-for="i in 5" :key="i" class="flex gap-4 group">
-                <div class="relative flex-shrink-0 mt-1">
-                  <div class="w-2.5 h-2.5 bg-primary/80 rounded-full ring-4 ring-primary/10 group-hover:ring-primary/30 group-hover:scale-125 transition-all duration-300" />
-                  <div v-if="i < 5" class="absolute top-4 left-[4.5px] w-[1px] h-full bg-border -z-10 group-hover:bg-primary/20 transition-colors duration-300" />
+            <div v-if="isLoadingUsers" class="py-8 text-center text-muted-foreground text-sm">
+              Loading users...
+            </div>
+            <div v-else-if="!usersData?.users?.length" class="py-8 text-center text-muted-foreground text-sm">
+              No users found.
+            </div>
+            <div v-else class="space-y-4 pt-2">
+              <div
+                v-for="user in usersData.users"
+                :key="user.id"
+                class="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/60 transition-colors cursor-pointer"
+                @click="router.push({ name: 'admin-users-show', params: { id: user.id } })"
+              >
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold">
+                    {{ user.name.substring(0, 2).toUpperCase() }}
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-foreground leading-tight">{{ user.name }}</p>
+                    <p class="text-xs text-muted-foreground mt-0.5">{{ user.email }}</p>
+                  </div>
                 </div>
-                <div class="flex-1 space-y-1.5 pb-1">
-                  <p class="text-sm font-medium leading-none text-foreground">
-                    New flight AX-492 scheduled
-                  </p>
-                  <p class="text-xs text-muted-foreground leading-relaxed">
-                    Flight from DXB to LHR confirmed by admin.
-                  </p>
-                  <p class="text-[10px] text-muted-foreground/70 font-semibold uppercase tracking-wider">
-                    {{ $t('dashboard.mins_ago', { count: i * 15 }) }}
-                  </p>
+                <div class="text-right">
+                  <span class="text-xs font-medium text-foreground block">{{ user.role?.name || user.hotel_name || 'Staff' }}</span>
+                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium capitalize mt-0.5" :class="user.status === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'">
+                    {{ user.status }}
+                  </span>
                 </div>
               </div>
             </div>

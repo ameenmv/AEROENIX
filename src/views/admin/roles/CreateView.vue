@@ -6,8 +6,6 @@ import { useForm } from '@/composables'
 import { useQuery } from '@tanstack/vue-query'
 import { roleFormSchema } from '@/modules/roles/schema'
 import { rolesService } from '@/services/rolesService'
-import { Checkbox } from '@/components/uic/checkbox'
-import { Label } from '@/components/uic/label'
 import { Loader2Icon } from 'lucide-vue-next'
 
 const { t } = useI18n()
