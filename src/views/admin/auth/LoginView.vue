@@ -27,8 +27,8 @@ const form = useForm<string | null>({
   action: 'custom',
   showNotifications: false,
   initialValues: {
-    email: 'admin@aeroenix.com',
-    password: 'password',
+    email: 'aeroenix10@gmail.com',
+    password: 'AeR@550@',
     remember: false,
   },
   mutationFn: data => authStore.login(data),

@@ -20,13 +20,30 @@ const isConnectingWhatsApp = ref(false)
 const isConnectingInstagram = ref(false)
 const isConnectingFacebook = ref(false)
 
+function openOAuthPopup(url: string) {
+  const width = 600
+  const height = 700
+  const left = window.screenX + (window.outerWidth - width) / 2
+  const top = window.screenY + (window.outerHeight - height) / 2
+
+  const popup = window.open(
+    url,
+    'channel_oauth_popup',
+    `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no,scrollbars=yes,resizable=yes`,
+  )
+
+  if (!popup) {
+    toast.error('Popup blocked! Please allow popups for this site and try again.')
+  }
+}
+
 async function handleConnectWhatsApp() {
   isConnectingWhatsApp.value = true
   try {
     const data = await channelsService.getWhatsAppAuthUrl()
     const targetUrl = data?.url || data?.auth_url
     if (targetUrl) {
-      window.location.href = targetUrl
+      openOAuthPopup(targetUrl)
     } else {
       toast.error('Failed to generate WhatsApp connection link.')
     }
@@ -43,7 +60,7 @@ async function handleConnectInstagram() {
     const data = await channelsService.getInstagramAuthUrl()
     const targetUrl = data?.url || data?.auth_url
     if (targetUrl) {
-      window.location.href = targetUrl
+      openOAuthPopup(targetUrl)
     } else {
       toast.error('Failed to generate Instagram connection link.')
     }
@@ -60,7 +77,7 @@ async function handleConnectFacebook() {
     const data = await channelsService.getFacebookAuthUrl()
     const targetUrl = data?.url || data?.auth_url
     if (targetUrl) {
-      window.location.href = targetUrl
+      openOAuthPopup(targetUrl)
     } else {
       toast.error('Failed to generate Facebook connection link.')
     }
