@@ -131,20 +131,23 @@ api.interceptors.response.use(
     switch (status) {
       // ── 401 Unauthenticated ─────────────────────────────────────────
       case 401: {
-        // Skip redirect in mock mode
-        if (import.meta.env.VITE_MOCK_AUTH !== 'false') {
-          console.warn('[Mock Auth] Ignored 401 Unauthorized from real API.')
-          break
-        }
         // Skip redirect for auth-flow requests (login, OTP verify, password reset)
-        // These return 401 for invalid credentials/codes, not expired sessions
+        // These return 401 for invalid credentials/codes — let the form handle it
         if (isAuthRequest) {
           break
         }
+        
+        const locale = localStorage.getItem('locale') || 'en'
+
+        // Clear all auth token and user state
         localStorage.removeItem('auth_token')
+        localStorage.removeItem('auth_user')
+        localStorage.removeItem('auth_token_issued_at')
         localStorage.removeItem('permissions')
         localStorage.removeItem('_current_permission')
-        const locale = localStorage.getItem('locale') || 'en'
+        localStorage.removeItem('client_id')
+        localStorage.removeItem('client_secret')
+        sessionStorage.clear()
 
         await showToast('warning', 'Session Expired', 'Please log in again to continue.')
 
