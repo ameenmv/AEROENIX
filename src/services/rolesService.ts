@@ -1,52 +1,78 @@
-import type { Permission } from '@/types/entities/permission'
-import type { Role } from '@/types/entities/role'
-import { ROLES_ENDPOINT } from '@/modules/roles/endpoints'
+import type { CreateRolePayload, Role, RolesPermissionsMatrix, UpdateRolePermissionsPayload } from '@/types/entities/role'
+import type { ApiSuccessResponse } from '@/types/services/api'
 import api from './api'
-import { createService } from './createService'
 
 /**
- * Roles Service — aligned with backend RolesController + RolePermissionsController.
+ * ──────────────────────────────────────────────────────────────────────────────
+ * Roles Service — aligned with Aeroenix backend RoleController.
  *
- * Standard CRUD + toggle via createService:
- *   list()   → GET    /admin/v1/roles
- *   get()    → GET    /admin/v1/roles/{id}
- *   create() → POST   /admin/v1/roles
- *   update() → PUT    /admin/v1/roles/{id}
- *   delete() → DELETE /admin/v1/roles/{id}
- *   toggle() → PATCH  /admin/v1/roles/{id}/toggle
+ * Backend: app/Http/Controllers/V1/Platform/RoleController.php
+ * Routes:
+ *   GET  /platform/roles-permissions           → matrix (roles + permissions grid)
+ *   POST /platform/roles                       → create custom role
+ *   PUT  /platform/roles/{role}/permissions     → update role permissions
  *
- * Custom operations for permissions sub-resource:
- *   getPermissions() → GET   /admin/v1/roles/{id}/permissions
- *   syncPermissions() → PATCH /admin/v1/roles/{id}/permissions
+ * NOTE: The backend does NOT have standard CRUD routes for roles.
+ * No GET /{id}, PUT /{id}, DELETE /{id} endpoints exist.
+ * ──────────────────────────────────────────────────────────────────────────────
  */
-const baseService = createService<Role>(ROLES_ENDPOINT, {
-  defaultListScope: 'full',
-})
+
+const ENDPOINT = '/platform/roles'
 
 export const rolesService = {
-  ...baseService,
-
-  /** Override list to always include permissions relation */
-  async list(params: Parameters<typeof baseService.list>[0] = {}) {
-    return baseService.list({ ...params, scope: 'full' })
+  /**
+   * GET /platform/roles-permissions — full matrix of roles and permissions.
+   *
+   * Returns all roles with their permission IDs, and all permission modules
+   * grouped by feature area.
+   *
+   * Query param: hotel_id (optional) — scope to a specific hotel.
+   */
+  async getMatrix(hotelId?: number): Promise<RolesPermissionsMatrix> {
+    const response = await api.get<ApiSuccessResponse<RolesPermissionsMatrix>>(
+      '/platform/roles-permissions',
+      {
+        params: hotelId ? { hotel_id: hotelId } : {},
+      },
+    )
+    return response.data.data
   },
 
   /**
-   * GET /admin/v1/roles/{roleId}/permissions
-   * Fetch permissions assigned to a specific role.
+   * POST /platform/roles — create a new custom role.
+   *
+   * For Super Admin: hotel_id can be null (platform-level role).
+   * For Hotel Admin: hotel_id is resolved by backend.
    */
-  async getPermissions(roleId: string | number): Promise<Permission[]> {
-    const response = await api.get(`${ROLES_ENDPOINT}/${roleId}/permissions`)
-    return response.data?.data || response.data || []
+  async create(data: CreateRolePayload): Promise<Role> {
+    const response = await api.post<ApiSuccessResponse<{ role: Role }>>(
+      ENDPOINT,
+      data,
+    )
+    return response.data.data.role
   },
 
   /**
-   * PATCH /admin/v1/roles/{roleId}/permissions
-   * Sync (replace) a role's permissions with the given IDs.
+   * PUT /platform/roles/{roleId}/permissions — update permissions for a role.
    */
-  async syncPermissions(roleId: string | number, permissionIds: number[]): Promise<void> {
-    await api.patch(`${ROLES_ENDPOINT}/${roleId}/permissions`, {
-      permissions: permissionIds,
-    })
+  async updatePermissions(
+    roleId: number | string,
+    data: UpdateRolePermissionsPayload,
+  ): Promise<{ id: number; name: string }> {
+    const response = await api.put<ApiSuccessResponse<{ role: { id: number; name: string } }>>(
+      `${ENDPOINT}/${roleId}/permissions`,
+      data,
+    )
+    return response.data.data.role
+  },
+
+  /**
+   * Backward-compatible dropdown method.
+   * Returns roles from the matrix API in a format compatible with select fields.
+   * Used by template modules (admins) that expect rolesService.dropdown().
+   */
+  async dropdown(_params?: Record<string, unknown>): Promise<{ data: Role[] }> {
+    const matrix = await this.getMatrix()
+    return { data: matrix.roles }
   },
 }

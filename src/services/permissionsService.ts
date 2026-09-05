@@ -1,25 +1,39 @@
 import type { Permission } from '@/types/entities/permission'
-import { PERMISSIONS_ENDPOINT } from '@/modules/permissions/endpoints'
-import { createService } from './createService'
+import type { ApiSuccessResponse } from '@/types/services/api'
+import api from './api'
 
 /**
- * Permissions Service — read-only listing for role management forms.
+ * ──────────────────────────────────────────────────────────────────────────────
+ * Permissions Service — aligned with Aeroenix backend PermissionController.
  *
- * Backend only exposes:
- *   GET /admin/v1/permissions → permissions.index
+ * Backend: app/Http/Controllers/V1/Platform/PermissionController.php
+ * Routes:
+ *   GET /platform/permissions → list all permissions (read-only)
  *
- * Use the list() method to fetch all available permissions
- * grouped by module for the role permissions matrix UI.
+ * Response: { success, data: { permissions: [{ id, action }] } }
+ * ──────────────────────────────────────────────────────────────────────────────
  */
-const baseService = createService<Permission>(PERMISSIONS_ENDPOINT)
+
+const ENDPOINT = '/platform/permissions'
 
 export const permissionsService = {
-  /** Fetch all permissions (unpaginated for use in forms) */
-  async list(params: Parameters<typeof baseService.list>[0] = {}) {
-    return baseService.list({
-      ...params,
-      paginate: false,
-      scope: 'mini',
-    })
+  /**
+   * GET /platform/permissions — fetch all available permissions.
+   *
+   * Used in role management forms to display the full permission grid.
+   */
+  async list(): Promise<Permission[]> {
+    const response = await api.get<ApiSuccessResponse<any>>(ENDPOINT)
+    const data = response.data.data || {}
+
+    // Backend may wrap under `permissions` key or return directly as array
+    if (Array.isArray(data)) {
+      return data
+    }
+    if (data.permissions && Array.isArray(data.permissions)) {
+      return data.permissions
+    }
+
+    return []
   },
 }

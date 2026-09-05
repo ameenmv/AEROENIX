@@ -1,7 +1,7 @@
 import type { VariantProps } from 'class-variance-authority'
 import { cva } from 'class-variance-authority'
 
-export const timePickerVariants = cva('relative inline-block', {
+export const timePickerVariants = cva('relative w-full', {
   variants: {
     size: {
       sm: '[&_input]:h-7 [&_input]:text-xs [&_input]:w-[80px]',

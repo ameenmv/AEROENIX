@@ -1,0 +1,19 @@
+{
+  "title": "Roles & Permissions",
+  "subtitle": "Manage roles and their permission assignments",
+  "fields": {
+    "name": "Role Name",
+    "description": "Description",
+    "permission": "Permission",
+    "permissions": "Permissions"
+  },
+  "placeholders": {
+    "name": "Enter role name",
+    "description": "Brief description of the role"
+  },
+  "permissions_hint": "Select the permissions for this role",
+  "actions": {
+    "create": "Create Role"
+  },
+  "empty": "No roles found."
+}

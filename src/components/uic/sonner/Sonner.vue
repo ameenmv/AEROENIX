@@ -41,6 +41,7 @@ const restProps = computed(() => {
   <Sonner
     :class="cn('toaster group', props.class)"
     :theme="theme"
+    :duration="5000"
     :style="{
       '--normal-bg': 'var(--popover)',
       '--normal-text': 'var(--popover-foreground)',

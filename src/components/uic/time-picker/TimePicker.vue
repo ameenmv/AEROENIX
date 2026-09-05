@@ -23,7 +23,7 @@ const props = withDefaults(
     class?: HTMLAttributes['class']
   }>(),
   {
-    modelValue: '12:00',
+    modelValue: '',
     disabled: false,
     placeholder: 'Pick time',
     size: 'default',
@@ -43,7 +43,7 @@ const currentPeriod = ref<'AM' | 'PM'>('AM')
 const pad = (n: number) => n.toString().padStart(2, '0')
 
 function initFromValue(val: string) {
-  if (!val)
+  if (!val || !val.includes(':'))
     return
   const [hStr, mStr] = val.split(':')
   const h24 = Number.parseInt(hStr!, 10)
@@ -68,8 +68,12 @@ watch(
   { immediate: true },
 )
 
+const hasValue = computed(() => !!props.modelValue && props.modelValue.includes(':'))
+
 const displayTime = computed(
-  () => `${pad(currentHour.value)}:${pad(currentMinute.value)} ${currentPeriod.value}`,
+  () => hasValue.value
+    ? `${pad(currentHour.value)}:${pad(currentMinute.value)} ${currentPeriod.value}`
+    : props.placeholder,
 )
 
 const prevHour = computed(() => (currentHour.value === 1 ? 12 : currentHour.value - 1))
@@ -130,14 +134,14 @@ function onOpenChange(open: boolean) {
         :class="
           cn(
             timePickerVariants({ size }),
-            'justify-start text-left font-normal gap-2',
-            !modelValue && 'text-muted-foreground',
+            'w-full inline-flex items-center justify-start text-left font-normal gap-2',
+            !hasValue && 'text-muted-foreground',
             props.class,
           )
         "
       >
-        <Clock :size="14" class="text-muted-foreground" />
-        {{ displayTime }}
+        <Clock :size="14" class="shrink-0 text-muted-foreground" />
+        <span :class="!hasValue && 'text-muted-foreground'">{{ displayTime }}</span>
       </Button>
     </PopoverTrigger>
 

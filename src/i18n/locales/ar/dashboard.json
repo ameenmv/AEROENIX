@@ -6,5 +6,8 @@
   "activity_overview": "نظرة عامة على النشاط",
   "activity_subtitle": "مقاييس الرحلات والركاب اليومية.",
   "recent_activity": "النشاط الأخير",
-  "recent_activity_subtitle": "أحدث الإجراءات في النظام."
+  "recent_activity_subtitle": "أحدث الإجراءات في النظام.",
+  "from_last_month": "من الشهر الماضي",
+  "all_systems_operational": "جميع الأنظمة تعمل بشكل طبيعي",
+  "mins_ago": "منذ {count} دقيقة"
 }

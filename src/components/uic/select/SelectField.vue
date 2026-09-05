@@ -97,6 +97,10 @@ const singleSelectedValue = computed({
     }
   },
 })
+const singleSelectedLabel = computed(() => {
+  const opt = props.options.find(o => String(o.value) === singleSelectedValue.value)
+  return opt?.label ?? ''
+})
 // --- Styles ---
 const triggerClasses = computed(() => {
   return cn(
@@ -127,7 +131,7 @@ const triggerClasses = computed(() => {
       {{ label }}
       <span v-if="required" class="text-destructive ml-0.5">*</span>
     </Label>
-    <template v-if="!multiple">
+    <template v-if="!multiple && variant !== 'search'">
       <Select v-model="singleSelectedValue" :disabled="disabled">
         <SelectTrigger :id="id" :class="triggerClasses">
           <SelectValue :placeholder="placeholder || 'Select an option'" />
@@ -138,6 +142,59 @@ const triggerClasses = computed(() => {
           </SelectItem>
         </SelectContent>
       </Select>
+    </template>
+    <template v-else-if="!multiple && variant === 'search'">
+      <Popover v-model:open="open">
+        <PopoverTrigger as-child>
+          <button
+            :id="id"
+            role="combobox"
+            :aria-expanded="open"
+            :disabled="disabled"
+            :class="
+              cn(
+                'flex items-center border rounded-md shadow-sm',
+                triggerClasses,
+                open ? 'ring-1 ring-ring' : '',
+              )
+            "
+          >
+            <span
+              class="truncate flex-1 text-start"
+              :class="!singleSelectedValue ? 'text-muted-foreground' : ''"
+            >
+              {{ singleSelectedLabel || placeholder || 'Select an option' }}
+            </span>
+            <ChevronDown class="h-4 w-4 shrink-0 opacity-50" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent class="w-[--reka-popover-trigger-width] p-0 z-100" align="start">
+          <Command>
+            <CommandInput :placeholder="$t('common.search', 'Search...')" />
+            <CommandEmpty>{{ $t('common.no_results_found', 'No results found.') }}</CommandEmpty>
+            <CommandList class="max-h-[250px] overflow-y-auto">
+              <CommandGroup>
+                <CommandItem
+                  v-for="option in options"
+                  :key="option.value"
+                  :value="String(option.label)"
+                  @select="singleSelectedValue = String(option.value); open = false"
+                >
+                  {{ option.label }}
+                  <Check
+                    :class="
+                      cn(
+                        'ml-auto h-4 w-4',
+                        singleSelectedValue === String(option.value) ? 'opacity-100' : 'opacity-0',
+                      )
+                    "
+                  />
+                </CommandItem>
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </template>
     <template v-else>
       <Popover v-model:open="open">
@@ -171,7 +228,7 @@ const triggerClasses = computed(() => {
         <PopoverContent class="w-full p-0 z-100" align="start">
           <Command>
             <CommandInput :placeholder="placeholder || 'Search...'" />
-            <CommandEmpty>{{ $t('common.No results found.') }}</CommandEmpty>
+            <CommandEmpty>{{ $t('common.no_results_found', 'No results found.') }}</CommandEmpty>
             <CommandList class="max-h-[250px] overflow-y-auto">
               <CommandGroup>
                 <CommandItem

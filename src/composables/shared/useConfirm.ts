@@ -3,6 +3,7 @@ export interface ConfirmState {
   title: string
   message: string
   callback: (() => void) | null
+  variant: 'destructive' | 'default'
 }
 /**
  * Standalone composable for managing confirmation dialogs.
@@ -17,6 +18,9 @@ export interface ConfirmState {
  *     cancel()
  *   })
  * }
+ *
+ * // For non-destructive actions (green button):
+ * confirm('Activate', 'Are you sure?', callback, 'default')
  * ```
  */
 export function useConfirm() {
@@ -25,12 +29,13 @@ export function useConfirm() {
     title: '',
     message: '',
     callback: null,
+    variant: 'destructive',
   })
-  const confirm = (title: string, message: string, callback: () => void) => {
-    confirmState.value = { show: true, title, message, callback }
+  const confirm = (title: string, message: string, callback: () => void, variant: 'destructive' | 'default' = 'destructive') => {
+    confirmState.value = { show: true, title, message, callback, variant }
   }
   const cancel = () => {
-    confirmState.value = { show: false, title: '', message: '', callback: null }
+    confirmState.value = { show: false, title: '', message: '', callback: null, variant: 'destructive' }
   }
   return { confirmState, confirm, cancel }
 }

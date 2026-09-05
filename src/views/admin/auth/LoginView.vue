@@ -27,21 +27,15 @@ const form = useForm<string | null>({
   action: 'custom',
   showNotifications: false,
   initialValues: {
-    email: '',
-    password: '',
+    email: 'aeroenix10@gmail.com',
+    password: 'AeR@550@',
     remember: false,
   },
   mutationFn: data => authStore.login(data),
-  onSuccess: (otpChallengeToken) => {
+  onSuccess: () => {
     const lang = (route.params.lang as string) || 'en'
-    if (!otpChallengeToken) {
-      // Direct login — no 2FA
-      router.push({ path: `/${lang}/admin/dashboard` })
-    }
-    else {
-      // 2FA required — pass token via route
-      router.push({ path: `/${lang}/admin/otp`, query: { token: otpChallengeToken } })
-    }
+    // Direct login — Aeroenix backend has no OTP/2FA
+    router.push({ path: `/${lang}/admin/dashboard` })
   },
 })
 
@@ -135,10 +129,10 @@ const [remember] = form.defineField('remember')
             type="submit"
             variant="primary"
             class="auth-btn-primary w-full h-11 text-base shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-200"
-            :disabled="form.isPending.value"
+            :disabled="form.isPending"
           >
             <svg
-              v-if="form.isPending.value"
+              v-if="form.isPending"
               class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -159,7 +153,7 @@ const [remember] = form.defineField('remember')
               />
             </svg>
             {{
-              form.isPending.value
+              form.isPending
                 ? t('auth.logging_in', 'Signing in...')
                 : t('auth.login_btn', 'Log In')
             }}

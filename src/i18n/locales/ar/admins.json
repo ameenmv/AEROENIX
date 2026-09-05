@@ -1,5 +1,6 @@
 {
   "title": "المشرفون",
+  "subtitle": "إدارة مشرفي النظام",
   "description": "إدارة مشرفي النظام",
   "create_title": "إنشاء مشرف",
   "create_description": "إضافة مشرف جديد إلى النظام",
@@ -69,7 +70,20 @@
     "location": "الموقع",
     "session_status": "حالة الجلسة",
     "session_time": "وقت الجلسة",
-    "timezone": "المنطقة الزمنية"
+    "timezone": "المنطقة الزمنية",
+    "username": "اسم المستخدم",
+    "password_confirmation": "تأكيد كلمة المرور",
+    "roles": "الأدوار"
+  },
+  "verified": "موثق",
+  "placeholders": {
+    "name": "الاسم الكامل",
+    "email": "email{'@'}example.com",
+    "phone": "+966...",
+    "username": "اسم مستخدم اختياري",
+    "password": "8 أحرف على الأقل",
+    "password_edit": "اتركه فارغاً للاحتفاظ بالحالي",
+    "password_confirmation": "أعد كلمة المرور"
   },
   "statuss": {
     "active": "نشط",

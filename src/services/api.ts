@@ -44,6 +44,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
   },
   // Cookie-based auth support (Sanctum SPA)
   withCredentials: import.meta.env.VITE_AUTH_STRATEGY === 'cookie',

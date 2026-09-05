@@ -1,153 +1,161 @@
 <script setup lang="ts">
-import type { Permission } from '@/types/entities/permission'
-import { useQuery } from '@tanstack/vue-query'
-import { ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useForm } from '@/composables'
-import { roleFormSchema } from '@/modules/roles/schema'
-import { permissionsService } from '@/services/permissionsService'
+import { useI18n } from 'vue-i18n'
+import { useRoles } from '@/composables'
 import { rolesService } from '@/services/rolesService'
+import type { Role } from '@/types/entities/role'
+import { Button } from '@/components/uic/button'
+import { Skeleton } from '@/components/uic/skeleton'
+import { Badge } from '@/components/uic/badge'
+import { ArrowLeft01Icon, FloppyDiskIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
+import { useSonarStore } from '@/stores/sonar'
 
-const { t } = useI18n()
-const router = useRouter()
 const route = useRoute()
-const id = route.params.id as string
+const router = useRouter()
+const { t } = useI18n()
+const { roles, modules, isLoading, refetch } = useRoles()
+const sonar = useSonarStore()
 
-const { data: item, isLoading } = useQuery({
-  queryKey: ['roles', id],
-  queryFn: () => rolesService.get(id, { scope: 'full', include: 'permissions' }),
-  retry: false,
-  refetchOnWindowFocus: false,
-})
+const roleId = Number(route.params.id)
+const role = computed<Role | undefined>(() => roles.value.find(r => r.id === roleId))
 
-const { data: allPermissions } = useQuery({
-  queryKey: ['permissions'],
-  queryFn: () => permissionsService.list(),
-  retry: false,
-  refetchOnWindowFocus: false,
-})
-
+// The mutable state for permissions
 const selectedPermissions = ref<number[]>([])
+const isSaving = ref(false)
 
-const form = useForm({
-  resourceName: 'roles',
-  action: 'update',
-  schema: roleFormSchema(t),
-  mutationFn: async (data) => {
-    const result = await rolesService.update(id, data)
-    // Sync permissions separately
-    await rolesService.syncPermissions(id, selectedPermissions.value)
-    return result
-  },
-  onSuccess: () => router.push({ name: 'admin-roles' }),
-})
-
-watch(
-  item,
-  (newItem) => {
-    if (newItem) {
-      form.setValues({
-        display_name: newItem.display_name,
-        permissions: newItem.permissions?.map(p => p.id) || [],
-      })
-      selectedPermissions.value = newItem.permissions?.map(p => p.id) || []
-    }
-  },
-  { immediate: true },
-)
-
-// Group permissions by module for the UI
-function groupedPermissions(permissions: Permission[]) {
-  const groups: Record<string, Permission[]> = {}
-  for (const perm of permissions) {
-    const module = perm.module || 'general'
-    if (!groups[module])
-      groups[module] = []
-    groups[module].push(perm)
+// Initialize selected permissions when role is loaded
+watch(role, (newRole) => {
+  if (newRole) {
+    selectedPermissions.value = [...newRole.permissions]
   }
-  return groups
+}, { immediate: true })
+
+function togglePermission(permissionId: number) {
+  const index = selectedPermissions.value.indexOf(permissionId)
+  if (index === -1) {
+    selectedPermissions.value.push(permissionId)
+  } else {
+    selectedPermissions.value.splice(index, 1)
+  }
 }
 
-function togglePermission(permId: number) {
-  const idx = selectedPermissions.value.indexOf(permId)
-  if (idx === -1) {
-    selectedPermissions.value.push(permId)
-  }
-  else {
-    selectedPermissions.value.splice(idx, 1)
+function hasPermission(permissionId: number): boolean {
+  return selectedPermissions.value.includes(permissionId)
+}
+
+async function savePermissions() {
+  if (!role.value) return
+  isSaving.value = true
+  try {
+    await rolesService.updatePermissions(role.value.id, {
+      permissions: selectedPermissions.value
+    })
+    sonar.success('Success', t('roles.permissions_updated', 'Permissions updated successfully'))
+    await refetch() // refresh the matrix
+    router.push({ name: 'admin-roles' })
+  } catch (error: any) {
+    sonar.error('Error', error?.response?.data?.message || 'Failed to update permissions')
+  } finally {
+    isSaving.value = false
   }
 }
 </script>
 
 <template>
-  <div class="space-y-6">
-    <h1 class="text-2xl font-bold">
-      {{ t('actions.edit') }} {{ t('roles.title', 'Role') }}
-    </h1>
-
-    <div v-if="isLoading" class="py-12 flex justify-center">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-    </div>
-
-    <FormContainer
-      v-else
-      :form="form"
-      :is-edit="true"
-      @cancel="router.push({ name: 'admin-roles' })"
-    >
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <InputField
-          name="display_name.en"
-          :label="`${t('roles.fields.display_name', 'Role Name')} (EN)`"
-          :placeholder="t('roles.placeholders.display_name_en', 'Enter role name in English')"
-          :error="form.errors.value['display_name.en']"
-        />
-        <InputField
-          name="display_name.ar"
-          :label="`${t('roles.fields.display_name', 'Role Name')} (AR)`"
-          :placeholder="t('roles.placeholders.display_name_ar', 'Enter role name in Arabic')"
-          dir="rtl"
-          :error="form.errors.value['display_name.ar']"
-        />
-      </div>
-
-      <!-- Permissions Matrix -->
-      <div class="mt-6">
-        <h3 class="text-lg font-semibold mb-4">
-          {{ t('roles.fields.permissions', 'Permissions') }}
-        </h3>
-
-        <div v-if="allPermissions?.data" class="space-y-6">
-          <div
-            v-for="(perms, module) in groupedPermissions(allPermissions.data)"
-            :key="module"
-            class="rounded-lg border border-border p-4"
-          >
-            <h4 class="text-sm font-semibold capitalize mb-3 text-primary">
-              {{ module }}
-            </h4>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-              <label
-                v-for="perm in perms"
-                :key="perm.id"
-                class="flex items-center gap-2 text-sm cursor-pointer rounded-md p-2 hover:bg-muted/50 transition-colors"
-              >
-                <input
-                  type="checkbox"
-                  :checked="selectedPermissions.includes(perm.id)"
-                  class="rounded border-border"
-                  @change="togglePermission(perm.id)"
-                >
-                <span>{{ perm.label?.en || perm.name }}</span>
-              </label>
+  <ModularView>
+    <div class="space-y-6 pb-12">
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <Button variant="ghost" size="icon" @click="router.push({ name: 'admin-roles' })">
+            <HugeiconsIcon :icon="ArrowLeft01Icon" :size="20" />
+          </Button>
+          <div>
+            <div class="flex items-center gap-3">
+              <h1 class="text-2xl font-bold tracking-tight">
+                <Skeleton v-if="isLoading" class="h-8 w-40" />
+                <template v-else-if="role">{{ role.name }}</template>
+                <template v-else>{{ t('roles.not_found', 'Role Not Found') }}</template>
+              </h1>
+              <Badge v-if="role" :variant="role.scope === 'platform' ? 'default' : 'secondary'" class="capitalize">
+                {{ role.scope }}
+              </Badge>
             </div>
+            <p class="mt-1 text-sm text-muted-foreground">
+              {{ t('roles.edit_subtitle', 'Toggle permissions to grant or revoke access') }}
+            </p>
           </div>
         </div>
-        <div v-else class="text-sm text-muted-foreground">
-          {{ t('common.loading', 'Loading...') }}
+
+        <div v-if="role" class="flex items-center gap-3 self-end sm:self-auto">
+          <Button variant="outline" @click="router.push({ name: 'admin-roles' })" :disabled="isSaving">
+            {{ t('actions.cancel', 'Cancel') }}
+          </Button>
+          <Button @click="savePermissions" :disabled="isSaving">
+            <span v-if="isSaving" class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+            <HugeiconsIcon v-else :icon="FloppyDiskIcon" :size="18" class="mr-2" />
+            {{ t('actions.save_changes', 'Save Changes') }}
+          </Button>
         </div>
       </div>
-    </FormContainer>
-  </div>
+
+      <!-- Loading State -->
+      <div v-if="isLoading" class="space-y-10 mt-10">
+        <div v-for="m in 4" :key="`sk-mod-${m}`">
+          <Skeleton class="h-6 w-48 mb-4" />
+          <div class="flex flex-wrap gap-3">
+             <Skeleton class="h-10 w-40 rounded-lg" v-for="p in 8" :key="`sk-perm-${p}`" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Roles Content -->
+      <div v-else-if="role" class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-12 mt-10">
+        <div v-for="mod in modules" :key="mod.name" class="flex flex-col">
+          <!-- Module Header -->
+          <div class="flex items-center gap-4 mb-5">
+            <h3 class="text-lg font-bold tracking-tight uppercase text-foreground whitespace-nowrap">{{ mod.name }}</h3>
+            <div class="h-px bg-border/60 flex-1 min-w-4"></div>
+            <span class="text-xs font-medium text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-md whitespace-nowrap">
+              {{ mod.permissions.length }} {{ t('roles.fields.permissions_count', 'Permissions') }}
+            </span>
+          </div>
+          
+          <!-- Pills Grid (Toggles) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-3">
+            <button
+              v-for="perm in mod.permissions"
+              :key="perm.id"
+              type="button"
+              @click="togglePermission(perm.id)"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-all duration-200 outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              :class="hasPermission(perm.id) 
+                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400 shadow-sm hover:bg-emerald-500/20' 
+                : 'bg-background border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground'"
+            >
+              <div 
+                class="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold transition-colors"
+                :class="hasPermission(perm.id) ? 'bg-emerald-500 text-white shadow-sm' : 'bg-muted-foreground/20 text-muted-foreground'"
+              >
+                {{ hasPermission(perm.id) ? '✓' : '+' }}
+              </div>
+              <span class="text-[13px] font-semibold tracking-wide truncate" :title="perm.action">
+                {{ perm.action }}
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Not Found State -->
+      <div v-else class="flex flex-col items-center justify-center py-12 text-muted-foreground">
+        <p>{{ t('roles.not_found', 'Role Not Found') }}</p>
+        <Button variant="link" @click="router.push({ name: 'admin-roles' })" class="mt-2">
+          {{ t('actions.go_back', 'Go Back') }}
+        </Button>
+      </div>
+    </div>
+  </ModularView>
 </template>

@@ -21,6 +21,7 @@ interface Props {
   size?: 'sm' | 'md' | 'lg'
   required?: boolean
   disabled?: boolean
+  autocomplete?: string
   rows?: number
   class?: HTMLAttributes['class']
 }
@@ -97,6 +98,7 @@ const inputClasses = computed(() => {
         :model-value="modelValue"
         :placeholder="placeholder"
         :disabled="disabled"
+        :autocomplete="autocomplete"
         :class="cn('font-sans', inputClasses, $slots.suffix ? 'pr-10' : '')"
         @update:model-value="(val) => emit('update:modelValue', val)"
       />

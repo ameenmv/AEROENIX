@@ -4,6 +4,10 @@ import { useAuthStore } from '@/stores'
 import i18n, { DEFAULT_LOCALE, setLocale, SUPPORTED_LOCALES } from '../i18n'
 import { getModuleRoutes } from './modules'
 
+// Auto-import all modules so they register themselves
+import.meta.glob('../modules/**/index.ts', { eager: true })
+import.meta.glob('../modules/*.ts', { eager: true })
+
 const routes = [
   {
     path: 'admin/login',
@@ -22,6 +26,12 @@ const routes = [
     name: 'admin-forgot-password-verify',
     component: () => import('../views/admin/auth/ForgotPasswordOtpView.vue'),
     meta: { layout: 'blank', breadcrumbKey: 'auth.verify_code_title' },
+  },
+  {
+    path: 'admin/set-password',
+    name: 'admin-set-password',
+    component: () => import('../views/admin/auth/AcceptInvitationView.vue'),
+    meta: { layout: 'blank', breadcrumbKey: 'auth.set_password_title' },
   },
   {
     path: 'admin/reset-password',
@@ -101,6 +111,7 @@ router.beforeEach((to, _from, next) => {
     = to.path.includes('/admin/login')
       || to.path.includes('/admin/forgot-password')
       || to.path.includes('/admin/reset-password')
+      || to.path.includes('/admin/set-password')
       || to.path.includes('/admin/otp')
 
   // ── Mock Auth Bypass ──────────────────────────────────────────────────────

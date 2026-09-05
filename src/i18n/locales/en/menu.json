@@ -4,5 +4,8 @@
   "navigation": "Navigation",
   "profile": "Profile",
   "settings": "Settings",
-  "users": "Users"
+  "users": "Users",
+  "hotels": "Hotels",
+  "roles": "Roles & Permissions",
+  "channels": "Channels"
 }

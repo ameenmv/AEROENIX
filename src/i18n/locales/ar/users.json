@@ -1,11 +1,12 @@
 {
   "title": "المستخدمين",
-  "subtitle": "إدارة مستخدمي المنصة",
+  "subtitle": "إدارة مستخدمي المنصة والدعوات",
   "fields": {
     "name": "الاسم",
     "email": "البريد الإلكتروني",
     "phone": "رقم الهاتف",
     "role": "الدور",
+    "hotel": "الفندق",
     "status": "الحالة",
     "is_verified": "موثق",
     "last_login_at": "آخر تسجيل دخول",
@@ -20,5 +21,33 @@
   "statuses": {
     "active": "نشط",
     "inactive": "غير نشط"
-  }
+  },
+  "tabs": {
+    "users": "المستخدمين",
+    "invitations": "الدعوات المعلقة"
+  },
+  "status": {
+    "invited": "مدعو"
+  },
+  "actions": {
+    "invite": "دعوة مستخدم",
+    "resend": "إعادة إرسال",
+    "suspend": "تعليق",
+    "activate": "تفعيل"
+  },
+  "pending_invitations": "الدعوات المعلقة",
+  "no_pending_invitations": "لا توجد دعوات معلقة",
+  "confirm_suspend": "تأكيد التعليق",
+  "confirm_suspend_message": "هل أنت متأكد أنك تريد تعليق {name}؟",
+  "confirm_activate": "تأكيد التفعيل",
+  "confirm_activate_message": "هل أنت متأكد أنك تريد تفعيل {name}؟",
+  "invite_subtitle": "إرسال دعوة لمستخدم جديد للانضمام إلى المنصة",
+  "placeholders": {
+    "email": "user{'@'}example.com",
+    "name": "الاسم الكامل",
+    "role": "اختر دوراً",
+    "hotel": "اختر فندقاً"
+  },
+  "confirm_resend": "إعادة إرسال الدعوة",
+  "confirm_resend_message": "هل أنت متأكد أنك تريد إعادة إرسال الدعوة إلى {email}؟"
 }

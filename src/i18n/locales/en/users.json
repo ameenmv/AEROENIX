@@ -1,11 +1,12 @@
 {
   "title": "Users",
-  "subtitle": "Manage platform users",
+  "subtitle": "Manage platform users and invitations",
   "fields": {
     "name": "Name",
     "email": "Email",
     "phone": "Phone",
     "role": "Role",
+    "hotel": "Hotel",
     "status": "Status",
     "is_verified": "Verified",
     "last_login_at": "Last Login",
@@ -20,5 +21,33 @@
   "statuses": {
     "active": "Active",
     "inactive": "Inactive"
-  }
+  },
+  "tabs": {
+    "users": "Users",
+    "invitations": "Pending Invitations"
+  },
+  "status": {
+    "invited": "Invited"
+  },
+  "actions": {
+    "invite": "Invite User",
+    "resend": "Resend",
+    "suspend": "Suspend",
+    "activate": "Activate"
+  },
+  "pending_invitations": "Pending Invitations",
+  "no_pending_invitations": "No pending invitations",
+  "confirm_suspend": "Confirm Suspend",
+  "confirm_suspend_message": "Are you sure you want to suspend {name}?",
+  "confirm_activate": "Confirm Activate",
+  "confirm_activate_message": "Are you sure you want to activate {name}?",
+  "invite_subtitle": "Send an invitation to a new user to join the platform",
+  "placeholders": {
+    "email": "user{'@'}example.com",
+    "name": "Full name",
+    "role": "Select a role",
+    "hotel": "Select a hotel"
+  },
+  "confirm_resend": "Resend Invitation",
+  "confirm_resend_message": "Are you sure you want to resend the invitation to {email}?"
 }

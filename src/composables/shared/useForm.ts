@@ -80,12 +80,14 @@ export function useForm<T = any>(options: UseFormOptions<T>) {
       return await mutationFn(data)
     },
     onSuccess: (data) => {
-      // The Axios interceptor in api.ts already shows a toast for real mutating API responses.
-      // We skip sonar toast here to avoid double notifications.
-      // For mock services (which bypass Axios), the mock service itself shows toasts.
-
       // Invalidate list queries for this resource to keep table updated
       queryClient.invalidateQueries({ queryKey: [resourceName] })
+      
+      if (showNotifications) {
+        const msg = (data as any)?.message || _successMessage || `${resourceName} saved successfully.`
+        sonarStore.success('Success', msg)
+      }
+      
       onSuccess?.(data)
     },
     onError: (err: unknown) => {
@@ -265,7 +267,6 @@ export function useForm<T = any>(options: UseFormOptions<T>) {
     ...veeForm,
     action,
     mutate: mutation.mutate,
-    isPending: mutation.isPending,
     onSubmit,
     executeSubmit,
     cancelSubmit,
@@ -275,6 +276,7 @@ export function useForm<T = any>(options: UseFormOptions<T>) {
     canSubmit,
     showConfirmDialog,
     // Placeholder values — immediately overridden by defineProperties below
+    isPending: false as any,
     hasConfirmBeforeSubmit: _confirm.enabled as any,
     confirmTitle: _confirm.title as any,
     confirmMessage: _confirm.message as any,
@@ -286,6 +288,11 @@ export function useForm<T = any>(options: UseFormOptions<T>) {
   // This ensures external assignments (e.g. form.hasConfirmBeforeSubmit = computed(...))
   // propagate into the closure that validatedSubmit reads from
   Object.defineProperties(result, {
+    isPending: {
+      get: () => mutation.isPending.value ?? (mutation as any).isPending,
+      enumerable: true,
+      configurable: true,
+    },
     hasConfirmBeforeSubmit: {
       get: () => _confirm.enabled,
       set: (v: any) => {

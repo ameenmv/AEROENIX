@@ -3,7 +3,6 @@ import { registerModule } from '@/router/modules'
 registerModule({
   name: 'roles',
   path: 'admin/roles',
-  permissionKey: 'roles',
   routes: [
     {
       path: 'admin/roles',
@@ -13,7 +12,6 @@ registerModule({
         title: 'menu.roles',
         description: 'Manage roles and permissions',
         requiresAuth: true,
-        permission: 'roles.view',
       },
     },
     {
@@ -24,7 +22,6 @@ registerModule({
         title: 'actions.create',
         description: 'Create a new role',
         requiresAuth: true,
-        permission: 'roles.manage',
       },
     },
     {
@@ -35,7 +32,6 @@ registerModule({
         title: 'actions.edit',
         description: 'Edit role details and permissions',
         requiresAuth: true,
-        permission: 'roles.manage',
       },
     },
     {
@@ -46,7 +42,6 @@ registerModule({
         title: 'actions.view',
         description: 'View role details',
         requiresAuth: true,
-        permission: 'roles.view',
       },
     },
   ],
