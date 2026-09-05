@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { toast } from 'vue-sonner'
 import {
+  Cancel01Icon,
+  CodeIcon,
   FacebookIcon,
   InformationCircleIcon,
   InstagramIcon,
@@ -12,6 +14,8 @@ import {
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/uic/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/uic/card'
+import { Input } from '@/components/uic/input'
+import { Label } from '@/components/uic/label'
 import { channelsService } from '@/services/channelsService'
 
 const { t } = useI18n()
@@ -19,6 +23,15 @@ const { t } = useI18n()
 const isConnectingWhatsApp = ref(false)
 const isConnectingInstagram = ref(false)
 const isConnectingFacebook = ref(false)
+
+// Dev/Manual Connect Modal State
+const showManualModal = ref(false)
+const manualChannelType = ref<'whatsapp' | 'instagram' | 'facebook'>('whatsapp')
+const manualPhoneNumberId = ref('')
+const manualAccessToken = ref('')
+const manualPageId = ref('')
+const manualAuthKey = ref('')
+const isSubmittingManual = ref(false)
 
 function openOAuthPopup(url: string) {
   const width = 600
@@ -36,6 +49,24 @@ function openOAuthPopup(url: string) {
     toast.error('Popup blocked! Please allow popups for this site and try again.')
   }
 }
+
+// PostMessage Listener for popup callback messages
+function handlePostMessage(event: MessageEvent) {
+  if (event.data?.type === 'AEROENIX_CHANNEL_CONNECTED') {
+    const channelName = event.data?.channel?.name || 'Channel'
+    toast.success(`${channelName} connected successfully!`)
+  } else if (event.data?.type === 'AEROENIX_CHANNEL_ERROR') {
+    toast.error(event.data?.message || 'Failed to connect channel.')
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('message', handlePostMessage)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('message', handlePostMessage)
+})
 
 async function handleConnectWhatsApp() {
   isConnectingWhatsApp.value = true
@@ -87,6 +118,57 @@ async function handleConnectFacebook() {
     isConnectingFacebook.value = false
   }
 }
+
+// Open Dev/Manual modal
+function openManualModal(type: 'whatsapp' | 'instagram' | 'facebook') {
+  manualChannelType.value = type
+  manualPhoneNumberId.value = ''
+  manualAccessToken.value = ''
+  manualPageId.value = ''
+  manualAuthKey.value = ''
+  showManualModal.value = true
+}
+
+async function handleManualSubmit() {
+  isSubmittingManual.value = true
+  try {
+    if (manualChannelType.value === 'whatsapp') {
+      if (!manualPhoneNumberId.value || !manualAccessToken.value) {
+        toast.error('Phone Number ID and Access Token are required.')
+        return
+      }
+      await channelsService.connectWhatsApp({
+        phone_number_id: manualPhoneNumberId.value,
+        access_token: manualAccessToken.value,
+      })
+      toast.success('WhatsApp Business channel connected successfully!')
+    } else if (manualChannelType.value === 'instagram') {
+      if (!manualAuthKey.value) {
+        toast.error('Instagram Auth Key is required.')
+        return
+      }
+      await channelsService.connectInstagram({
+        auth_key: manualAuthKey.value,
+      })
+      toast.success('Instagram channel connected successfully!')
+    } else if (manualChannelType.value === 'facebook') {
+      if (!manualPageId.value || !manualAccessToken.value) {
+        toast.error('Page ID and Access Token are required.')
+        return
+      }
+      await channelsService.connectFacebook({
+        page_id: manualPageId.value,
+        access_token: manualAccessToken.value,
+      })
+      toast.success('Facebook Messenger channel connected successfully!')
+    }
+    showManualModal.value = false
+  } catch (err: any) {
+    toast.error(err?.message || 'Failed to connect channel.')
+  } finally {
+    isSubmittingManual.value = false
+  }
+}
 </script>
 
 <template>
@@ -122,14 +204,25 @@ async function handleConnectFacebook() {
               <span class="text-muted-foreground font-medium">Provider:</span>
               <span class="font-semibold text-foreground">Meta Cloud API</span>
             </div>
-            <Button
-              class="w-full gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20"
-              :disabled="isConnectingWhatsApp"
-              @click="handleConnectWhatsApp"
-            >
-              <HugeiconsIcon :icon="Link01Icon" :size="18" />
-              <span>Connect WhatsApp</span>
-            </Button>
+            <div class="space-y-2">
+              <Button
+                class="w-full gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20"
+                :disabled="isConnectingWhatsApp"
+                @click="handleConnectWhatsApp"
+              >
+                <HugeiconsIcon :icon="Link01Icon" :size="18" />
+                <span>Connect WhatsApp</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                class="w-full gap-1.5 text-xs text-muted-foreground"
+                @click="openManualModal('whatsapp')"
+              >
+                <HugeiconsIcon :icon="CodeIcon" :size="14" />
+                <span>Manual Token Connect</span>
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
@@ -149,14 +242,25 @@ async function handleConnectFacebook() {
               <span class="text-muted-foreground font-medium">Provider:</span>
               <span class="font-semibold text-foreground">Instagram Graph API</span>
             </div>
-            <Button
-              class="w-full gap-2 bg-pink-600 hover:bg-pink-700 text-white shadow-md shadow-pink-600/20"
-              :disabled="isConnectingInstagram"
-              @click="handleConnectInstagram"
-            >
-              <HugeiconsIcon :icon="Link01Icon" :size="18" />
-              <span>Connect Instagram</span>
-            </Button>
+            <div class="space-y-2">
+              <Button
+                class="w-full gap-2 bg-pink-600 hover:bg-pink-700 text-white shadow-md shadow-pink-600/20"
+                :disabled="isConnectingInstagram"
+                @click="handleConnectInstagram"
+              >
+                <HugeiconsIcon :icon="Link01Icon" :size="18" />
+                <span>Connect Instagram</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                class="w-full gap-1.5 text-xs text-muted-foreground"
+                @click="openManualModal('instagram')"
+              >
+                <HugeiconsIcon :icon="CodeIcon" :size="14" />
+                <span>Manual Token Connect</span>
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
@@ -176,14 +280,25 @@ async function handleConnectFacebook() {
               <span class="text-muted-foreground font-medium">Provider:</span>
               <span class="font-semibold text-foreground">Meta Messenger API</span>
             </div>
-            <Button
-              class="w-full gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20"
-              :disabled="isConnectingFacebook"
-              @click="handleConnectFacebook"
-            >
-              <HugeiconsIcon :icon="Link01Icon" :size="18" />
-              <span>Connect Messenger</span>
-            </Button>
+            <div class="space-y-2">
+              <Button
+                class="w-full gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20"
+                :disabled="isConnectingFacebook"
+                @click="handleConnectFacebook"
+              >
+                <HugeiconsIcon :icon="Link01Icon" :size="18" />
+                <span>Connect Messenger</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                class="w-full gap-1.5 text-xs text-muted-foreground"
+                @click="openManualModal('facebook')"
+              >
+                <HugeiconsIcon :icon="CodeIcon" :size="14" />
+                <span>Manual Token Connect</span>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -202,6 +317,70 @@ async function handleConnectFacebook() {
           </div>
         </CardContent>
       </Card>
+
+      <!-- Dev/Manual Credentials Modal -->
+      <Teleport to="body">
+        <div v-if="showManualModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" @click="showManualModal = false" />
+
+          <div class="relative z-10 bg-background border border-border rounded-xl shadow-xl w-full max-w-md p-6 space-y-4 animate-in fade-in zoom-in-95 duration-200">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-bold flex items-center gap-2">
+                <HugeiconsIcon :icon="CodeIcon" :size="20" class="text-primary" />
+                <span>Manual Credentials Connect</span>
+              </h3>
+              <button class="text-muted-foreground hover:text-foreground" @click="showManualModal = false">
+                <HugeiconsIcon :icon="Cancel01Icon" :size="18" />
+              </button>
+            </div>
+
+            <p class="text-xs text-muted-foreground">
+              Connect directly using Meta App credentials for testing and development.
+            </p>
+
+            <!-- WhatsApp Fields -->
+            <div v-if="manualChannelType === 'whatsapp'" class="space-y-3">
+              <div>
+                <Label class="text-xs">Phone Number ID</Label>
+                <Input v-model="manualPhoneNumberId" type="text" placeholder="e.g. 1205078266028733" class="mt-1 text-sm bg-muted/30" />
+              </div>
+              <div>
+                <Label class="text-xs">Access Token</Label>
+                <Input v-model="manualAccessToken" type="password" placeholder="EAAu..." class="mt-1 text-sm bg-muted/30" />
+              </div>
+            </div>
+
+            <!-- Instagram Fields -->
+            <div v-else-if="manualChannelType === 'instagram'" class="space-y-3">
+              <div>
+                <Label class="text-xs">Instagram Auth Key / Token</Label>
+                <Input v-model="manualAuthKey" type="password" placeholder="IGAAVUI..." class="mt-1 text-sm bg-muted/30" />
+              </div>
+            </div>
+
+            <!-- Facebook Fields -->
+            <div v-else-if="manualChannelType === 'facebook'" class="space-y-3">
+              <div>
+                <Label class="text-xs">Facebook Page ID</Label>
+                <Input v-model="manualPageId" type="text" placeholder="e.g. 113172478396345" class="mt-1 text-sm bg-muted/30" />
+              </div>
+              <div>
+                <Label class="text-xs">Page Access Token</Label>
+                <Input v-model="manualAccessToken" type="password" placeholder="EAAB..." class="mt-1 text-sm bg-muted/30" />
+              </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-2">
+              <Button variant="outline" size="sm" @click="showManualModal = false">
+                Cancel
+              </Button>
+              <Button size="sm" :disabled="isSubmittingManual" @click="handleManualSubmit">
+                Connect Channel
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Teleport>
     </div>
   </div>
 </template>

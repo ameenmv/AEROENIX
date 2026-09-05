@@ -22,6 +22,25 @@ const INSTAGRAM_BASE = '/user/workspace/channels/instagram-professional'
 const FACEBOOK_BASE = '/user/workspace/channels/facebook-messenger'
 
 export const channelsService = {
+  /**
+   * Handle OAuth callback from Frontend Callback view.
+   * Sends code & state to backend and returns response.
+   */
+  async handleOAuthCallback(provider: string, code: string, state: string): Promise<any> {
+    let endpoint = WHATSAPP_BASE
+    const p = (provider || '').toLowerCase()
+    if (p.includes('instagram')) {
+      endpoint = INSTAGRAM_BASE
+    } else if (p.includes('facebook') || p.includes('messenger')) {
+      endpoint = FACEBOOK_BASE
+    }
+
+    const res = await api.get(`${endpoint}/callback`, {
+      params: { code, state },
+    })
+    return res.data
+  },
+
   // ── WhatsApp Business ──────────────────────────────────────────────────────
   async getWhatsAppAuthUrl(hotelId?: number): Promise<{ url?: string; auth_url?: string; state: string }> {
     const res = await api.get<ApiSuccessResponse<any>>(`${WHATSAPP_BASE}/auth-url`, {

@@ -15,5 +15,14 @@ registerModule({
         breadcrumbKey: 'menu.channels',
       },
     },
+    {
+      path: 'admin/channels/callback/:provider?',
+      name: 'admin-channels-callback',
+      component: () => import('@/views/admin/channels/CallbackView.vue'),
+      meta: {
+        layout: 'blank',
+        breadcrumbKey: 'menu.channels',
+      },
+    },
   ],
 })

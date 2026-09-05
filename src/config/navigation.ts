@@ -1,4 +1,11 @@
-import { Building04Icon, Home01Icon, SecurityLockIcon, Share01Icon, UserGroupIcon } from '@hugeicons/core-free-icons'
+import {
+  Building04Icon,
+  Comment01Icon,
+  Home01Icon,
+  SecurityLockIcon,
+  Share01Icon,
+  UserGroupIcon,
+} from '@hugeicons/core-free-icons'
 
 export interface NavItem {
   name: string
@@ -17,6 +24,12 @@ export const navigationConfig: NavItem[] = [
     label: 'menu.home',
     icon: Home01Icon,
     to: '/admin/dashboard',
+  },
+  {
+    name: 'conversations',
+    label: 'menu.conversations',
+    icon: Comment01Icon,
+    to: '/admin/conversations',
   },
   {
     name: 'users',
