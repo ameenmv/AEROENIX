@@ -26,7 +26,14 @@ import { Badge } from '@/components/uic/badge'
 import { Button } from '@/components/uic/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/uic/card'
 import { Input } from '@/components/uic/input'
-import { Switch } from '@/components/uic/switch'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/uic/alert-dialog'
 import { conversationsService } from '@/services/conversationsService'
 
 const { t } = useI18n()
@@ -46,6 +53,10 @@ const selectedChannelFilter = ref<string>('all')
 const searchQuery = ref<string>('')
 const newMessageText = ref<string>('')
 const isAiPaused = ref<boolean>(false)
+
+// Handoff confirmation dialog state
+const showHandoffDialog = ref(false)
+const pendingHandoffAction = ref<'handoff' | 'resume' | null>(null)
 
 // Fetch Conversations List
 async function fetchConversations() {
@@ -113,28 +124,48 @@ async function handleSendMessage() {
   }
 }
 
-// Toggle AI vs Human Staff Handoff
-async function handleHandoffToggle(checked: boolean) {
-  if (!activeConversationId.value || isTogglingHandoff.value) return
+// ── AI Handoff with Confirmation Popup ───────────────────────────────────────
 
+/** Called when user clicks the handoff toggle button — opens confirmation popup */
+function requestHandoffToggle() {
+  if (!activeConversationId.value || isTogglingHandoff.value) return
+  pendingHandoffAction.value = isAiPaused.value ? 'resume' : 'handoff'
+  showHandoffDialog.value = true
+}
+
+/** Called when user confirms the action in the popup */
+async function confirmHandoff() {
+  if (!activeConversationId.value || !pendingHandoffAction.value) return
+
+  showHandoffDialog.value = false
   isTogglingHandoff.value = true
+
   try {
-    if (checked) {
-      // Handoff to human staff (pause AI)
+    if (pendingHandoffAction.value === 'handoff') {
       await conversationsService.handoff(activeConversationId.value)
       isAiPaused.value = true
-      toast.info('AI paused. Conversation taken over by staff.')
+      toast.info('AI paused — conversation taken over by staff.', {
+        description: 'You can now send manual replies. Click "Resume AI" to re-enable the bot.',
+      })
     } else {
-      // Resume AI bot
       await conversationsService.resumeAi(activeConversationId.value)
       isAiPaused.value = false
-      toast.success('AI bot auto-reply resumed.')
+      toast.success('AI bot auto-reply resumed.', {
+        description: 'The AI assistant will handle incoming messages automatically.',
+      })
     }
   } catch (err: any) {
     toast.error('Failed to update AI handoff status.')
   } finally {
     isTogglingHandoff.value = false
+    pendingHandoffAction.value = null
   }
+}
+
+/** Called when user cancels/rejects the popup */
+function cancelHandoff() {
+  showHandoffDialog.value = false
+  pendingHandoffAction.value = null
 }
 
 // Watch filters
@@ -330,28 +361,74 @@ function getChannelColorClass(badgeName: string) {
                 </div>
               </div>
 
-              <!-- AI Handoff Toggle -->
-              <div class="flex items-center gap-2 shrink-0 bg-muted/30 p-2 rounded-xl border border-border/40">
-                <div class="text-right text-xs">
-                  <p class="font-semibold text-foreground flex items-center gap-1">
-                    <HugeiconsIcon
-                      :icon="isAiPaused ? UserGroupIcon : SparklesIcon"
-                      :size="14"
-                      :class="isAiPaused ? 'text-blue-500' : 'text-purple-500'"
-                    />
-                    <span>{{ isAiPaused ? 'Staff Active' : 'AI Active' }}</span>
+              <!-- ═══════════════════════════════════════════════════════════
+                   AI Handoff Control — Prominent Banner Button
+                   ═══════════════════════════════════════════════════════════ -->
+              <button
+                class="shrink-0 flex items-center gap-3 px-4 py-2.5 rounded-xl border-2 transition-all duration-300 group/handoff"
+                :class="isAiPaused
+                  ? 'bg-blue-500/10 border-blue-500/40 hover:border-blue-500/70 hover:bg-blue-500/15'
+                  : 'bg-emerald-500/10 border-emerald-500/40 hover:border-emerald-500/70 hover:bg-emerald-500/15'"
+                :disabled="isTogglingHandoff"
+                @click="requestHandoffToggle"
+              >
+                <!-- Status Icon -->
+                <div
+                  class="w-9 h-9 rounded-lg flex items-center justify-center transition-colors"
+                  :class="isAiPaused ? 'bg-blue-500/20' : 'bg-emerald-500/20'"
+                >
+                  <HugeiconsIcon
+                    :icon="isAiPaused ? UserGroupIcon : SparklesIcon"
+                    :size="18"
+                    :class="isAiPaused ? 'text-blue-400' : 'text-emerald-400'"
+                  />
+                </div>
+
+                <!-- Label -->
+                <div class="text-left">
+                  <p
+                    class="text-sm font-bold leading-tight"
+                    :class="isAiPaused ? 'text-blue-400' : 'text-emerald-400'"
+                  >
+                    {{ isAiPaused ? 'Staff Mode' : 'AI Active' }}
                   </p>
-                  <p class="text-[10px] text-muted-foreground">
-                    {{ isAiPaused ? 'Human takeover' : 'Auto-replying' }}
+                  <p class="text-[10px] text-muted-foreground font-medium">
+                    {{ isAiPaused ? 'Click to resume AI' : 'Click to take over' }}
                   </p>
                 </div>
-                <Switch
-                  :checked="isAiPaused"
-                  :disabled="isTogglingHandoff"
-                  @update:checked="handleHandoffToggle"
-                />
-              </div>
+
+                <!-- Pulsing dot -->
+                <div class="relative ml-1">
+                  <span
+                    class="block w-2.5 h-2.5 rounded-full"
+                    :class="isAiPaused ? 'bg-blue-400' : 'bg-emerald-400'"
+                  />
+                  <span
+                    class="absolute inset-0 w-2.5 h-2.5 rounded-full animate-ping opacity-75"
+                    :class="isAiPaused ? 'bg-blue-400' : 'bg-emerald-400'"
+                  />
+                </div>
+              </button>
             </CardHeader>
+
+            <!-- AI status banner — visible indicator below header -->
+            <div
+              class="px-4 py-2 flex items-center justify-center gap-2 text-xs font-semibold border-b transition-colors duration-300"
+              :class="isAiPaused
+                ? 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'"
+            >
+              <HugeiconsIcon
+                :icon="isAiPaused ? UserGroupIcon : SparklesIcon"
+                :size="14"
+              />
+              <span v-if="isAiPaused">
+                🛑 AI is paused — You are replying manually as staff
+              </span>
+              <span v-else>
+                ✨ AI is auto-replying to this conversation
+              </span>
+            </div>
 
             <!-- Chat Thread Messages -->
             <div class="flex-1 p-4 overflow-y-auto space-y-4 bg-muted/10">
@@ -449,6 +526,51 @@ function getChannelColorClass(badgeName: string) {
                 </Badge>
               </div>
 
+              <!-- AI Mode Indicator Card -->
+              <div
+                class="p-3 rounded-xl border-2 transition-all duration-300"
+                :class="isAiPaused
+                  ? 'bg-blue-500/5 border-blue-500/30'
+                  : 'bg-emerald-500/5 border-emerald-500/30'"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-lg flex items-center justify-center"
+                    :class="isAiPaused ? 'bg-blue-500/15' : 'bg-emerald-500/15'"
+                  >
+                    <HugeiconsIcon
+                      :icon="isAiPaused ? UserGroupIcon : SparklesIcon"
+                      :size="20"
+                      :class="isAiPaused ? 'text-blue-400' : 'text-emerald-400'"
+                    />
+                  </div>
+                  <div class="flex-1">
+                    <p
+                      class="text-sm font-bold"
+                      :class="isAiPaused ? 'text-blue-400' : 'text-emerald-400'"
+                    >
+                      {{ isAiPaused ? 'Staff Handling' : 'AI Auto-Reply' }}
+                    </p>
+                    <p class="text-[10px] text-muted-foreground">
+                      {{ isAiPaused ? 'AI bot is paused for this conversation' : 'Bot is handling replies automatically' }}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  class="w-full mt-2.5 gap-2 text-xs font-semibold h-8"
+                  :class="isAiPaused
+                    ? 'border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10'
+                    : 'border-blue-500/40 text-blue-400 hover:bg-blue-500/10'"
+                  :disabled="isTogglingHandoff"
+                  @click="requestHandoffToggle"
+                >
+                  <HugeiconsIcon :icon="isAiPaused ? SparklesIcon : UserGroupIcon" :size="14" />
+                  {{ isAiPaused ? 'Resume AI Bot' : 'Take Over (Staff)' }}
+                </Button>
+              </div>
+
               <!-- Stats Grid -->
               <div class="grid grid-cols-2 gap-3 pt-2 border-t border-border/40">
                 <div class="bg-muted/30 p-3 rounded-xl border border-border/30 text-center">
@@ -485,5 +607,114 @@ function getChannelColorClass(badgeName: string) {
         </Card>
       </div>
     </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         AI Handoff Confirmation Dialog (Popup)
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <AlertDialog :open="showHandoffDialog">
+      <AlertDialogContent class="max-w-md border-border/50">
+        <!-- Taking over from AI -->
+        <template v-if="pendingHandoffAction === 'handoff'">
+          <AlertDialogHeader>
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-12 h-12 rounded-xl bg-blue-500/15 flex items-center justify-center">
+                <HugeiconsIcon :icon="UserGroupIcon" :size="24" class="text-blue-400" />
+              </div>
+              <div>
+                <AlertDialogTitle class="text-lg">Take Over Conversation?</AlertDialogTitle>
+                <AlertDialogDescription class="text-sm mt-0.5">
+                  Switch from AI to manual staff mode
+                </AlertDialogDescription>
+              </div>
+            </div>
+          </AlertDialogHeader>
+
+          <div class="space-y-3 py-2">
+            <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-sm text-amber-400">
+              ⚠️ The AI bot will <strong>stop replying</strong> to this conversation. You will need to respond manually as a staff agent.
+            </div>
+            <div class="text-xs text-muted-foreground space-y-1.5">
+              <p class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                All new messages will wait for your manual reply
+              </p>
+              <p class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                You can resume AI at any time from the chat header
+              </p>
+              <p class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                Chat history and context will be preserved
+              </p>
+            </div>
+          </div>
+
+          <AlertDialogFooter>
+            <Button variant="outline" class="gap-1.5" @click="cancelHandoff">
+              Cancel
+            </Button>
+            <Button
+              class="bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
+              :disabled="isTogglingHandoff"
+              @click="confirmHandoff"
+            >
+              <HugeiconsIcon :icon="UserGroupIcon" :size="16" />
+              Yes, Take Over
+            </Button>
+          </AlertDialogFooter>
+        </template>
+
+        <!-- Resuming AI -->
+        <template v-else>
+          <AlertDialogHeader>
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-12 h-12 rounded-xl bg-emerald-500/15 flex items-center justify-center">
+                <HugeiconsIcon :icon="SparklesIcon" :size="24" class="text-emerald-400" />
+              </div>
+              <div>
+                <AlertDialogTitle class="text-lg">Resume AI Bot?</AlertDialogTitle>
+                <AlertDialogDescription class="text-sm mt-0.5">
+                  Switch back to automated AI responses
+                </AlertDialogDescription>
+              </div>
+            </div>
+          </AlertDialogHeader>
+
+          <div class="space-y-3 py-2">
+            <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-sm text-emerald-400">
+              ✨ The AI assistant will <strong>resume auto-replying</strong> to incoming messages in this conversation.
+            </div>
+            <div class="text-xs text-muted-foreground space-y-1.5">
+              <p class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                AI will use hotel knowledge base for responses
+              </p>
+              <p class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                You can take over again at any time
+              </p>
+              <p class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                Your staff messages will remain in the history
+              </p>
+            </div>
+          </div>
+
+          <AlertDialogFooter>
+            <Button variant="outline" class="gap-1.5" @click="cancelHandoff">
+              Cancel
+            </Button>
+            <Button
+              class="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
+              :disabled="isTogglingHandoff"
+              @click="confirmHandoff"
+            >
+              <HugeiconsIcon :icon="SparklesIcon" :size="16" />
+              Yes, Resume AI
+            </Button>
+          </AlertDialogFooter>
+        </template>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>

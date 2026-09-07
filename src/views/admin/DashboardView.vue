@@ -1,233 +1,594 @@
 <script setup lang="ts">
+import type { ApexOptions } from 'apexcharts'
+import type { ChannelDistItem } from '@/services/dashboardService'
 import {
-  Activity01Icon,
   Building04Icon,
-  MailSend01Icon,
   UserGroupIcon,
-  CheckmarkCircle02Icon,
+  Comment01Icon,
+  MailSend01Icon,
+  ArrowRight01Icon,
+  Search01Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useQuery } from '@tanstack/vue-query'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/uic/card'
-import { Button as Btn } from '@/components/uic/button'
+import { Card, CardContent } from '@/components/uic/card'
+import { ChartArea } from '@/components/uic/chart'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/uic/avatar'
+import { Skeleton } from '@/components/uic/skeleton'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/uic/select'
+import { dashboardService } from '@/services/dashboardService'
 import { hotelsService } from '@/services/hotelsService'
-import { usersService } from '@/services/usersService'
+import { useAuthStore } from '@/stores'
 
 const { t } = useI18n()
 const router = useRouter()
+const authStore = useAuthStore()
 
-// Fetch hotels list for count & overview
-const { data: hotelsData, isLoading: isLoadingHotels } = useQuery({
-  queryKey: ['dashboard-hotels'],
-  queryFn: () => hotelsService.list({ limit: 5 }),
+const selectedHotelId = ref<string>('all')
+
+// Fetch hotels list for the filter dropdown
+const { data: hotelsData } = useQuery({
+  queryKey: ['dashboard-hotels-list'],
+  queryFn: () => hotelsService.list({ limit: 100 }),
 })
 
-// Fetch users & invitations list for count & overview
-const { data: usersData, isLoading: isLoadingUsers } = useQuery({
-  queryKey: ['dashboard-users'],
-  queryFn: () => usersService.list({ limit: 5 }),
+// Fetch dashboard data
+const { data: dashboardData, isLoading } = useQuery({
+  queryKey: ['dashboard-stats', selectedHotelId],
+  queryFn: () =>
+    dashboardService.get(
+      selectedHotelId.value !== 'all'
+        ? { hotel_id: selectedHotelId.value }
+        : undefined,
+    ),
 })
+
+// ── Computed data ────────────────────────────────────────────────────────────
+const kpis = computed(() => dashboardData.value?.kpis)
+const chartDays = computed(() => dashboardData.value?.conversations_last_7_days || [])
+const channelDist = computed(() => {
+  const dist = dashboardData.value?.channel_distribution
+  if (!dist) return []
+  return Object.values(dist) as ChannelDistItem[]
+})
+const recentActivity = computed(() => dashboardData.value?.recent_activity || [])
+
+const userName = computed(() => authStore.user?.name || dashboardData.value?.header?.user?.name || 'Admin')
+const userRole = computed(() => {
+  const backendRole = dashboardData.value?.header?.user?.role
+  if (backendRole) {
+    return backendRole.replace(/_/g, ' ').replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())
+  }
+  const roles = authStore.user?.roles
+  if (roles?.length) {
+    return roles[0].replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())
+  }
+  return authStore.user?.role?.replace(/_/g, ' ').replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Super Admin'
+})
+const userAvatar = computed(() => authStore.user?.avatar || '')
+const userInitials = computed(() => {
+  const name = authStore.user?.name || 'A'
+  const parts = name.split(' ')
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
+  return name.substring(0, 2).toUpperCase()
+})
+
+// ── Chart config ─────────────────────────────────────────────────────────────
+const areaSeries = computed<ApexAxisChartSeries>(() => [
+  {
+    name: 'Conversations',
+    data: chartDays.value.map(d => d.count),
+  },
+])
+
+const areaCategories = computed(() => chartDays.value.map(d => d.day))
+
+const areaChartOptions = computed<ApexOptions>(() => ({
+  colors: ['#38bdf8'],
+  stroke: { width: 3, curve: 'smooth' },
+  fill: {
+    type: 'gradient',
+    gradient: {
+      shade: 'dark',
+      type: 'vertical',
+      opacityFrom: 0.4,
+      opacityTo: 0.05,
+      stops: [0, 100],
+    },
+  },
+  grid: {
+    borderColor: 'rgba(148, 163, 184, 0.12)',
+    strokeDashArray: 4,
+    xaxis: { lines: { show: false } },
+    yaxis: { lines: { show: true } },
+  },
+  xaxis: {
+    labels: { style: { colors: '#94a3b8', fontSize: '12px', fontWeight: 500 } },
+    axisBorder: { show: false },
+    axisTicks: { show: false },
+  },
+  yaxis: {
+    labels: { style: { colors: '#94a3b8', fontSize: '12px', fontWeight: 500 } },
+  },
+  markers: {
+    size: 5,
+    colors: ['#0f172a'],
+    strokeColors: '#38bdf8',
+    strokeWidth: 3,
+    hover: { sizeOffset: 2 },
+  },
+  tooltip: {
+    theme: 'dark',
+    marker: { show: true },
+  },
+  dataLabels: {
+    enabled: true,
+    offsetY: -10,
+    style: { fontSize: '11px', fontWeight: 600, colors: ['#e2e8f0'] },
+    background: { enabled: false },
+  },
+  chart: {
+    toolbar: { show: false },
+    zoom: { enabled: false },
+    background: 'transparent',
+  },
+}))
+
+// ── Donut chart — rendered manually with SVG for full control ────────────────
+const totalConversationsFromChannels = computed(() =>
+  channelDist.value.reduce((sum, c) => sum + c.count, 0),
+)
+
+// ── Activity icon helpers ────────────────────────────────────────────────────
+function getActivityIcon(type: string) {
+  switch (type) {
+    case 'booking':
+    case 'conversation':
+      return Comment01Icon
+    case 'handoff':
+      return UserGroupIcon
+    default:
+      return Search01Icon
+  }
+}
+
+function getActivityIconClasses(type: string) {
+  switch (type) {
+    case 'booking':
+      return 'bg-emerald-500/15 text-emerald-400'
+    case 'conversation':
+      return 'bg-sky-500/15 text-sky-400'
+    case 'handoff':
+      return 'bg-amber-500/15 text-amber-400'
+    default:
+      return 'bg-slate-500/15 text-slate-400'
+  }
+}
+
+function formatNumber(num: number | undefined) {
+  if (!num && num !== 0) return '0'
+  return num.toLocaleString()
+}
+
+// ── Donut SVG rendering ──────────────────────────────────────────────────────
+function computeDonutSegments() {
+  const items = channelDist.value
+  const total = items.reduce((s, c) => s + c.count, 0)
+  if (total === 0) return []
+
+  const segments: { offset: number; dashArray: string; color: string; percentage: number }[] = []
+  let cumulative = 0
+  const circumference = 2 * Math.PI * 70 // radius = 70
+
+  for (const item of items) {
+    const pct = item.count / total
+    const length = pct * circumference
+    const gap = circumference - length
+    segments.push({
+      offset: -cumulative * circumference + circumference * 0.25, // start from top
+      dashArray: `${length} ${gap}`,
+      color: item.color,
+      percentage: Math.round(pct * 100),
+    })
+    cumulative += pct
+  }
+  return segments
+}
+
+const donutSegments = computed(() => computeDonutSegments())
 </script>
 
 <template>
   <div class="p-6 text-foreground min-h-[calc(100vh-(--spacing(16)))] bg-background">
-    <div class="max-w-[1400px] mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <!-- Page Header -->
+    <div class="max-w-[1400px] mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           Page Header
+           ══════════════════════════════════════════════════════════════════ -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 class="text-3xl font-bold tracking-tight">
-            {{ t('common.Dashboard', 'Dashboard Overview') }}
+            {{ t('common.Dashboard', 'Dashboard') }}
           </h1>
           <p class="text-muted-foreground mt-1 text-sm">
-            {{ t('common.dashboard_subtitle', 'Here is what is happening with Aeroenix today.') }}
+            {{ t('common.dashboard_subtitle', 'Overview of Aeroenix Hotel platform performance.') }}
           </p>
         </div>
-        <div class="flex items-center gap-2">
-          <Btn variant="primary" class="gap-2 h-10 px-4 shadow-md shadow-primary/20" @click="router.push({ name: 'admin-hotels' })">
-            <HugeiconsIcon :icon="Building04Icon" :size="18" />
-            <span>{{ t('hotels.title', 'Manage Hotels') }}</span>
-          </Btn>
+
+        <div class="flex items-center gap-4">
+          <!-- Hotel Filter -->
+          <Select v-model="selectedHotelId">
+            <SelectTrigger class="w-[180px] h-10 bg-card border-border/50 gap-2">
+              <HugeiconsIcon :icon="Building04Icon" :size="16" class="text-muted-foreground shrink-0" />
+              <SelectValue :placeholder="t('dashboard.all_hotels', 'All Hotels')" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{{ t('dashboard.all_hotels', 'All Hotels') }}</SelectItem>
+              <SelectItem
+                v-for="hotel in hotelsData?.data"
+                :key="hotel.id"
+                :value="String(hotel.id)"
+              >
+                {{ hotel.name }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
+          <!-- User Badge -->
+          <div class="flex items-center gap-3 pl-3 border-l border-border/50">
+            <Avatar class="h-10 w-10 ring-2 ring-primary/30">
+              <AvatarImage v-if="userAvatar" :src="userAvatar" :alt="userName" />
+              <AvatarFallback class="bg-primary/10 text-primary font-semibold text-sm">
+                {{ userInitials }}
+              </AvatarFallback>
+            </Avatar>
+            <div class="hidden md:block">
+              <p class="text-sm font-semibold text-foreground leading-tight">{{ userName }}</p>
+              <p class="text-xs text-muted-foreground">{{ userRole }}</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Stats Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Total Hotels -->
-        <Card class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-border/50 cursor-pointer" @click="router.push({ name: 'admin-hotels' })">
-          <CardHeader class="flex flex-row items-center justify-between pb-2">
-            <CardTitle class="text-sm font-medium text-muted-foreground">
-              {{ t('hotels.title', 'Hotels') }}
-            </CardTitle>
-            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-              <HugeiconsIcon :icon="Building04Icon" :size="18" />
+      <!-- ══════════════════════════════════════════════════════════════════
+           Stats Cards — mapped from kpis.*
+           ══════════════════════════════════════════════════════════════════ -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+        <!-- Total Conversations -->
+        <Card
+          class="relative overflow-hidden border-border/40 hover:border-border/70 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group"
+          @click="router.push({ name: 'admin-conversations' })"
+        >
+          <CardContent class="px-5 py-3">
+            <div class="flex items-start justify-between mb-4">
+              <div class="w-11 h-11 rounded-xl bg-sky-500/15 flex items-center justify-center">
+                <HugeiconsIcon :icon="Comment01Icon" :size="22" class="text-sky-400" />
+              </div>
+              <span
+                v-if="kpis?.total_conversations?.change_percentage"
+                class="text-xs font-semibold px-2.5 py-1 rounded-full"
+                :class="kpis.total_conversations.trend === 'up' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'"
+              >
+                {{ kpis.total_conversations.trend === 'up' ? '+' : '-' }}{{ kpis.total_conversations.change_percentage }}%
+              </span>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div class="text-3xl font-bold">
-              <span v-if="isLoadingHotels" class="animate-pulse">...</span>
-              <span v-else>{{ hotelsData?.pagination?.total ?? hotelsData?.data?.length ?? 0 }}</span>
-            </div>
-            <p class="text-xs text-muted-foreground mt-1 font-medium">
-              {{ t('hotels.subtitle', 'Managed properties') }}
-            </p>
+            <template v-if="isLoading">
+              <Skeleton class="h-8 w-20 mb-1" />
+              <Skeleton class="h-4 w-32" />
+            </template>
+            <template v-else>
+              <p class="text-3xl font-bold text-foreground tracking-tight">
+                {{ kpis?.total_conversations?.formatted_value || '0' }}
+              </p>
+              <p class="text-sm text-muted-foreground mt-0.5 font-medium">
+                {{ kpis?.total_conversations?.label || t('dashboard.total_conversations', 'Total Conversations') }}
+              </p>
+            </template>
           </CardContent>
         </Card>
 
-        <!-- Total Active Users -->
-        <Card class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-border/50 cursor-pointer" @click="router.push({ name: 'admin-users' })">
-          <CardHeader class="flex flex-row items-center justify-between pb-2">
-            <CardTitle class="text-sm font-medium text-muted-foreground">
-              {{ t('users.title', 'System Users') }}
-            </CardTitle>
-            <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
-              <HugeiconsIcon :icon="UserGroupIcon" :size="18" />
+        <!-- Active Leads -->
+        <Card
+          class="relative overflow-hidden border-border/40 hover:border-border/70 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group"
+        >
+          <CardContent class="px-5 py-3">
+            <div class="flex items-start justify-between mb-4">
+              <div class="w-11 h-11 rounded-xl bg-emerald-500/15 flex items-center justify-center">
+                <HugeiconsIcon :icon="MailSend01Icon" :size="22" class="text-emerald-400" />
+              </div>
+              <span
+                v-if="kpis?.active_leads?.change_percentage"
+                class="text-xs font-semibold px-2.5 py-1 rounded-full"
+                :class="kpis.active_leads.trend === 'up' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'"
+              >
+                {{ kpis.active_leads.trend === 'up' ? '+' : '-' }}{{ kpis.active_leads.change_percentage }}%
+              </span>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div class="text-3xl font-bold">
-              <span v-if="isLoadingUsers" class="animate-pulse">...</span>
-              <span v-else>{{ usersData?.pagination?.total ?? usersData?.users?.length ?? 0 }}</span>
-            </div>
-            <p class="text-xs text-muted-foreground mt-1 font-medium">
-              {{ t('users.subtitle', 'Active staff & admins') }}
-            </p>
+            <template v-if="isLoading">
+              <Skeleton class="h-8 w-16 mb-1" />
+              <Skeleton class="h-4 w-24" />
+            </template>
+            <template v-else>
+              <p class="text-3xl font-bold text-foreground tracking-tight">
+                {{ kpis?.active_leads?.formatted_value || '0' }}
+              </p>
+              <p class="text-sm text-muted-foreground mt-0.5 font-medium">
+                {{ kpis?.active_leads?.label || t('dashboard.active_leads', 'Active Leads') }}
+              </p>
+            </template>
           </CardContent>
         </Card>
 
-        <!-- Pending Invitations -->
-        <Card class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-border/50 cursor-pointer" @click="router.push({ name: 'admin-users' })">
-          <CardHeader class="flex flex-row items-center justify-between pb-2">
-            <CardTitle class="text-sm font-medium text-muted-foreground">
-              {{ t('users.tabs.invitations', 'Pending Invitations') }}
-            </CardTitle>
-            <div class="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500">
-              <HugeiconsIcon :icon="MailSend01Icon" :size="18" />
+        <!-- Bookings This Month -->
+        <Card
+          class="relative overflow-hidden border-border/40 hover:border-border/70 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group"
+        >
+          <CardContent class="px-5 py-3">
+            <div class="flex items-start justify-between mb-4">
+              <div class="w-11 h-11 rounded-xl bg-violet-500/15 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-violet-400">
+                  <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                  <line x1="16" x2="16" y1="2" y2="6" />
+                  <line x1="8" x2="8" y1="2" y2="6" />
+                  <line x1="3" x2="21" y1="10" y2="10" />
+                </svg>
+              </div>
+              <span
+                v-if="kpis?.bookings_this_month?.change_percentage"
+                class="text-xs font-semibold px-2.5 py-1 rounded-full"
+                :class="kpis.bookings_this_month.trend === 'up' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'"
+              >
+                {{ kpis.bookings_this_month.trend === 'up' ? '+' : '-' }}{{ kpis.bookings_this_month.change_percentage }}%
+              </span>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div class="text-3xl font-bold">
-              <span v-if="isLoadingUsers" class="animate-pulse">...</span>
-              <span v-else>{{ usersData?.invitations?.length ?? 0 }}</span>
-            </div>
-            <p class="text-xs text-amber-500 mt-1 font-medium">
-              {{ t('users.status.invited', 'Awaiting acceptance') }}
-            </p>
+            <template v-if="isLoading">
+              <Skeleton class="h-8 w-12 mb-1" />
+              <Skeleton class="h-4 w-36" />
+            </template>
+            <template v-else>
+              <p class="text-3xl font-bold text-foreground tracking-tight">
+                {{ kpis?.bookings_this_month?.formatted_value || '0' }}
+              </p>
+              <p class="text-sm text-muted-foreground mt-0.5 font-medium">
+                {{ kpis?.bookings_this_month?.label || t('dashboard.bookings_this_month', 'Bookings This Month') }}
+              </p>
+            </template>
           </CardContent>
         </Card>
 
-        <!-- System Health -->
-        <Card class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-border/50">
-          <CardHeader class="flex flex-row items-center justify-between pb-2">
-            <CardTitle class="text-sm font-medium text-muted-foreground">
-              {{ t('dashboard.system_health', 'System Health') }}
-            </CardTitle>
-            <div class="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-              <HugeiconsIcon :icon="Activity01Icon" :size="18" />
+        <!-- Hotels & Users (split card) -->
+        <Card
+          class="relative overflow-hidden border-border/40 hover:border-border/70 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group"
+          @click="router.push({ name: 'admin-hotels' })"
+        >
+          <CardContent class="px-5 py-3">
+            <div class="flex items-start justify-between mb-4">
+              <div class="w-11 h-11 rounded-xl bg-blue-500/15 flex items-center justify-center">
+                <HugeiconsIcon :icon="Building04Icon" :size="22" class="text-blue-400" />
+              </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div class="text-3xl font-bold text-emerald-500 flex items-center gap-2">
-              <HugeiconsIcon :icon="CheckmarkCircle02Icon" :size="24" />
-              <span>100%</span>
-            </div>
-            <p class="text-xs text-muted-foreground mt-1">
-              {{ t('dashboard.all_systems_operational', 'All systems operational') }}
-            </p>
+            <template v-if="isLoading">
+              <Skeleton class="h-8 w-24 mb-1" />
+              <Skeleton class="h-4 w-28" />
+            </template>
+            <template v-else>
+              <div class="flex items-baseline gap-6">
+                <div>
+                  <p class="text-3xl font-bold text-foreground tracking-tight">
+                    {{ formatNumber(kpis?.hotels_and_users?.hotels_count) }}
+                  </p>
+                  <p class="text-xs text-muted-foreground font-medium mt-0.5">
+                    {{ kpis?.hotels_and_users?.label_hotels || t('dashboard.total_hotels', 'Total Hotels') }}
+                  </p>
+                </div>
+                <div class="h-8 w-px bg-border/50" />
+                <div>
+                  <p class="text-3xl font-bold text-foreground tracking-tight">
+                    {{ formatNumber(kpis?.hotels_and_users?.users_count) }}
+                  </p>
+                  <p class="text-xs text-muted-foreground font-medium mt-0.5">
+                    {{ kpis?.hotels_and_users?.label_users || t('dashboard.total_users', 'Total Users') }}
+                  </p>
+                </div>
+              </div>
+              <p class="text-sm text-muted-foreground mt-2 font-medium">
+                {{ kpis?.hotels_and_users?.title || t('dashboard.hotels_and_users', 'Hotels & Users') }}
+              </p>
+            </template>
           </CardContent>
         </Card>
       </div>
 
-      <!-- Main Overview Tables -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Recent Hotels -->
-        <Card class="border-border/50 shadow-sm">
-          <CardHeader class="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>{{ t('hotels.title', 'Hotels Overview') }}</CardTitle>
-              <CardDescription>{{ t('hotels.subtitle', 'Recently created hotel properties') }}</CardDescription>
-            </div>
-            <Btn variant="outline" size="sm" @click="router.push({ name: 'admin-hotels' })">
-              {{ t('actions.view', 'View All') }}
-            </Btn>
-          </CardHeader>
-          <CardContent>
-            <div v-if="isLoadingHotels" class="py-8 text-center text-muted-foreground text-sm">
-              Loading hotels...
-            </div>
-            <div v-else-if="!hotelsData?.data?.length" class="py-8 text-center text-muted-foreground text-sm">
-              No hotels configured yet.
-            </div>
-            <div v-else class="space-y-4 pt-2">
-              <div
-                v-for="hotel in hotelsData.data"
-                :key="hotel.id"
-                class="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/60 transition-colors cursor-pointer"
-                @click="router.push({ name: 'admin-hotels-show', params: { id: hotel.id } })"
-              >
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold">
-                    {{ hotel.name.substring(0, 2).toUpperCase() }}
-                  </div>
-                  <div>
-                    <p class="text-sm font-medium text-foreground leading-tight">{{ hotel.name }}</p>
-                    <p class="text-xs text-muted-foreground mt-0.5">{{ hotel.address || 'No address specified' }}</p>
-                  </div>
-                </div>
-                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium capitalize" :class="hotel.status === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'">
-                  {{ hotel.status }}
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <!-- ══════════════════════════════════════════════════════════════════
+           Charts Row
+           ══════════════════════════════════════════════════════════════════ -->
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
 
-        <!-- Recent Users -->
-        <Card class="border-border/50 shadow-sm">
-          <CardHeader class="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>{{ t('users.title', 'Recent Users') }}</CardTitle>
-              <CardDescription>{{ t('users.subtitle', 'Active platform administrators & staff') }}</CardDescription>
-            </div>
-            <Btn variant="outline" size="sm" @click="router.push({ name: 'admin-users' })">
-              {{ t('actions.view', 'View All') }}
-            </Btn>
-          </CardHeader>
-          <CardContent>
-            <div v-if="isLoadingUsers" class="py-8 text-center text-muted-foreground text-sm">
-              Loading users...
-            </div>
-            <div v-else-if="!usersData?.users?.length" class="py-8 text-center text-muted-foreground text-sm">
-              No users found.
-            </div>
-            <div v-else class="space-y-4 pt-2">
-              <div
-                v-for="user in usersData.users"
-                :key="user.id"
-                class="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/60 transition-colors cursor-pointer"
-                @click="router.push({ name: 'admin-users-show', params: { id: user.id } })"
-              >
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold">
-                    {{ user.name.substring(0, 2).toUpperCase() }}
-                  </div>
-                  <div>
-                    <p class="text-sm font-medium text-foreground leading-tight">{{ user.name }}</p>
-                    <p class="text-xs text-muted-foreground mt-0.5">{{ user.email }}</p>
+        <!-- Conversations Chart (takes 3/5 columns) -->
+        <div class="lg:col-span-3">
+          <template v-if="isLoading">
+            <Card class="border-border/40 p-5">
+              <Skeleton class="h-6 w-48 mb-4" />
+              <Skeleton class="h-[280px] w-full rounded-lg" />
+            </Card>
+          </template>
+          <template v-else>
+            <ChartArea
+              :series="areaSeries"
+              :categories="areaCategories"
+              :height="280"
+              :options="areaChartOptions"
+              :fill-opacity="0.35"
+              class="border-border/40"
+            >
+              <template #header>
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-semibold text-foreground">
+                    {{ t('dashboard.conversations_last_7_days', 'Conversations — Last 7 Days') }}
+                  </h3>
+                  <div class="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                      <line x1="16" x2="16" y1="2" y2="6" />
+                      <line x1="8" x2="8" y1="2" y2="6" />
+                      <line x1="3" x2="21" y1="10" y2="10" />
+                    </svg>
+                    <span class="font-medium">{{ t('dashboard.last_7_days', 'Last 7 Days') }}</span>
                   </div>
                 </div>
-                <div class="text-right">
-                  <span class="text-xs font-medium text-foreground block">{{ user.role?.name || user.hotel_name || 'Staff' }}</span>
-                  <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium capitalize mt-0.5" :class="user.status === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'">
-                    {{ user.status }}
-                  </span>
+              </template>
+            </ChartArea>
+          </template>
+        </div>
+
+        <!-- Channel Distribution (takes 2/5 columns) -->
+        <div class="lg:col-span-2">
+          <template v-if="isLoading">
+            <Card class="border-border/40 p-5 h-full">
+              <Skeleton class="h-6 w-40 mb-4" />
+              <Skeleton class="h-[180px] w-[180px] rounded-full mx-auto mb-4" />
+              <Skeleton class="h-4 w-full mb-2" />
+              <Skeleton class="h-4 w-full mb-2" />
+              <Skeleton class="h-4 w-full" />
+            </Card>
+          </template>
+          <template v-else>
+            <Card class="border-border/40 h-full">
+              <CardContent class="p-5">
+                <h3 class="text-sm font-semibold text-foreground mb-5">
+                  {{ t('dashboard.channel_distribution', 'Channel Distribution') }}
+                </h3>
+
+                <div class="flex flex-col items-center">
+                  <!-- Custom SVG Donut Chart -->
+                  <div class="relative w-[200px] h-[200px] mx-auto mb-5">
+                    <svg viewBox="0 0 200 200" class="w-full h-full -rotate-90">
+                      <!-- Background circle -->
+                      <circle
+                        cx="100" cy="100" r="70"
+                        fill="none"
+                        stroke="rgba(148, 163, 184, 0.1)"
+                        stroke-width="24"
+                      />
+                      <!-- Data segments -->
+                      <circle
+                        v-for="(seg, idx) in donutSegments"
+                        :key="idx"
+                        cx="100" cy="100" r="70"
+                        fill="none"
+                        :stroke="seg.color"
+                        stroke-width="24"
+                        :stroke-dasharray="seg.dashArray"
+                        :stroke-dashoffset="seg.offset"
+                        stroke-linecap="round"
+                        class="transition-all duration-700 ease-out"
+                      />
+                    </svg>
+                    <!-- Center label -->
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                      <span class="text-2xl font-bold text-foreground">
+                        {{ formatNumber(totalConversationsFromChannels) }}
+                      </span>
+                      <span class="text-xs text-muted-foreground font-medium">Conversations</span>
+                    </div>
+                  </div>
+
+                  <!-- Custom Legend -->
+                  <div class="w-full space-y-3">
+                    <div
+                      v-for="channel in channelDist"
+                      :key="channel.name"
+                      class="flex items-center justify-between"
+                    >
+                      <div class="flex items-center gap-2.5">
+                        <span
+                          class="w-2.5 h-2.5 rounded-full shrink-0"
+                          :style="{ backgroundColor: channel.color }"
+                        />
+                        <span class="text-sm font-medium text-foreground">{{ channel.name }}</span>
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <span class="text-sm font-semibold text-muted-foreground">{{ channel.percentage }}%</span>
+                        <span class="text-sm font-bold text-foreground tabular-nums min-w-[40px] text-right">
+                          {{ formatNumber(channel.count) }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </template>
+        </div>
       </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════
+           Recent Activity
+           ══════════════════════════════════════════════════════════════════ -->
+      <Card class="border-border/40">
+        <CardContent class="p-5">
+          <div class="flex items-center justify-between mb-5">
+            <h3 class="text-sm font-semibold text-foreground">
+              {{ t('dashboard.recent_activity', 'Recent Activity') }}
+            </h3>
+            <button
+              class="text-xs font-medium text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
+              @click="router.push({ name: 'admin-conversations' })"
+            >
+              {{ t('dashboard.view_all', 'View all') }}
+              <HugeiconsIcon :icon="ArrowRight01Icon" :size="14" />
+            </button>
+          </div>
+
+          <!-- Loading state -->
+          <div v-if="isLoading" class="space-y-4">
+            <div v-for="i in 3" :key="i" class="flex items-center gap-4">
+              <Skeleton class="w-9 h-9 rounded-lg shrink-0" />
+              <div class="flex-1">
+                <Skeleton class="h-4 w-3/4 mb-1.5" />
+              </div>
+              <Skeleton class="h-4 w-20" />
+            </div>
+          </div>
+
+          <!-- Activity items -->
+          <div v-else-if="recentActivity.length" class="space-y-1">
+            <div
+              v-for="activity in recentActivity"
+              :key="activity.id"
+              class="flex items-center gap-4 p-3 rounded-xl hover:bg-muted/40 transition-colors"
+            >
+              <div
+                class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                :class="getActivityIconClasses(activity.icon)"
+              >
+                <HugeiconsIcon :icon="getActivityIcon(activity.icon)" :size="18" />
+              </div>
+              <p class="flex-1 text-sm text-foreground font-medium">
+                {{ activity.title }}
+              </p>
+              <span class="text-xs text-muted-foreground whitespace-nowrap font-medium">
+                {{ activity.time_ago }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div v-else class="py-8 text-center text-muted-foreground text-sm">
+            {{ t('dashboard.no_recent_activity', 'No recent activity to show.') }}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   </div>
 </template>
