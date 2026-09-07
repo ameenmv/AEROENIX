@@ -8,5 +8,6 @@
   "hotels": "Hotels",
   "roles": "Roles & Permissions",
   "channels": "Channels",
-  "conversations": "Inbox & Conversations"
+  "conversations": "Inbox & Conversations",
+  "activity_logs": "Activity Logs"
 }
