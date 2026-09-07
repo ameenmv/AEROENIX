@@ -3,11 +3,8 @@ import type { ApexOptions } from 'apexcharts'
 import type { ChannelDistItem } from '@/services/dashboardService'
 import {
   Building04Icon,
-  UserGroupIcon,
   Comment01Icon,
   MailSend01Icon,
-  ArrowRight01Icon,
-  Search01Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useQuery } from '@tanstack/vue-query'
@@ -16,7 +13,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { Card, CardContent } from '@/components/uic/card'
 import { ChartArea } from '@/components/uic/chart'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/uic/avatar'
+
 import { Skeleton } from '@/components/uic/skeleton'
 import {
   Select,
@@ -27,11 +24,9 @@ import {
 } from '@/components/uic/select'
 import { dashboardService } from '@/services/dashboardService'
 import { hotelsService } from '@/services/hotelsService'
-import { useAuthStore } from '@/stores'
 
 const { t } = useI18n()
 const router = useRouter()
-const authStore = useAuthStore()
 
 const selectedHotelId = ref<string>('all')
 
@@ -60,27 +55,7 @@ const channelDist = computed(() => {
   if (!dist) return []
   return Object.values(dist) as ChannelDistItem[]
 })
-const recentActivity = computed(() => dashboardData.value?.recent_activity || [])
 
-const userName = computed(() => authStore.user?.name || dashboardData.value?.header?.user?.name || 'Admin')
-const userRole = computed(() => {
-  const backendRole = dashboardData.value?.header?.user?.role
-  if (backendRole) {
-    return backendRole.replace(/_/g, ' ').replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())
-  }
-  const roles = authStore.user?.roles
-  if (roles?.length) {
-    return roles[0].replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())
-  }
-  return authStore.user?.role?.replace(/_/g, ' ').replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Super Admin'
-})
-const userAvatar = computed(() => authStore.user?.avatar || '')
-const userInitials = computed(() => {
-  const name = authStore.user?.name || 'A'
-  const parts = name.split(' ')
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
-  return name.substring(0, 2).toUpperCase()
-})
 
 // ── Chart config ─────────────────────────────────────────────────────────────
 const areaSeries = computed<ApexAxisChartSeries>(() => [
@@ -148,31 +123,7 @@ const totalConversationsFromChannels = computed(() =>
   channelDist.value.reduce((sum, c) => sum + c.count, 0),
 )
 
-// ── Activity icon helpers ────────────────────────────────────────────────────
-function getActivityIcon(type: string) {
-  switch (type) {
-    case 'booking':
-    case 'conversation':
-      return Comment01Icon
-    case 'handoff':
-      return UserGroupIcon
-    default:
-      return Search01Icon
-  }
-}
 
-function getActivityIconClasses(type: string) {
-  switch (type) {
-    case 'booking':
-      return 'bg-emerald-500/15 text-emerald-400'
-    case 'conversation':
-      return 'bg-sky-500/15 text-sky-400'
-    case 'handoff':
-      return 'bg-amber-500/15 text-amber-400'
-    default:
-      return 'bg-slate-500/15 text-slate-400'
-  }
-}
 
 function formatNumber(num: number | undefined) {
   if (!num && num !== 0) return '0'
@@ -244,18 +195,7 @@ const donutSegments = computed(() => computeDonutSegments())
           </Select>
 
           <!-- User Badge -->
-          <div class="flex items-center gap-3 pl-3 border-l border-border/50">
-            <Avatar class="h-10 w-10 ring-2 ring-primary/30">
-              <AvatarImage v-if="userAvatar" :src="userAvatar" :alt="userName" />
-              <AvatarFallback class="bg-primary/10 text-primary font-semibold text-sm">
-                {{ userInitials }}
-              </AvatarFallback>
-            </Avatar>
-            <div class="hidden md:block">
-              <p class="text-sm font-semibold text-foreground leading-tight">{{ userName }}</p>
-              <p class="text-xs text-muted-foreground">{{ userRole }}</p>
-            </div>
-          </div>
+          
         </div>
       </div>
 
@@ -535,60 +475,7 @@ const donutSegments = computed(() => computeDonutSegments())
       <!-- ══════════════════════════════════════════════════════════════════
            Recent Activity
            ══════════════════════════════════════════════════════════════════ -->
-      <Card class="border-border/40">
-        <CardContent class="p-5">
-          <div class="flex items-center justify-between mb-5">
-            <h3 class="text-sm font-semibold text-foreground">
-              {{ t('dashboard.recent_activity', 'Recent Activity') }}
-            </h3>
-            <button
-              class="text-xs font-medium text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
-              @click="router.push({ name: 'admin-conversations' })"
-            >
-              {{ t('dashboard.view_all', 'View all') }}
-              <HugeiconsIcon :icon="ArrowRight01Icon" :size="14" />
-            </button>
-          </div>
-
-          <!-- Loading state -->
-          <div v-if="isLoading" class="space-y-4">
-            <div v-for="i in 3" :key="i" class="flex items-center gap-4">
-              <Skeleton class="w-9 h-9 rounded-lg shrink-0" />
-              <div class="flex-1">
-                <Skeleton class="h-4 w-3/4 mb-1.5" />
-              </div>
-              <Skeleton class="h-4 w-20" />
-            </div>
-          </div>
-
-          <!-- Activity items -->
-          <div v-else-if="recentActivity.length" class="space-y-1">
-            <div
-              v-for="activity in recentActivity"
-              :key="activity.id"
-              class="flex items-center gap-4 p-3 rounded-xl hover:bg-muted/40 transition-colors"
-            >
-              <div
-                class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                :class="getActivityIconClasses(activity.icon)"
-              >
-                <HugeiconsIcon :icon="getActivityIcon(activity.icon)" :size="18" />
-              </div>
-              <p class="flex-1 text-sm text-foreground font-medium">
-                {{ activity.title }}
-              </p>
-              <span class="text-xs text-muted-foreground whitespace-nowrap font-medium">
-                {{ activity.time_ago }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Empty state -->
-          <div v-else class="py-8 text-center text-muted-foreground text-sm">
-            {{ t('dashboard.no_recent_activity', 'No recent activity to show.') }}
-          </div>
-        </CardContent>
-      </Card>
+      
     </div>
   </div>
 </template>

@@ -2,6 +2,7 @@ import {
   Building04Icon,
   Comment01Icon,
   Home01Icon,
+  Notification03Icon,
   SecurityLockIcon,
   Share01Icon,
   UserGroupIcon,
@@ -55,5 +56,11 @@ export const navigationConfig: NavItem[] = [
     label: 'menu.channels',
     icon: Share01Icon,
     to: '/admin/channels',
+  },
+  {
+    name: 'activity-logs',
+    label: 'menu.activity_logs',
+    icon: Notification03Icon,
+    to: '/admin/activity-logs',
   },
 ]
