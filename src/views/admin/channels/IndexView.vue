@@ -219,7 +219,12 @@ async function handleConnectFacebook() {
                 </div>
                 <div class="flex justify-between items-center text-sm">
                   <span class="text-muted-foreground">Number</span>
-                  <span class="font-medium text-foreground">{{ whatsappChannel.username }}</span>
+                  <a v-if="whatsappChannel.channel_url || whatsappChannel.link" :href="(whatsappChannel.channel_url || whatsappChannel.link) || undefined" target="_blank" class="font-medium text-primary hover:underline">
+                    {{ whatsappChannel.username }}
+                  </a>
+                  <span v-else class="font-medium text-foreground">
+                    {{ whatsappChannel.username }}
+                  </span>
                 </div>
               </div>
               <Button
@@ -273,11 +278,12 @@ async function handleConnectFacebook() {
               <div class="rounded-lg bg-muted/30 p-3 space-y-2 border border-border/40">
                 <div class="flex justify-between items-center text-sm">
                   <span class="text-muted-foreground">Account</span>
-                  <span class="font-medium text-foreground truncate max-w-[120px]" :title="instagramChannel.name">{{ instagramChannel.name }}</span>
-                </div>
-                <div class="flex justify-between items-center text-sm">
-                  <span class="text-muted-foreground">ID</span>
-                  <span class="font-medium text-foreground">{{ instagramChannel.external_account_id }}</span>
+                  <a v-if="instagramChannel.channel_url || instagramChannel.link" :href="(instagramChannel.channel_url || instagramChannel.link) || undefined" target="_blank" class="font-medium text-primary hover:underline truncate max-w-[120px]" :title="instagramChannel.name">
+                    @{{ instagramChannel.username || instagramChannel.name }}
+                  </a>
+                  <span v-else class="font-medium text-foreground truncate max-w-[120px]" :title="instagramChannel.name">
+                    @{{ instagramChannel.username || instagramChannel.name }}
+                  </span>
                 </div>
               </div>
               <Button
@@ -331,11 +337,12 @@ async function handleConnectFacebook() {
               <div class="rounded-lg bg-muted/30 p-3 space-y-2 border border-border/40">
                 <div class="flex justify-between items-center text-sm">
                   <span class="text-muted-foreground">Account</span>
-                  <span class="font-medium text-foreground truncate max-w-[120px]" :title="facebookChannel.name">{{ facebookChannel.name }}</span>
-                </div>
-                <div class="flex justify-between items-center text-sm">
-                  <span class="text-muted-foreground">ID</span>
-                  <span class="font-medium text-foreground">{{ facebookChannel.external_account_id }}</span>
+                  <a v-if="facebookChannel.channel_url || facebookChannel.link" :href="(facebookChannel.channel_url || facebookChannel.link) || undefined" target="_blank" class="font-medium text-primary hover:underline truncate max-w-[120px]" :title="facebookChannel.name">
+                    {{ facebookChannel.name }}
+                  </a>
+                  <span v-else class="font-medium text-foreground truncate max-w-[120px]" :title="facebookChannel.name">
+                    {{ facebookChannel.name }}
+                  </span>
                 </div>
               </div>
               <Button

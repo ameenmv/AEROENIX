@@ -18,6 +18,9 @@ export interface Channel {
   username?: string | null
   name: string
   profile_picture_url?: string | null
+  channel_url?: string | null
+  link?: string | null
+  external_url?: string | null
   status: ChannelStatus
   metadata?: Record<string, any> | null
   connected_at?: string | null
