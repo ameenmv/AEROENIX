@@ -19,6 +19,8 @@ import { useRouter } from 'vue-router'
 import { useDetails } from '@/composables/useDetails'
 import { hotelsService } from '@/services/hotelsService'
 import { Button } from '@/components/uic/button'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/uic/tabs'
+import RoomList from './components/RoomList.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -117,39 +119,58 @@ function getFields(hotel: Hotel): DetailField[] {
           </div>
         </div>
 
-        <!-- Fields Grid -->
-        <div class="p-6 space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <div
-              v-for="field in getFields(item)"
-              :key="field.label"
-              class="flex items-center gap-3"
-            >
-              <div class="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground shrink-0">
-                <HugeiconsIcon :icon="field.icon" :size="18" />
+        <Tabs default-value="overview" class="w-full mt-6">
+          <TabsList class="mb-4 bg-muted/50 p-1">
+            <TabsTrigger value="overview" class="gap-2">
+              <HugeiconsIcon :icon="Building04Icon" :size="16" />
+              {{ t('hotels.overview', 'Overview') }}
+            </TabsTrigger>
+            <TabsTrigger value="rooms" class="gap-2">
+              <HugeiconsIcon :icon="Building04Icon" :size="16" /> <!-- Placeholder for room icon -->
+              {{ t('hotels.rooms_tab', 'Rooms & Rates') }}
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="overview" class="mt-0 focus-visible:outline-none focus-visible:ring-0">
+            <!-- Fields Grid -->
+            <div class="p-6 space-y-6 border border-border/50 rounded-xl bg-card">
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div
+                  v-for="field in getFields(item)"
+                  :key="field.label"
+                  class="flex items-center gap-3"
+                >
+                  <div class="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground shrink-0">
+                    <HugeiconsIcon :icon="field.icon" :size="18" />
+                  </div>
+                  <div class="min-w-0">
+                    <span class="text-[11px] uppercase tracking-widest text-muted-foreground/70 font-medium">
+                      {{ field.label }}
+                    </span>
+                    <p class="font-semibold text-sm mt-0.5 truncate" :dir="field.dir">
+                      {{ field.value || '—' }}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div class="min-w-0">
-                <span class="text-[11px] uppercase tracking-widest text-muted-foreground/70 font-medium">
-                  {{ field.label }}
-                </span>
-                <p class="font-semibold text-sm mt-0.5 truncate" :dir="field.dir">
-                  {{ field.value || '—' }}
+
+              <!-- Description -->
+              <div v-if="item.description" class="pt-4 border-t border-border/50 mt-4">
+                <h3 class="text-[11px] uppercase tracking-widest text-muted-foreground/70 font-medium mb-2 flex items-center gap-2">
+                  <HugeiconsIcon :icon="NoteIcon" :size="14" />
+                  {{ t('hotels.fields.description', 'Description') }}
+                </h3>
+                <p class="text-sm leading-relaxed text-foreground/80">
+                  {{ item.description }}
                 </p>
               </div>
             </div>
-          </div>
-
-          <!-- Description -->
-          <div v-if="item.description" class="pt-2 border-t border-border/50">
-            <h3 class="text-[11px] uppercase tracking-widest text-muted-foreground/70 font-medium mb-2 flex items-center gap-2">
-              <HugeiconsIcon :icon="NoteIcon" :size="14" />
-              {{ t('hotels.fields.description', 'Description') }}
-            </h3>
-            <p class="text-sm leading-relaxed text-foreground/80">
-              {{ item.description }}
-            </p>
-          </div>
-        </div>
+          </TabsContent>
+          
+          <TabsContent value="rooms" class="mt-0 focus-visible:outline-none focus-visible:ring-0">
+            <RoomList :hotel-id="item.id" />
+          </TabsContent>
+        </Tabs>
       </div>
     </template>
   </div>

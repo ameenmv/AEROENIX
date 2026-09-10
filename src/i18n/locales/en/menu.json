@@ -9,5 +9,7 @@
   "roles": "Roles & Permissions",
   "channels": "Channels",
   "conversations": "Inbox & Conversations",
-  "activity_logs": "Activity Logs"
+  "activity_logs": "Activity Logs",
+  "bookings": "Bookings",
+  "staff_qna": "Staff Q&A"
 }

@@ -48,6 +48,22 @@ export const searchablePagesConfig: SearchablePageConfig[] = [
     keywords: ['hotels', 'faroes', 'فنادق', 'منشآت'],
   },
   {
+    id: 'admin-bookings',
+    titleKey: 'menu.bookings',
+    descriptionKey: 'command.desc_bookings',
+    path: '/admin/bookings',
+    categoryKey: 'menu.organization_group',
+    keywords: ['bookings', 'reservations', 'حجوزات', 'حجز'],
+  },
+  {
+    id: 'admin-staff-qna',
+    titleKey: 'menu.staff_qna',
+    descriptionKey: 'command.desc_staff_qna',
+    path: '/admin/staff-qna',
+    categoryKey: 'menu.organization_group',
+    keywords: ['ai', 'knowledge', 'qa', 'staff', 'ذكاء اصطناعي'],
+  },
+  {
     id: 'admin-roles',
     titleKey: 'menu.roles',
     descriptionKey: 'command.desc_roles',
