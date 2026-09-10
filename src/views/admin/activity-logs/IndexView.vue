@@ -17,6 +17,13 @@ import { Card } from '@/components/uic/card'
 import { Input } from '@/components/uic/input'
 import { Button } from '@/components/uic/button'
 import { Badge } from '@/components/uic/badge'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/uic/select'
 import { activityLogService } from '@/services/activityLogService'
 
 // ── State ────────────────────────────────────────────────────────────────────
@@ -25,6 +32,7 @@ const pagination = ref<ActivityLogPagination | null>(null)
 const isLoading = ref(false)
 const searchQuery = ref('')
 const currentPage = ref(1)
+const perPage = ref('20')
 
 let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -35,7 +43,7 @@ async function fetchLogs(page = 1) {
   try {
     const params: ActivityLogListParams = {
       page,
-      per_page: 20,
+      per_page: Number(perPage.value),
     }
     if (searchQuery.value.trim()) {
       params.search = searchQuery.value.trim()
@@ -142,6 +150,10 @@ const groupedLogs = computed(() => {
 })
 
 watch(searchQuery, handleSearch)
+watch(perPage, () => {
+  currentPage.value = 1
+  fetchLogs(1)
+})
 
 onMounted(() => {
   fetchLogs()
@@ -211,7 +223,7 @@ onMounted(() => {
             <div
               v-for="(log, li) in group.items"
               :key="log.id"
-              class="flex items-start gap-4 px-5 py-4 transition-all duration-150 hover:bg-white/[0.02] group relative"
+              class="flex items-start gap-4 px-5 py-2.5 transition-all duration-150 hover:bg-white/[0.02] group relative"
               :class="{ 'border-b border-border/8': li < group.items.length - 1 }"
             >
               <!-- Timeline dot connector -->
@@ -293,17 +305,32 @@ onMounted(() => {
 
       <!-- ── Pagination ──────────────────────────────────────── -->
       <div
-        v-if="pagination && pagination.total_pages > 1"
-        class="flex items-center justify-between mt-5 px-1"
+        v-if="pagination && pagination.total > 0"
+        class="flex items-center justify-between mt-5 px-1 flex-wrap gap-4"
       >
-        <p class="text-xs text-muted-foreground/50">
-          Page {{ pagination.current_page }} of {{ pagination.total_pages }}
-          <span class="hidden sm:inline">
-            · Showing {{ ((pagination.current_page - 1) * pagination.per_page) + 1 }}–{{ Math.min(pagination.current_page * pagination.per_page, pagination.total) }}
-          </span>
-        </p>
+        <div class="flex items-center gap-4">
+          <p class="text-xs text-muted-foreground/50">
+            Page {{ pagination.current_page }} of {{ pagination.total_pages }}
+            <span class="hidden sm:inline">
+              · Showing {{ ((pagination.current_page - 1) * pagination.per_page) + 1 }}–{{ Math.min(pagination.current_page * pagination.per_page, pagination.total) }}
+            </span>
+          </p>
+          <div class="hidden sm:flex items-center gap-2">
+            <span class="text-xs text-muted-foreground/50">Records Per Page Display</span>
+            <Select v-model="perPage">
+              <SelectTrigger class="w-[70px] h-8 text-xs bg-card border-border/30 rounded-lg">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1.5" v-if="pagination.total_pages > 1">
           <Button
             variant="outline"
             size="sm"

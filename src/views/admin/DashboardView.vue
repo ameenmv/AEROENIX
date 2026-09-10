@@ -5,6 +5,11 @@ import {
   Building04Icon,
   Comment01Icon,
   MailSend01Icon,
+  Delete02Icon,
+  Shield01Icon,
+  UserCircleIcon,
+  Notification03Icon,
+  Time02Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useQuery } from '@tanstack/vue-query'
@@ -15,6 +20,7 @@ import { Card, CardContent } from '@/components/uic/card'
 import { ChartArea } from '@/components/uic/chart'
 
 import { Skeleton } from '@/components/uic/skeleton'
+import { Button } from '@/components/uic/button'
 import {
   Select,
   SelectContent,
@@ -156,6 +162,15 @@ function computeDonutSegments() {
 }
 
 const donutSegments = computed(() => computeDonutSegments())
+
+function getIconForActivity(iconName: string) {
+  switch (iconName) {
+    case 'trash': return Delete02Icon
+    case 'shield': return Shield01Icon
+    case 'user': return UserCircleIcon
+    default: return Notification03Icon
+  }
+}
 </script>
 
 <template>
@@ -366,10 +381,10 @@ const donutSegments = computed(() => computeDonutSegments())
             <ChartArea
               :series="areaSeries"
               :categories="areaCategories"
-              :height="280"
+              :height="330"
               :options="areaChartOptions"
               :fill-opacity="0.35"
-              class="border-border/40"
+              class="border-border/40 h-full flex flex-col justify-between"
             >
               <template #header>
                 <div class="flex items-center justify-between">
@@ -475,6 +490,60 @@ const donutSegments = computed(() => computeDonutSegments())
       <!-- ══════════════════════════════════════════════════════════════════
            Recent Activity
            ══════════════════════════════════════════════════════════════════ -->
+      <div class="">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-foreground">
+            {{ t('dashboard.recent_activity', 'Recent Activity') }}
+          </h3>
+          <Button variant="outline" size="sm" class="text-xs h-8" @click="router.push({ name: 'admin-activity-logs' })">
+            {{ t('dashboard.view_all', 'View All') }}
+          </Button>
+        </div>
+        
+        <template v-if="isLoading">
+          <Card class="border-border/40 p-5">
+            <div class="space-y-4">
+              <Skeleton class="h-12 w-full rounded-lg" v-for="i in 5" :key="i" />
+            </div>
+          </Card>
+        </template>
+        <template v-else-if="dashboardData?.recent_activity?.length">
+          <Card class="border-border/40 overflow-hidden shadow-sm hover:shadow-md transition-shadow py-2 gap-0">
+            <div class="divide-y divide-border/40">
+              <div
+                v-for="activity in dashboardData.recent_activity"
+                :key="activity.id"
+                class="p-3 sm:px-4 sm:py-3 flex items-start gap-3 hover:bg-muted/30 transition-colors"
+              >
+                <!-- Icon -->
+                <div class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center bg-primary/10 text-primary">
+                  <HugeiconsIcon :icon="getIconForActivity(activity.icon)" :size="16" />
+                </div>
+                
+                <!-- Content -->
+                <div class="flex-1 min-w-0 pt-0.5">
+                  <p class="text-[13px] font-semibold text-foreground leading-snug truncate">
+                    <span class="text-primary">{{ activity.user_name }}</span>
+                    <span class="font-normal text-muted-foreground ml-1">{{ activity.description }}</span>
+                  </p>
+                  <div class="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
+                    <HugeiconsIcon :icon="Time02Icon" :size="12" />
+                    <span>{{ activity.time_ago }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </template>
+        <template v-else>
+          <Card class="border-border/40 p-8 text-center flex flex-col items-center justify-center">
+            <div class="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground mb-3">
+              <HugeiconsIcon :icon="Notification03Icon" :size="24" />
+            </div>
+            <p class="text-sm text-muted-foreground">No recent activity found.</p>
+          </Card>
+        </template>
+      </div>
       
     </div>
   </div>
