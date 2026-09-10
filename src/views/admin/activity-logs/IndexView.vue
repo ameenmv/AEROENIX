@@ -13,6 +13,7 @@ import {
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Card } from '@/components/uic/card'
 import { Input } from '@/components/uic/input'
 import { Button } from '@/components/uic/button'
@@ -27,6 +28,7 @@ import {
 import { activityLogService } from '@/services/activityLogService'
 
 // ── State ────────────────────────────────────────────────────────────────────
+const { t } = useI18n()
 const logs = ref<ActivityLogItem[]>([])
 const pagination = ref<ActivityLogPagination | null>(null)
 const isLoading = ref(false)
@@ -128,8 +130,8 @@ function getDateGroup(timestamp: string) {
   const d = new Date(timestamp)
   const now = new Date()
   const diff = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24))
-  if (diff === 0) return 'Today'
-  if (diff === 1) return 'Yesterday'
+  if (diff === 0) return t('activity_logs.today', 'Today')
+  if (diff === 1) return t('activity_logs.yesterday', 'Yesterday')
   return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
 }
 
@@ -166,8 +168,8 @@ onMounted(() => {
 
       <!-- ── Header ──────────────────────────────────────────── -->
       <div class="mb-7">
-        <h1 class="text-2xl font-bold text-foreground tracking-tight">Activity Logs</h1>
-        <p class="text-sm text-muted-foreground/70 mt-1">Security audit trail of all system actions.</p>
+        <h1 class="text-2xl font-bold text-foreground tracking-tight">{{ t('activity_logs.title', 'Activity Logs') }}</h1>
+        <p class="text-sm text-muted-foreground/70 mt-1">{{ t('activity_logs.subtitle', 'Security audit trail of all system actions.') }}</p>
       </div>
 
       <!-- ── Search + Stats Bar ──────────────────────────────── -->
@@ -181,7 +183,7 @@ onMounted(() => {
           <Input
             v-model="searchQuery"
             type="text"
-            placeholder="Search by user, action, or description..."
+            :placeholder="t('activity_logs.search', 'Search by user, action, or description...')"
             class="w-full h-12 pl-11 pr-4 rounded-2xl bg-card border-border/30 text-sm focus:border-primary/40"
           />
         </div>
@@ -190,7 +192,7 @@ onMounted(() => {
           class="hidden sm:flex items-center gap-2 px-4 h-12 rounded-2xl bg-card border border-border/30 text-xs text-muted-foreground shrink-0"
         >
           <span class="font-bold text-foreground">{{ pagination.total }}</span>
-          <span>total entries</span>
+          <span>{{ t('activity_logs.total_entries', 'total entries') }}</span>
         </div>
       </div>
 
@@ -288,9 +290,9 @@ onMounted(() => {
           <div class="w-16 h-16 rounded-2xl bg-muted/10 flex items-center justify-center mx-auto mb-4">
             <HugeiconsIcon :icon="Activity01Icon" :size="32" class="text-muted-foreground/25" />
           </div>
-          <p class="text-sm font-semibold text-foreground/60">No activity logs found</p>
+          <p class="text-sm font-semibold text-foreground/60">{{ t('activity_logs.no_logs', 'No activity logs found') }}</p>
           <p class="text-xs text-muted-foreground/50 mt-1">
-            {{ searchQuery ? 'Try a different search term.' : 'Activity will appear here as actions are performed.' }}
+            {{ searchQuery ? t('activity_logs.no_logs_search', 'Try a different search term.') : t('activity_logs.no_logs_desc', 'Activity will appear here as actions are performed.') }}
           </p>
         </div>
 
@@ -310,13 +312,13 @@ onMounted(() => {
       >
         <div class="flex items-center gap-4">
           <p class="text-xs text-muted-foreground/50">
-            Page {{ pagination.current_page }} of {{ pagination.total_pages }}
+            {{ t('activity_logs.page_of', { page: pagination.current_page, total: pagination.total_pages }) }}
             <span class="hidden sm:inline">
-              · Showing {{ ((pagination.current_page - 1) * pagination.per_page) + 1 }}–{{ Math.min(pagination.current_page * pagination.per_page, pagination.total) }}
+              · {{ t('activity_logs.showing', { start: ((pagination.current_page - 1) * pagination.per_page) + 1, end: Math.min(pagination.current_page * pagination.per_page, pagination.total) }) }}
             </span>
           </p>
           <div class="hidden sm:flex items-center gap-2">
-            <span class="text-xs text-muted-foreground/50">Records Per Page Display</span>
+            <span class="text-xs text-muted-foreground/50">{{ t('activity_logs.records_per_page', 'Records Per Page Display') }}</span>
             <Select v-model="perPage">
               <SelectTrigger class="w-[70px] h-8 text-xs bg-card border-border/30 rounded-lg">
                 <SelectValue />
@@ -338,7 +340,7 @@ onMounted(() => {
             :disabled="pagination.current_page <= 1"
             @click="goToPage(pagination.current_page - 1)"
           >
-            Previous
+            {{ t('actions.previous', 'Previous') }}
           </Button>
 
           <template v-for="page in pagination.total_pages" :key="page">
@@ -371,7 +373,7 @@ onMounted(() => {
             :disabled="pagination.current_page >= pagination.total_pages"
             @click="goToPage(pagination.current_page + 1)"
           >
-            Next
+            {{ t('actions.next', 'Next') }}
           </Button>
         </div>
       </div>
