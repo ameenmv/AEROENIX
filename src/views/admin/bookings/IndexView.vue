@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useQuery } from '@tanstack/vue-query'
 import {
   Calendar01Icon,
-  CheckmarkBadge01Icon,
   Search01Icon,
-  FilterIcon,
   EyeIcon,
   MoreVerticalIcon,
   NoteIcon,
@@ -15,7 +13,7 @@ import {
 import { HugeiconsIcon } from '@hugeicons/vue'
 
 import { bookingsService } from '@/services/bookingsService'
-import type { Booking } from '@/types/entities/booking'
+
 
 import { Button } from '@/components/uic/button'
 import { Input } from '@/components/uic/input'
@@ -33,8 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/uic/table'
-import StatusBadge from '@/components/ui/StatusBadge.vue'
-import FilterPanel from '@/components/uic/filter-panel/FilterPanel.vue'
+
 
 import { refDebounced } from '@vueuse/core'
 

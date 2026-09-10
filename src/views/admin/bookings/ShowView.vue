@@ -4,7 +4,6 @@ import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import {
-  Calendar01Icon,
   CheckmarkBadge01Icon,
   Cancel01Icon,
   UserIcon,
@@ -17,13 +16,12 @@ import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 
 import { bookingsService } from '@/services/bookingsService'
-import type { Booking } from '@/types/entities/booking'
+
 
 import { Button } from '@/components/uic/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/uic/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/uic/card'
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
