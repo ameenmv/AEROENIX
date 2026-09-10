@@ -67,6 +67,13 @@ export const rolesService = {
   },
 
   /**
+   * DELETE /platform/roles/{roleId} — delete a role.
+   */
+  async delete(roleId: number | string): Promise<void> {
+    await api.delete(`${ENDPOINT}/${roleId}`)
+  },
+
+  /**
    * Backward-compatible dropdown method.
    * Returns roles from the matrix API in a format compatible with select fields.
    * Used by template modules (admins) that expect rolesService.dropdown().

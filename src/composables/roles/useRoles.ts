@@ -18,7 +18,7 @@ import { rolesService } from '@/services/rolesService'
 export function useRoles(hotelId?: number) {
   const queryClient = useQueryClient()
 
-  const { data: matrixData, isLoading, error, refetch } = useQuery<RolesPermissionsMatrix>({
+  const { data: matrixData, isLoading, isFetching, error, refetch } = useQuery<RolesPermissionsMatrix>({
     queryKey: ['roles-permissions', hotelId],
     queryFn: () => rolesService.getMatrix(hotelId),
   })
@@ -63,6 +63,7 @@ export function useRoles(hotelId?: number) {
     modules,
     matrixData,
     isLoading,
+    isFetching,
     error,
 
     // Actions
