@@ -2,7 +2,6 @@ import {
   Building04Icon,
   Calendar01Icon,
   Comment01Icon,
-  CpuIcon,
   Home01Icon,
   Notification03Icon,
   SecurityLockIcon,

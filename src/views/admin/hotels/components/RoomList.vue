@@ -7,8 +7,6 @@ import {
   Edit02Icon,
   PlusSignIcon,
   Delete02Icon,
-  Search01Icon,
-  FilterIcon,
   MoreVerticalIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
@@ -28,7 +26,6 @@ import {
 } from '@/components/uic/table'
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
