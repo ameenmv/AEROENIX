@@ -1,0 +1,14 @@
+{
+  "title": "Activity Logs",
+  "subtitle": "Security audit trail of all system actions.",
+  "search": "Search by user, action, or description...",
+  "total_entries": "total entries",
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "no_logs": "No activity logs found",
+  "no_logs_search": "Try a different search term.",
+  "no_logs_desc": "Activity will appear here as actions are performed.",
+  "page_of": "Page {page} of {total}",
+  "showing": "Showing {start}–{end}",
+  "records_per_page": "Records Per Page Display"
+}

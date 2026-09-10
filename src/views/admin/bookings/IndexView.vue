@@ -118,7 +118,7 @@ const getStatusColor = (status: string) => {
                 <div class="text-xs text-muted-foreground">{{ booking.guest.phone || booking.guest.email }}</div>
               </TableCell>
               <TableCell>
-                <div class="text-sm font-medium">{{ booking.hotel_name || 'N/A' }}</div>
+                <div class="text-sm font-medium">{{ booking.hotel_name || t('common.na', 'N/A') }}</div>
                 <div class="text-xs text-muted-foreground">{{ booking.room.name }} (x{{ booking.room.rooms_count }})</div>
               </TableCell>
               <TableCell>
