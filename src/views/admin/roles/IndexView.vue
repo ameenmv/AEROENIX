@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { PlusSignIcon, MoreHorizontalIcon, ViewIcon, PencilEdit01Icon } from '@hugeicons/core-free-icons'
+import { ref } from 'vue'
+import { PlusSignIcon, MoreHorizontalIcon, ViewIcon, PencilEdit01Icon, Delete02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+import { useQueryClient, useMutation } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 import { useRoles } from '@/composables'
+import { rolesService } from '@/services/rolesService'
+import type { Role } from '@/types/entities/role'
 import { Button } from '@/components/uic/button'
 import { Skeleton } from '@/components/uic/skeleton'
 import { Badge } from '@/components/uic/badge'
@@ -13,13 +18,52 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/uic/dropdown-menu'
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/uic/alert-dialog'
 
 const { t } = useI18n()
 const router = useRouter()
+const queryClient = useQueryClient()
 
-const { roles, isLoading } = useRoles()
+const { roles, isLoading, isFetching } = useRoles()
 
+const isDeleteDialogOpen = ref(false)
+const roleToDelete = ref<Role | null>(null)
 
+const { mutate: executeDelete, isPending: isDeleting } = useMutation({
+  mutationFn: (id: string | number) => rolesService.delete(id),
+  onSuccess: () => {
+    toast.success(t('roles.delete_success', 'Role deleted successfully'))
+    queryClient.invalidateQueries({ queryKey: ['roles-permissions'] })
+    closeDeleteDialog()
+  },
+  onError: (error: any) => {
+    toast.error(error?.response?.data?.message || t('roles.delete_error', 'Failed to delete role'))
+  }
+})
+
+function openDeleteDialog(role: Role) {
+  roleToDelete.value = role
+  isDeleteDialogOpen.value = true
+}
+
+function closeDeleteDialog() {
+  isDeleteDialogOpen.value = false
+  roleToDelete.value = null
+}
+
+function confirmDelete() {
+  if (roleToDelete.value) {
+    executeDelete(roleToDelete.value.id)
+  }
+}
 </script>
 
 <template>
@@ -41,7 +85,7 @@ const { roles, isLoading } = useRoles()
       </div>
 
       <!-- Loading State Skeleton -->
-      <div v-if="isLoading" class="overflow-x-auto rounded-lg border border-border/50">
+      <div v-if="isLoading || isFetching" class="overflow-x-auto rounded-lg border border-border/50">
         <table class="w-full text-sm border-separate border-spacing-y-0">
           <thead>
             <tr>
@@ -108,6 +152,13 @@ const { roles, isLoading } = useRoles()
                       <HugeiconsIcon :icon="PencilEdit01Icon" :size="16" />
                       {{ t('actions.edit', 'Edit') }}
                     </DropdownMenuItem>
+                    <DropdownMenuItem
+                      class="text-destructive focus:text-destructive focus:bg-destructive/10"
+                      @click="openDeleteDialog(role)"
+                    >
+                      <HugeiconsIcon :icon="Delete02Icon" :size="16" />
+                      {{ t('actions.delete', 'Delete') }}
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </td>
@@ -121,5 +172,26 @@ const { roles, isLoading } = useRoles()
         <p>{{ t('roles.empty') }}</p>
       </div>
     </div>
+
+    <!-- Delete Dialog -->
+    <AlertDialog :open="isDeleteDialogOpen" @update:open="val => { if (!isDeleting) isDeleteDialogOpen = val }">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{{ t('actions.delete', 'Delete') }} {{ t('roles.title', 'Role') }}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {{ t('roles.delete_confirm', 'Are you sure you want to delete this role? This action cannot be undone.') }}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel :disabled="isDeleting" @click="closeDeleteDialog">
+            {{ t('actions.cancel', 'Cancel') }}
+          </AlertDialogCancel>
+          <Button variant="destructive" :disabled="isDeleting" @click="confirmDelete">
+            <span v-if="isDeleting" class="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+            {{ t('actions.delete', 'Delete') }}
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </ModularView>
 </template>

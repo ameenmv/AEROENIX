@@ -23,6 +23,24 @@ const FACEBOOK_BASE = '/user/workspace/channels/facebook-messenger'
 
 export const channelsService = {
   /**
+   * Fetch all channels for the workspace/hotel.
+   */
+  async getAll(hotelId?: number): Promise<Channel[]> {
+    const res = await api.get<ApiSuccessResponse<Channel[]>>('/user/workspace/channels', {
+      params: hotelId ? { hotel_id: hotelId } : {},
+    })
+    return res.data.data
+  },
+
+  /**
+   * Disconnect any channel by ID.
+   */
+  async disconnect(channelId: number | string): Promise<string> {
+    const res = await api.delete<ApiSuccessResponse<any>>(`/user/workspace/channels/${channelId}`)
+    return res.data.message || 'Channel disconnected successfully.'
+  },
+
+  /**
    * Handle OAuth callback from Frontend Callback view.
    * Sends code & state to backend and returns response.
    */

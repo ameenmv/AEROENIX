@@ -1,24 +1,51 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { toast } from 'vue-sonner'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/vue-query'
 import {
   FacebookIcon,
   InformationCircleIcon,
   InstagramIcon,
   Link01Icon,
   WhatsappIcon,
+  Delete02Icon,
+  CheckmarkBadge01Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/uic/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/uic/card'
 import { channelsService } from '@/services/channelsService'
+import type { Channel } from '@/types/entities/channel'
+import { Badge } from '@/components/uic/badge'
+import { Skeleton } from '@/components/uic/skeleton'
 
 const { t } = useI18n()
+const queryClient = useQueryClient()
 
 const isConnectingWhatsApp = ref(false)
 const isConnectingInstagram = ref(false)
 const isConnectingFacebook = ref(false)
+
+const { data: channels, isLoading } = useQuery<Channel[]>({
+  queryKey: ['channels'],
+  queryFn: () => channelsService.getAll()
+})
+
+const whatsappChannel = computed(() => channels.value?.find(c => c.provider === 'whatsapp_business'))
+const instagramChannel = computed(() => channels.value?.find(c => c.provider === 'instagram_professional'))
+const facebookChannel = computed(() => channels.value?.find(c => c.provider === 'facebook_messenger'))
+
+const { mutate: executeDisconnect, isPending: isDisconnecting } = useMutation({
+  mutationFn: (id: string | number) => channelsService.disconnect(id),
+  onSuccess: (message) => {
+    toast.success(message)
+    queryClient.invalidateQueries({ queryKey: ['channels'] })
+  },
+  onError: () => {
+    toast.error(t('channels.disconnect_error', 'Failed to disconnect channel.'))
+  }
+})
 
 
 
@@ -41,10 +68,11 @@ function openOAuthPopup(url: string) {
 
 // PostMessage Listener for popup callback messages
 function handlePostMessage(event: MessageEvent) {
-  if (event.data?.type === 'AEROENIX_CHANNEL_CONNECTED') {
-    const channelName = event.data?.channel?.name || 'Channel'
+  if (event.data?.type === 'CHANNEL_CONNECTED' || event.data?.type === 'AEROENIX_CHANNEL_CONNECTED') {
+    const channelName = event.data?.channel?.name || event.data?.data?.channel?.name || 'Channel'
     toast.success(`${channelName} connected successfully!`)
-  } else if (event.data?.type === 'AEROENIX_CHANNEL_ERROR') {
+    queryClient.invalidateQueries({ queryKey: ['channels'] })
+  } else if (event.data?.type === 'CHANNEL_AUTH_ERROR' || event.data?.type === 'AEROENIX_CHANNEL_ERROR') {
     toast.error(event.data?.message || 'Failed to connect channel.')
   }
 }
@@ -126,9 +154,19 @@ async function handleConnectFacebook() {
       </div>
 
       <!-- Channels Cards Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Skeleton class="h-[280px] w-full rounded-xl" v-for="i in 3" :key="i" />
+      </div>
+
+      <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- WhatsApp Business -->
-        <Card class="border-border/50 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+        <Card class="border-border/50 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between relative overflow-hidden">
+          <div v-if="whatsappChannel" class="absolute top-0 right-0 p-4">
+            <Badge variant="default" class="bg-emerald-500 hover:bg-emerald-600 gap-1">
+              <HugeiconsIcon :icon="CheckmarkBadge01Icon" :size="14" />
+              Connected
+            </Badge>
+          </div>
           <CardHeader>
             <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-4">
               <HugeiconsIcon :icon="WhatsappIcon" :size="28" />
@@ -143,21 +181,51 @@ async function handleConnectFacebook() {
               <span class="text-muted-foreground font-medium">Provider:</span>
               <span class="font-semibold text-foreground">Meta Cloud API</span>
             </div>
-            <div class="space-y-2">
+            
+            <template v-if="whatsappChannel">
+              <div class="rounded-lg bg-muted/30 p-3 space-y-2 border border-border/40">
+                <div class="flex justify-between items-center text-sm">
+                  <span class="text-muted-foreground">Account</span>
+                  <span class="font-medium text-foreground truncate max-w-[120px]" :title="whatsappChannel.name">{{ whatsappChannel.name }}</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                  <span class="text-muted-foreground">Number</span>
+                  <span class="font-medium text-foreground">{{ whatsappChannel.username }}</span>
+                </div>
+              </div>
               <Button
-                class="w-full gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20"
-                :disabled="isConnectingWhatsApp"
-                @click="handleConnectWhatsApp"
+                variant="destructive"
+                class="w-full gap-2"
+                :disabled="isDisconnecting"
+                @click="executeDisconnect(whatsappChannel.id)"
               >
-                <HugeiconsIcon :icon="Link01Icon" :size="18" />
-                <span>Connect WhatsApp</span>
+                <HugeiconsIcon :icon="Delete02Icon" :size="18" />
+                <span>Disconnect</span>
               </Button>
-            </div>
+            </template>
+            <template v-else>
+              <div class="space-y-2">
+                <Button
+                  class="w-full gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20"
+                  :disabled="isConnectingWhatsApp"
+                  @click="handleConnectWhatsApp"
+                >
+                  <HugeiconsIcon :icon="Link01Icon" :size="18" />
+                  <span>Connect WhatsApp</span>
+                </Button>
+              </div>
+            </template>
           </CardContent>
         </Card>
 
         <!-- Instagram Professional -->
-        <Card class="border-border/50 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+        <Card class="border-border/50 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between relative overflow-hidden">
+          <div v-if="instagramChannel" class="absolute top-0 right-0 p-4">
+            <Badge variant="default" class="bg-pink-500 hover:bg-pink-600 gap-1">
+              <HugeiconsIcon :icon="CheckmarkBadge01Icon" :size="14" />
+              Connected
+            </Badge>
+          </div>
           <CardHeader>
             <div class="w-12 h-12 rounded-xl bg-pink-500/10 text-pink-500 flex items-center justify-center mb-4">
               <HugeiconsIcon :icon="InstagramIcon" :size="28" />
@@ -172,21 +240,51 @@ async function handleConnectFacebook() {
               <span class="text-muted-foreground font-medium">Provider:</span>
               <span class="font-semibold text-foreground">Instagram Graph API</span>
             </div>
-            <div class="space-y-2">
+            
+            <template v-if="instagramChannel">
+              <div class="rounded-lg bg-muted/30 p-3 space-y-2 border border-border/40">
+                <div class="flex justify-between items-center text-sm">
+                  <span class="text-muted-foreground">Account</span>
+                  <span class="font-medium text-foreground truncate max-w-[120px]" :title="instagramChannel.name">{{ instagramChannel.name }}</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                  <span class="text-muted-foreground">ID</span>
+                  <span class="font-medium text-foreground">{{ instagramChannel.external_account_id }}</span>
+                </div>
+              </div>
               <Button
-                class="w-full gap-2 bg-pink-600 hover:bg-pink-700 text-white shadow-md shadow-pink-600/20"
-                :disabled="isConnectingInstagram"
-                @click="handleConnectInstagram"
+                variant="destructive"
+                class="w-full gap-2"
+                :disabled="isDisconnecting"
+                @click="executeDisconnect(instagramChannel.id)"
               >
-                <HugeiconsIcon :icon="Link01Icon" :size="18" />
-                <span>Connect Instagram</span>
+                <HugeiconsIcon :icon="Delete02Icon" :size="18" />
+                <span>Disconnect</span>
               </Button>
-            </div>
+            </template>
+            <template v-else>
+              <div class="space-y-2">
+                <Button
+                  class="w-full gap-2 bg-pink-600 hover:bg-pink-700 text-white shadow-md shadow-pink-600/20"
+                  :disabled="isConnectingInstagram"
+                  @click="handleConnectInstagram"
+                >
+                  <HugeiconsIcon :icon="Link01Icon" :size="18" />
+                  <span>Connect Instagram</span>
+                </Button>
+              </div>
+            </template>
           </CardContent>
         </Card>
 
         <!-- Facebook Messenger -->
-        <Card class="border-border/50 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+        <Card class="border-border/50 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between relative overflow-hidden">
+          <div v-if="facebookChannel" class="absolute top-0 right-0 p-4">
+            <Badge variant="default" class="bg-blue-500 hover:bg-blue-600 gap-1">
+              <HugeiconsIcon :icon="CheckmarkBadge01Icon" :size="14" />
+              Connected
+            </Badge>
+          </div>
           <CardHeader>
             <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center mb-4">
               <HugeiconsIcon :icon="FacebookIcon" :size="28" />
@@ -201,16 +299,40 @@ async function handleConnectFacebook() {
               <span class="text-muted-foreground font-medium">Provider:</span>
               <span class="font-semibold text-foreground">Meta Messenger API</span>
             </div>
-            <div class="space-y-2">
+            
+            <template v-if="facebookChannel">
+              <div class="rounded-lg bg-muted/30 p-3 space-y-2 border border-border/40">
+                <div class="flex justify-between items-center text-sm">
+                  <span class="text-muted-foreground">Account</span>
+                  <span class="font-medium text-foreground truncate max-w-[120px]" :title="facebookChannel.name">{{ facebookChannel.name }}</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                  <span class="text-muted-foreground">ID</span>
+                  <span class="font-medium text-foreground">{{ facebookChannel.external_account_id }}</span>
+                </div>
+              </div>
               <Button
-                class="w-full gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20"
-                :disabled="isConnectingFacebook"
-                @click="handleConnectFacebook"
+                variant="destructive"
+                class="w-full gap-2"
+                :disabled="isDisconnecting"
+                @click="executeDisconnect(facebookChannel.id)"
               >
-                <HugeiconsIcon :icon="Link01Icon" :size="18" />
-                <span>Connect Messenger</span>
+                <HugeiconsIcon :icon="Delete02Icon" :size="18" />
+                <span>Disconnect</span>
               </Button>
-            </div>
+            </template>
+            <template v-else>
+              <div class="space-y-2">
+                <Button
+                  class="w-full gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20"
+                  :disabled="isConnectingFacebook"
+                  @click="handleConnectFacebook"
+                >
+                  <HugeiconsIcon :icon="Link01Icon" :size="18" />
+                  <span>Connect Messenger</span>
+                </Button>
+              </div>
+            </template>
           </CardContent>
         </Card>
       </div>
