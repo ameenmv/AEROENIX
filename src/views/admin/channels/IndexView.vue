@@ -15,6 +15,15 @@ import {
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/uic/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/uic/card'
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/uic/alert-dialog'
 import { channelsService } from '@/services/channelsService'
 import type { Channel } from '@/types/entities/channel'
 import { Badge } from '@/components/uic/badge'
@@ -36,16 +45,36 @@ const whatsappChannel = computed(() => channels.value?.find(c => c.provider === 
 const instagramChannel = computed(() => channels.value?.find(c => c.provider === 'instagram_professional'))
 const facebookChannel = computed(() => channels.value?.find(c => c.provider === 'facebook_messenger'))
 
+const isDisconnectDialogOpen = ref(false)
+const channelToDisconnect = ref<Channel | null>(null)
+
+function openDisconnectDialog(channel: Channel) {
+  channelToDisconnect.value = channel
+  isDisconnectDialogOpen.value = true
+}
+
+function closeDisconnectDialog() {
+  isDisconnectDialogOpen.value = false
+  channelToDisconnect.value = null
+}
+
 const { mutate: executeDisconnect, isPending: isDisconnecting } = useMutation({
   mutationFn: (id: string | number) => channelsService.disconnect(id),
   onSuccess: (message) => {
     toast.success(message)
     queryClient.invalidateQueries({ queryKey: ['channels'] })
+    closeDisconnectDialog()
   },
   onError: () => {
     toast.error(t('channels.disconnect_error', 'Failed to disconnect channel.'))
   }
 })
+
+function confirmDisconnect() {
+  if (channelToDisconnect.value) {
+    executeDisconnect(channelToDisconnect.value.id)
+  }
+}
 
 
 
@@ -196,8 +225,7 @@ async function handleConnectFacebook() {
               <Button
                 variant="destructive"
                 class="w-full gap-2"
-                :disabled="isDisconnecting"
-                @click="executeDisconnect(whatsappChannel.id)"
+                @click="openDisconnectDialog(whatsappChannel)"
               >
                 <HugeiconsIcon :icon="Delete02Icon" :size="18" />
                 <span>Disconnect</span>
@@ -255,8 +283,7 @@ async function handleConnectFacebook() {
               <Button
                 variant="destructive"
                 class="w-full gap-2"
-                :disabled="isDisconnecting"
-                @click="executeDisconnect(instagramChannel.id)"
+                @click="openDisconnectDialog(instagramChannel)"
               >
                 <HugeiconsIcon :icon="Delete02Icon" :size="18" />
                 <span>Disconnect</span>
@@ -314,8 +341,7 @@ async function handleConnectFacebook() {
               <Button
                 variant="destructive"
                 class="w-full gap-2"
-                :disabled="isDisconnecting"
-                @click="executeDisconnect(facebookChannel.id)"
+                @click="openDisconnectDialog(facebookChannel)"
               >
                 <HugeiconsIcon :icon="Delete02Icon" :size="18" />
                 <span>Disconnect</span>
@@ -353,5 +379,26 @@ async function handleConnectFacebook() {
       </Card>
 
     </div>
+
+    <!-- Disconnect Dialog -->
+    <AlertDialog :open="isDisconnectDialogOpen" @update:open="val => { if (!isDisconnecting) isDisconnectDialogOpen = val }">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Disconnect Channel</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to disconnect this channel? You will no longer be able to automate messages for this channel.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel :disabled="isDisconnecting" @click="closeDisconnectDialog">
+            {{ t('actions.cancel', 'Cancel') }}
+          </AlertDialogCancel>
+          <Button variant="destructive" :disabled="isDisconnecting" @click="confirmDisconnect">
+            <span v-if="isDisconnecting" class="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+            <span>Disconnect</span>
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>
