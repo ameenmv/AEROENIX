@@ -1,6 +1,8 @@
 import {
   Building04Icon,
+  Calendar01Icon,
   Comment01Icon,
+  CpuIcon,
   Home01Icon,
   Notification03Icon,
   SecurityLockIcon,
@@ -43,6 +45,18 @@ export const navigationConfig: NavItem[] = [
     label: 'menu.hotels',
     icon: Building04Icon,
     to: '/admin/hotels',
+  },
+  {
+    name: 'bookings',
+    label: 'menu.bookings',
+    icon: Calendar01Icon,
+    to: '/admin/bookings',
+  },
+  {
+    name: 'staff-qna',
+    label: 'menu.staff_qna',
+    icon: CpuIcon,
+    to: '/admin/staff-qna',
   },
   {
     name: 'roles',
