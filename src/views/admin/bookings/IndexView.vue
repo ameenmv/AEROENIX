@@ -36,16 +36,19 @@ import {
 import StatusBadge from '@/components/ui/StatusBadge.vue'
 import FilterPanel from '@/components/uic/filter-panel/FilterPanel.vue'
 
+import { refDebounced } from '@vueuse/core'
+
 const { t } = useI18n()
 const router = useRouter()
 
 const search = ref('')
+const debouncedSearch = refDebounced(search, 500)
 const filters = ref<Record<string, unknown>>({ status: null })
 
 const { data, isLoading } = useQuery({
-  queryKey: ['bookings', search, filters],
+  queryKey: ['bookings', debouncedSearch, filters],
   queryFn: () => bookingsService.list({ 
-    search: search.value, 
+    search: debouncedSearch.value, 
     status: filters.value.status as string,
     limit: 50 
   }),

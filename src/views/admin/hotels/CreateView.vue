@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useForm } from '@/composables'
@@ -21,6 +21,25 @@ const form = useForm({
   mutationFn: data => hotelsService.create(data),
   onSuccess: () => router.push({ name: 'admin-hotels' }),
 })
+
+const currentStep = ref(1)
+
+watch(
+  () => form.displayErrors.value,
+  (errors) => {
+    if (Object.keys(errors).length === 0) return
+
+    const step1Fields = ['name', 'country', 'currency', 'phone', 'email', 'address']
+    const step2Fields = ['check_in_time', 'check_out_time', 'timezone', 'description']
+    
+    if (step1Fields.some(field => errors[field])) {
+      currentStep.value = 1
+    } else if (step2Fields.some(field => errors[field])) {
+      currentStep.value = 2
+    }
+  },
+  { deep: true }
+)
 
 const [name, nameProps] = form.defineField('name')
 const [adminEmail, adminEmailProps] = form.defineField('admin_email')
@@ -55,7 +74,7 @@ const timezoneOptions = Intl.supportedValuesOf('timeZone').map(tz => ({
   label: tz.replace(/_/g, ' '),
 }))
 
-const currentStep = ref(1)
+
 
 const steps = [
   { step: 1, title: t('hotels.wizard.step1.title', 'Basic Info'), description: t('hotels.wizard.step1.desc', 'General details') },
