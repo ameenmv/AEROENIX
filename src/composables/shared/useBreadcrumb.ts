@@ -19,7 +19,7 @@ export function useBreadcrumb() {
     // Always start with Home
     crumbs.push({
       label: t('menu.home'),
-      to: `/${locale.value}/dashboard`,
+      to: `/${locale.value}/admin/dashboard`,
     })
     // If there's a parent (resource sub-route like create/edit/view)
     if (parentBreadcrumbKey && parentPath) {

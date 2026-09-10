@@ -60,7 +60,8 @@ export interface ChannelDistItem {
 
 export interface RecentActivityItem {
   id: string
-  type: string
+  user_name: string
+  description: string
   title: string
   time_ago: string
   timestamp: string
