@@ -52,12 +52,12 @@ export const navigationConfig: NavItem[] = [
     icon: Calendar01Icon,
     to: '/admin/bookings',
   },
-  {
-    name: 'staff-qna',
-    label: 'menu.staff_qna',
-    icon: CpuIcon,
-    to: '/admin/staff-qna',
-  },
+  // {
+  //   name: 'staff-qna',
+  //   label: 'menu.staff_qna',
+  //   icon: CpuIcon,
+  //   to: '/admin/staff-qna',
+  // },
   {
     name: 'roles',
     label: 'menu.roles',
