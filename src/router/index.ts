@@ -65,6 +65,12 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/privacy-policy',
+      name: 'privacy-policy',
+      component: () => import('../views/public/PrivacyPolicyView.vue'),
+      meta: { layout: 'blank' },
+    },
+    {
       path: '/:lang([a-z]{2})?',
       children: [...routes, ...getModuleRoutes()],
     },
@@ -101,6 +107,9 @@ router.beforeEach((to, _from, next) => {
       }
     }
     else {
+      if (to.matched.some(record => record.path === '/privacy-policy')) {
+        return next()
+      }
       const targetPath = `/${savedLocale}${to.path === '/' ? '' : to.path}`
       return next({ path: targetPath })
     }
