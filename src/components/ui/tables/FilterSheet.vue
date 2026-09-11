@@ -2,15 +2,8 @@
 import type { ActiveFilters, FilterConfig, FilterField } from '@/types'
 import { Delete01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { computed, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { Button as Btn } from '@/components/uic/button'
-import { Checkbox } from '@/components/uic/checkbox'
-import { Input } from '@/components/uic/input'
-import { Label } from '@/components/uic/label'
-import SelectField from '@/components/uic/select/SelectField.vue'
-import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/components/uic/sheet'
-import { useFilterStore } from '@/stores/shared/filter'
+import ToggleSwitch from '@/components/uic/switch/ToggleSwitch.vue'
 
 const props = defineProps<{
   resource: string
@@ -90,6 +83,48 @@ function setDateRangeValue(field: FilterField, key: 'from' | 'to', value: any) {
     setFilterValue(field, newValue)
   }
 }
+// ── Async options loaded from endpoint shorthand ───────────────────────────────
+const loadedOptions = ref<Record<string, { value: any, label: string }[]>>({})
+const loadingFields = ref<Set<string>>(new Set())
+onMounted(() => {
+  props.config.fields.forEach((field) => {
+    if (field.optionsLoader) {
+      loadingFields.value.add(field.key)
+      field
+        .optionsLoader()
+        .then((result) => {
+          loadedOptions.value[field.key] = result.data
+        })
+        .catch((err) => {
+          console.error(`[FilterSheet] Failed to load options for "${field.key}":`, err)
+        })
+        .finally(() => {
+          loadingFields.value.delete(field.key)
+        })
+    }
+  })
+})
+/** Resolve options for a field — prefers async-loaded, falls back to static */
+function resolvedOptions(field: FilterField) {
+  return loadedOptions.value[field.key] || field.options || []
+}
+/**
+ * Visible fields — hides select/multiselect filters with no options.
+ * Other field types (text, number, date, toggle, etc.) are always shown.
+ */
+const visibleFields = computed(() =>
+  props.config.fields.filter((field) => {
+    if (field.type === 'select' || field.type === 'multiselect') {
+      if (loadingFields.value.has(field.key))
+        return false
+      if (field.optionsLoader)
+        return true
+      const opts = field.options || []
+      return opts.length > 0
+    }
+    return true
+  }),
+)
 </script>
 
 <template>
@@ -115,7 +150,7 @@ function setDateRangeValue(field: FilterField, key: 'from' | 'to', value: any) {
         </div>
       </SheetHeader>
       <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6 custom-scrollbar">
-        <div v-for="field in config.fields" :key="field.key" class="flex flex-col gap-2">
+        <div v-for="field in visibleFields" :key="field.key" class="flex flex-col gap-2">
           <div class="flex items-center justify-between">
             <Label class="text-sm font-medium text-foreground">
               {{ field.label.includes('.') ? t(field.label) : field.label }}
@@ -131,12 +166,20 @@ function setDateRangeValue(field: FilterField, key: 'from' | 'to', value: any) {
               {{ t('common.clear', 'Clear') }}
             </Btn>
           </div>
-          <!-- Text/Date -->
-          <div v-if="field.type === 'text' || field.type === 'date'" class="w-full">
+          <!-- Text -->
+          <div v-if="field.type === 'text'" class="w-full">
             <Input
-              :type="field.type === 'date' ? 'date' : 'text'"
+              type="text"
               :model-value="getFilterValue(field) || ''"
               :placeholder="field.placeholder || t('common.search', 'Search...')"
+              @update:model-value="setFilterValue(field, $event)"
+            />
+          </div>
+          <!-- Date (single) -->
+          <div v-else-if="field.type === 'date'" class="w-full">
+            <DatePicker
+              :model-value="getFilterValue(field) || null"
+              :placeholder="field.placeholder || t('common.select_date', 'Select date')"
               @update:model-value="setFilterValue(field, $event)"
             />
           </div>
@@ -144,7 +187,7 @@ function setDateRangeValue(field: FilterField, key: 'from' | 'to', value: any) {
           <div v-else-if="field.type === 'select'" class="w-full">
             <SelectField
               :model-value="getFilterValue(field) || ''"
-              :options="field.options || []"
+              :options="resolvedOptions(field)"
               :placeholder="field.placeholder || t('common.select', 'Select...')"
               variant="default"
               size="md"
@@ -174,17 +217,17 @@ function setDateRangeValue(field: FilterField, key: 'from' | 'to', value: any) {
             <div class="grid grid-cols-2 gap-2">
               <div class="flex flex-col gap-1">
                 <Label class="text-xs text-muted-foreground">{{ t('common.from', 'From') }}</Label>
-                <Input
-                  type="date"
-                  :model-value="getFilterValue(field)?.from || ''"
+                <DatePicker
+                  :model-value="getFilterValue(field)?.from || null"
+                  :placeholder="t('common.from', 'From')"
                   @update:model-value="setDateRangeValue(field, 'from', $event)"
                 />
               </div>
               <div class="flex flex-col gap-1">
                 <Label class="text-xs text-muted-foreground">{{ t('common.to', 'To') }}</Label>
-                <Input
-                  type="date"
-                  :model-value="getFilterValue(field)?.to || ''"
+                <DatePicker
+                  :model-value="getFilterValue(field)?.to || null"
+                  :placeholder="t('common.to', 'To')"
                   @update:model-value="setDateRangeValue(field, 'to', $event)"
                 />
               </div>
@@ -200,6 +243,15 @@ function setDateRangeValue(field: FilterField, key: 'from' | 'to', value: any) {
             <Label :for="`filter-${field.key}`" class="text-sm text-foreground font-normal">
               {{ field.placeholder || t('common.enabled', 'Enabled') }}
             </Label>
+          </div>
+          <!-- Toggle -->
+          <div v-else-if="field.type === 'toggle'" class="flex items-center pt-1">
+            <ToggleSwitch
+              :id="`filter-${field.key}`"
+              :model-value="!!getFilterValue(field)"
+              :label="getFilterValue(field) ? t('common.yes', 'Yes') : t('common.no', 'No')"
+              @update:model-value="setFilterValue(field, $event)"
+            />
           </div>
         </div>
       </div>

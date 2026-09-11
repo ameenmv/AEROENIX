@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { ArrowDown01Icon, ArrowUp01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { useI18n } from 'vue-i18n'
-import CheckboxField from '@/components/uic/inputs/CheckboxField.vue'
-import { TableHead, TableRow } from '@/components/uic/table'
 
 const props = defineProps<{
   columns: any[]
@@ -25,14 +22,11 @@ function toggleSort(colKey: string, isSortable: boolean) {
 </script>
 
 <template>
-  <TableRow class="border-none hover:bg-transparent bg-muted/30">
-    <TableHead
-      v-if="props.dragAndDrop?.enabled"
-      class="w-10 first:rounded-l-lg last:rounded-r-lg"
-    />
+  <TableRow class="hover:bg-transparent">
+    <TableHead v-if="props.dragAndDrop?.enabled" class="w-10" />
     <TableHead
       v-if="props.tableEnhancements?.rowSelection"
-      class="w-12 text-center align-middle border-none first:rounded-l-lg last:rounded-r-lg"
+      class="w-12 text-center align-middle border-none pointer-events-auto"
     >
       <CheckboxField
         :model-value="props.selectAll"
@@ -43,26 +37,22 @@ function toggleSort(colKey: string, isSortable: boolean) {
     <TableHead
       v-for="col in props.columns"
       :key="col.key"
-      class="px-4 py-3 font-medium text-muted-foreground/70 border-none text-[11px] uppercase tracking-widest align-middle first:rounded-l-lg last:rounded-r-lg"
-      :class="col.className || 'text-left'"
+      class="text-center px-3 py-2 font-semibold text-muted-foreground border-none text-[11px] uppercase tracking-wider align-middle mx-auto"
+      :class="col.className"
     >
       <slot :name="`head-${col.key}`" :col="col">
         <div
-          class="flex items-center gap-2"
-          :class="[
-            col.sortable ? 'cursor-pointer select-none' : '',
-            (col.className || '').includes('text-center') ? 'justify-center' :
-            (col.className || '').includes('text-right') ? 'justify-end' : 'justify-start'
-          ]"
+          class="flex items-center justify-center gap-2"
+          :class="[col.sortable ? 'cursor-pointer select-none pointer-events-auto' : '']"
           @click="toggleSort(col.key, !!col.sortable)"
         >
           {{ col.label.includes('.') ? t(col.label, col.label) : col.label }}
-          <div v-if="col.sortable" class="flex flex-col opacity-40">
+          <div v-if="col.sortable" class="flex flex-col opacity-50">
             <HugeiconsIcon
               :icon="ArrowUp01Icon"
               :size="10"
               :class="{
-                'opacity-100 text-primary':
+                'opacity-100 text-success':
                   props.sortColumn === col.key && props.sortDirection === 'asc',
               }"
             />
@@ -71,7 +61,7 @@ function toggleSort(colKey: string, isSortable: boolean) {
               :size="10"
               class="-mt-1"
               :class="{
-                'opacity-100 text-primary':
+                'opacity-100 text-success':
                   props.sortColumn === col.key && props.sortDirection === 'desc',
               }"
             />
@@ -81,7 +71,7 @@ function toggleSort(colKey: string, isSortable: boolean) {
     </TableHead>
     <TableHead
       v-if="props.hasActions"
-      class="border-none text-[11px] uppercase tracking-widest font-medium text-muted-foreground/70 px-4 py-3 align-middle text-center first:rounded-l-lg last:rounded-r-lg"
+      class="border-none text-[11px] uppercase tracking-wider font-semibold text-muted-foreground px-3 py-2 align-middle text-center w-[70px] flex-none"
     >
       {{ t('common.actions') }}
     </TableHead>

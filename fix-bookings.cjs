@@ -1,35 +1,22 @@
-<script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { useQuery } from '@tanstack/vue-query'
-import {
-  Calendar01Icon,
-  Search01Icon,
-  EyeIcon,
-  MoreVerticalIcon,
-  NoteIcon,
-} from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
+const fs = require('fs')
 
-import { bookingsService } from '@/services/bookingsService'
+const path = 'src/views/admin/bookings/IndexView.vue'
+let content = fs.readFileSync(path, 'utf8')
 
+// Replace old imports with new DataTable
+content = content.replace(
+  "import { Button } from '@/components/uic/button'",
+  "import { Button } from '@/components/uic/button'\nimport { DataTable } from '@/components/ui/tables'"
+)
+content = content.replace(
+  "import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/uic/table'",
+  ""
+)
 
-import { Button } from '@/components/uic/button'
-import { DataTable } from '@/components/ui/tables'
-import { Input } from '@/components/uic/input'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/uic/dropdown-menu'
-
-
-
-import { refDebounced } from '@vueuse/core'
-
-const { t } = useI18n()
+// Add columns
+content = content.replace(
+  'const { t } = useI18n()',
+  `const { t } = useI18n()
   
 const columns = [
   { key: 'booking_reference', label: 'bookings.reference', className: 'font-semibold' },
@@ -38,41 +25,18 @@ const columns = [
   { key: 'dates', label: 'bookings.dates', className: 'font-semibold' },
   { key: 'total', label: 'bookings.total', className: 'font-semibold text-right' },
   { key: 'status', label: 'bookings.status', className: 'font-semibold text-center' },
-]
-const router = useRouter()
+  { key: 'actions', label: '', className: 'w-[80px]' },
+]`
+)
 
-const search = ref('')
-const debouncedSearch = refDebounced(search, 500)
-const filters = ref<Record<string, unknown>>({ status: null })
+const oldFiltersStart = `    <!-- Filters and Search -->`
+const oldTableEnd = `      </Table>\n    </div>`
 
-const { data, isLoading } = useQuery({
-  queryKey: ['bookings', debouncedSearch, filters],
-  queryFn: () => bookingsService.list({ 
-    search: debouncedSearch.value, 
-    status: filters.value.status as string,
-    limit: 50 
-  }),
-})
+const startIndex = content.indexOf(oldFiltersStart)
+const endIndex = content.indexOf(oldTableEnd) + oldTableEnd.length
+const oldBlock = content.slice(startIndex, endIndex)
 
-const getStatusColor = (status: string) => {
-  if (status === 'confirmed') return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-  if (status === 'rejected') return 'bg-red-500/10 text-red-500 border-red-500/20'
-  return 'bg-amber-500/10 text-amber-500 border-amber-500/20'
-}
-</script>
-
-<template>
-  <div class="space-y-6">
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-2xl font-bold tracking-tight">{{ t('bookings.title', 'Bookings') }}</h1>
-        <p class="text-sm text-muted-foreground mt-1">
-          {{ t('bookings.subtitle', 'Manage all hotel bookings and reservations.') }}
-        </p>
-      </div>
-    </div>
-
-    <!-- Filters and Search -->
+const newTableBlock = `    <!-- Filters and Search -->
     <div class="flex flex-col sm:flex-row gap-4 justify-between items-center bg-card p-4 rounded-xl border border-border/50">
       <div class="relative w-full sm:max-w-xs">
         <HugeiconsIcon :icon="Search01Icon" :size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -166,6 +130,11 @@ const getStatusColor = (status: string) => {
           </div>
         </template>
       </DataTable>
-    </div>
-  </div>
-</template>
+    </div>`
+
+content = content.replace(oldBlock, newTableBlock)
+
+// Fix multiple occurrences of import if they exist
+content = content.replace("import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/uic/table'", "")
+
+fs.writeFileSync(path, content)

@@ -2,14 +2,7 @@
 import type { ActiveFilters, FilterField, FilterOption } from '@/types'
 import { Cancel01Icon, FilterIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { computed, onMounted, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { Button as Btn } from '@/components/uic/button'
-import { Checkbox } from '@/components/uic/checkbox'
-import { Input } from '@/components/uic/input'
-import { Label } from '@/components/uic/label'
-import SelectField from '@/components/uic/select/SelectField.vue'
-import { Switch } from '@/components/uic/switch'
 
 const props = withDefaults(
   defineProps<{
@@ -27,19 +20,14 @@ const props = withDefaults(
     collapsible: true,
   },
 )
-
 const emit = defineEmits<{
   (e: 'update:filters', filters: ActiveFilters): void
 }>()
-
-const { t } = useI18n()
-
+const { t, locale } = useI18n()
 /** Collapsed state — starts collapsed when collapsible is true */
 const collapsed = ref(props.collapsible)
-
 // ── Local copy of filters for two-way binding ──────────────────────────
 const localFilters = ref<ActiveFilters>({ ...props.filters })
-
 watch(
   () => props.filters,
   (val) => {
@@ -47,11 +35,9 @@ watch(
   },
   { deep: true },
 )
-
 // ── Async options loaded from API endpoints ─────────────────────────────
 const loadedOptions = ref<Record<string, FilterOption[]>>({})
 const loadingFields = ref<Set<string>>(new Set())
-
 onMounted(() => {
   props.fields.forEach((field) => {
     if (field.optionsLoader) {
@@ -70,12 +56,10 @@ onMounted(() => {
     }
   })
 })
-
 // ── Helpers ─────────────────────────────────────────────────────────────
 function getVal(field: FilterField) {
   return localFilters.value[field.key]
 }
-
 function setVal(field: FilterField, value: unknown) {
   if (value === null || value === undefined || value === '') {
     delete localFilters.value[field.key]
@@ -85,7 +69,6 @@ function setVal(field: FilterField, value: unknown) {
   }
   emit('update:filters', { ...localFilters.value })
 }
-
 function toggleMultiSelect(field: FilterField, optValue: unknown) {
   const current = getVal(field)
   if (Array.isArray(current)) {
@@ -101,12 +84,10 @@ function toggleMultiSelect(field: FilterField, optValue: unknown) {
     setVal(field, [optValue])
   }
 }
-
 function isMultiSelected(field: FilterField, optValue: unknown) {
   const current = getVal(field)
   return Array.isArray(current) && current.includes(optValue)
 }
-
 function setRangeValue(field: FilterField, key: 'min' | 'max', value: unknown) {
   const current = (getVal(field) as Record<string, unknown>) || {}
   const next = { ...current, [key]: value || undefined }
@@ -117,7 +98,6 @@ function setRangeValue(field: FilterField, key: 'min' | 'max', value: unknown) {
     setVal(field, next)
   }
 }
-
 function setDateRangeValue(field: FilterField, key: 'from' | 'to', value: unknown) {
   const current = (getVal(field) as Record<string, unknown>) || {}
   const next = { ...current, [key]: value || undefined }
@@ -128,24 +108,19 @@ function setDateRangeValue(field: FilterField, key: 'from' | 'to', value: unknow
     setVal(field, next)
   }
 }
-
 function clearAll() {
   localFilters.value = {}
   emit('update:filters', {})
 }
-
 const activeCount = computed(
   () =>
     Object.values(localFilters.value).filter(v => v !== undefined && v !== '' && v !== null).length,
 )
-
 const hasActive = computed(() => activeCount.value > 0)
-
 /** Resolve an i18n key (contains a dot) or return the raw label */
 function tl(label: string): string {
   return label.includes('.') ? t(label) : label
 }
-
 /** Get options for a field — prefers async-loaded, falls back to static */
 function translatedOptions(field: FilterField) {
   const opts = loadedOptions.value[field.key] || field.options || []
@@ -154,12 +129,30 @@ function translatedOptions(field: FilterField) {
     label: tl(opt.label),
   }))
 }
+/**
+ * Visible fields — hides select/multiselect filters that have no options
+ * (either because the API returned empty data or they're still loading).
+ * Other field types (text, number, date, toggle, etc.) are always shown.
+ */
+const visibleFields = computed(() =>
+  props.fields.filter((field) => {
+    if (field.type === 'select' || field.type === 'multiselect') {
+      if (loadingFields.value.has(field.key))
+        return false
+      if (field.optionsLoader)
+        return true
+      const opts = field.options || []
+      return opts.length > 0
+    }
+    return true
+  }),
+)
 </script>
 
 <template>
-  <div class="data-table-filters">
+  <div v-if="visibleFields.length > 0" class="data-table-filters">
     <!-- ═══ Toggle bar ═══ -->
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 mb-4 justify-end">
       <Btn
         v-if="collapsible"
         variant="outline"
@@ -172,7 +165,7 @@ function translatedOptions(field: FilterField) {
         {{ t('common.filters', 'Filters') }}
         <span
           v-if="activeCount > 0"
-          class="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground rounded-full text-[10px] font-bold flex items-center justify-center"
+          class="absolute -top-1 -end-1 w-4 h-4 bg-primary text-primary-foreground rounded-full text-[10px] font-bold flex items-center justify-center"
         >
           {{ activeCount }}
         </span>
@@ -188,7 +181,6 @@ function translatedOptions(field: FilterField) {
         {{ t('common.clear_all', 'Clear All') }}
       </Btn>
     </div>
-
     <!-- ═══ Filter fields ═══ -->
     <Transition name="filter-expand">
       <div
@@ -201,7 +193,7 @@ function translatedOptions(field: FilterField) {
         ]"
       >
         <div
-          v-for="field in fields"
+          v-for="field in visibleFields"
           :key="field.key"
           class="flex flex-col gap-1.5 min-w-0"
           :class="[layout === 'inline' ? 'flex-1 min-w-[180px] max-w-[260px]' : '']"
@@ -209,38 +201,38 @@ function translatedOptions(field: FilterField) {
           <Label class="text-xs font-medium text-foreground truncate">
             {{ tl(field.label) }}
           </Label>
-
           <!-- ── Text ── -->
           <Input
             v-if="field.type === 'text'"
+            :dir="locale === 'ar' ? 'rtl' : 'ltr'"
             :model-value="(getVal(field) as string) || ''"
             :placeholder="field.placeholder || t('common.search', 'Search...')"
             class="h-8 text-xs"
             @update:model-value="setVal(field, $event)"
           />
-
           <!-- ── Number ── -->
           <Input
             v-else-if="field.type === 'number'"
             type="number"
+            :dir="locale === 'ar' ? 'rtl' : 'ltr'"
             :model-value="(getVal(field) as string) || ''"
             :placeholder="field.placeholder || '0'"
             class="h-8 text-xs"
             @update:model-value="setVal(field, $event ? Number($event) : undefined)"
           />
-
           <!-- ── Date ── -->
           <Input
             v-else-if="field.type === 'date'"
             type="date"
+            :dir="locale === 'ar' ? 'rtl' : 'ltr'"
             :model-value="(getVal(field) as string) || ''"
             class="h-8 text-xs"
             @update:model-value="setVal(field, $event)"
           />
-
           <!-- ── Select ── -->
           <SelectField
             v-else-if="field.type === 'select'"
+            :dir="locale === 'ar' ? 'rtl' : 'ltr'"
             :model-value="(getVal(field) as string) || ''"
             :options="translatedOptions(field)"
             :placeholder="field.placeholder || t('common.select', 'Select...')"
@@ -248,7 +240,6 @@ function translatedOptions(field: FilterField) {
             size="md"
             @update:model-value="setVal(field, $event)"
           />
-
           <!-- ── Multiselect (pill toggles) ── -->
           <div v-else-if="field.type === 'multiselect'" class="flex flex-wrap gap-1.5">
             <span
@@ -265,7 +256,6 @@ function translatedOptions(field: FilterField) {
               {{ opt.label }}
             </span>
           </div>
-
           <!-- ── Toggle (switch) ── -->
           <div v-else-if="field.type === 'toggle'" class="flex items-center gap-2 pt-1">
             <Switch :checked="!!getVal(field)" @update:checked="setVal(field, $event)" />
@@ -275,11 +265,11 @@ function translatedOptions(field: FilterField) {
               }}
             </span>
           </div>
-
           <!-- ── Range (min/max) ── -->
           <div v-else-if="field.type === 'range'" class="grid grid-cols-2 gap-2">
             <Input
               type="number"
+              :dir="locale === 'ar' ? 'rtl' : 'ltr'"
               :model-value="(getVal(field) as any)?.min || ''"
               :placeholder="t('common.min', 'Min')"
               class="h-8 text-xs"
@@ -287,29 +277,28 @@ function translatedOptions(field: FilterField) {
             />
             <Input
               type="number"
+              :dir="locale === 'ar' ? 'rtl' : 'ltr'"
               :model-value="(getVal(field) as any)?.max || ''"
               :placeholder="t('common.max', 'Max')"
               class="h-8 text-xs"
               @update:model-value="setRangeValue(field, 'max', $event ? Number($event) : undefined)"
             />
           </div>
-
           <!-- ── DateRange (from/to) ── -->
           <div v-else-if="field.type === 'dateRange'" class="grid grid-cols-2 gap-2">
-            <Input
-              type="date"
-              :model-value="(getVal(field) as any)?.from || ''"
-              class="h-8 text-xs"
+            <DatePicker
+              :model-value="(getVal(field) as any)?.from || null"
+              :placeholder="t('common.from', 'From')"
+              class="!h-8 !text-xs !rounded-[8px]"
               @update:model-value="setDateRangeValue(field, 'from', $event)"
             />
-            <Input
-              type="date"
-              :model-value="(getVal(field) as any)?.to || ''"
-              class="h-8 text-xs"
+            <DatePicker
+              :model-value="(getVal(field) as any)?.to || null"
+              :placeholder="t('common.to', 'To')"
+              class="!h-8 !text-xs !rounded-[8px]"
               @update:model-value="setDateRangeValue(field, 'to', $event)"
             />
           </div>
-
           <!-- ── Checkbox ── -->
           <div v-else-if="field.type === 'checkbox'" class="flex items-center gap-2 pt-1">
             <Checkbox
