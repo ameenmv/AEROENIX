@@ -25,7 +25,7 @@ onMounted(() => {
     <main class="flex-grow container mx-auto px-4 py-12 max-w-3xl">
       <article class="prose prose-slate dark:prose-invert max-w-none">
         <h1 class="text-3xl font-bold tracking-tight mb-2">Privacy Policy</h1>
-        <p class="text-muted-foreground mb-8">Last Updated: <span class="font-semibold">[ADD DATE]</span></p>
+        <p class="text-muted-foreground mb-8">Last Updated: <span class="font-semibold">September 11, 2026</span></p>
 
         <div class="space-y-8 text-base/relaxed">
           <p>
@@ -122,7 +122,7 @@ onMounted(() => {
               Upon receiving a valid request, we will review and process the request in accordance with applicable laws and our data retention requirements.
             </p>
             <p>
-              <strong>Data Deletion Request:</strong> <a href="mailto:[ADD YOUR DATA DELETION URL OR CONTACT EMAIL]" class="text-primary hover:underline">[ADD YOUR DATA DELETION URL OR CONTACT EMAIL]</a>
+              <strong>Data Deletion Request:</strong> <a href="mailto:aeroenix10@gmail.com" class="text-primary hover:underline">aeroenix10@gmail.com</a>
             </p>
           </section>
 
@@ -147,8 +147,8 @@ onMounted(() => {
             </p>
             <div class="bg-muted p-4 rounded-md">
               <p class="font-semibold mb-2">Azul Hospitality</p>
-              <p class="mb-1"><strong>Email:</strong> <a href="mailto:[ADD OFFICIAL EMAIL]" class="text-primary hover:underline">[ADD OFFICIAL EMAIL]</a></p>
-              <p><strong>Website:</strong> <a href="https://[ADD OFFICIAL WEBSITE]" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">[ADD OFFICIAL WEBSITE]</a></p>
+              <p class="mb-1"><strong>Email:</strong> <a href="mailto:aeroenix10@gmail.com" class="text-primary hover:underline">aeroenix10@gmail.com</a></p>
+              <p><strong>Website:</strong> <a href="https://aeroenix.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">aeroenix.vercel.app</a></p>
             </div>
           </section>
         </div>
@@ -161,7 +161,7 @@ onMounted(() => {
         <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
           <p>&copy; {{ new Date().getFullYear() }} Azul Hospitality. All rights reserved.</p>
           <div class="flex gap-4">
-            <a href="https://YOUR-DOMAIN.com" class="hover:text-foreground transition-colors">Home</a>
+            <a href="https://aeroenix.vercel.app/" class="hover:text-foreground transition-colors">Home</a>
             <router-link to="/privacy-policy" class="hover:text-foreground transition-colors">Privacy Policy</router-link>
           </div>
         </div>
