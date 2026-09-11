@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SparklesIcon, UserGroupIcon } from '@hugeicons/core-free-icons'
+import { SparklesIcon, UserGroupIcon, BubbleChatIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -128,6 +128,10 @@ const {
   fetchConversations
 } = useConversationInbox()
 
+function clearSelectedConversation() {
+  selectConversation(null)
+}
+
 const {
   messages,
   status,
@@ -252,11 +256,16 @@ onUnmounted(() => {
 <template>
   <div class="flex flex-col h-[calc(100vh-(--spacing(16)))] bg-muted/10 p-2 sm:p-4 min-h-[600px]">
     <div
+      id="chat-container"
       ref="containerRef"
       class="flex w-full h-full overflow-hidden relative bg-card rounded-2xl shadow-sm border border-border/40"
     >
       <!-- Left: Inbox Sidebar -->
-      <div :style="{ width: `${leftWidth}px` }" class="flex-shrink-0 h-full p-3 pr-0 bg-background/50 border-r border-border/50 transition-all duration-300">
+      <div 
+        :style="{ width: `${leftWidth}px` }" 
+        class="flex-shrink-0 h-full p-3 pr-0 bg-background/50 border-r border-border/50 transition-all duration-300 z-20"
+        :class="selectedConversationId ? 'hidden lg:block' : 'w-full lg:w-auto flex-1 lg:flex-none'"
+      >
         <ConversationInboxSidebar
           :conversations="filteredConversations"
           :selected-conversation-id="selectedConversationId"
@@ -272,14 +281,28 @@ onUnmounted(() => {
 
       <!-- Left Drag Handle -->
       <div
-        class="w-[4px] h-full cursor-col-resize transition-colors z-10 flex-shrink-0 bg-transparent hover:bg-primary/20"
+        v-if="selectedConversationId"
+        class="hidden lg:block w-[4px] h-full cursor-col-resize transition-colors z-10 flex-shrink-0 bg-transparent hover:bg-primary/20"
         @mousedown.prevent="startDragLeft"
         @dblclick.prevent="leftWidth = 320"
       />
 
       <!-- Center: Chat Panel -->
-      <div class="flex-1 min-w-0 h-full p-2 transition-all duration-300">
+      <div 
+        class="flex-1 min-w-0 h-full p-2 transition-all duration-300"
+        :class="!selectedConversationId ? 'hidden lg:block' : 'block'"
+      >
+        <div v-if="!selectedConversationId" class="w-full h-full flex flex-col items-center justify-center bg-background rounded-xl border border-border/40 text-center px-4">
+          <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+            <HugeiconsIcon :icon="BubbleChatIcon" :size="40" class="text-primary" />
+          </div>
+          <h2 class="text-2xl font-bold text-foreground mb-2">{{ t('conversations.welcome_title', 'Inbox & Conversations') }}</h2>
+          <p class="text-muted-foreground max-w-sm mx-auto">
+            {{ t('conversations.welcome_subtitle', 'Select a conversation from the left to start replying, or let AI handle it automatically.') }}
+          </p>
+        </div>
         <ConversationChatPanel
+          v-else
           :conversation="activeConversation"
           :messages="messages"
           :status="status"
@@ -297,6 +320,7 @@ onUnmounted(() => {
           @reset-zoom="resetZoom"
           @toggle-fullscreen="toggleFullscreen"
           @toggle-properties="toggleProperties"
+          @back="clearSelectedConversation"
         />
       </div>
 
@@ -304,13 +328,18 @@ onUnmounted(() => {
       <div
         v-if="selectedConversationId"
         v-show="isPropertiesVisible"
-        class="w-[4px] h-full cursor-col-resize transition-colors z-10 flex-shrink-0 bg-transparent hover:bg-primary/20"
+        class="hidden lg:block w-[4px] h-full cursor-col-resize transition-colors z-10 flex-shrink-0 bg-transparent hover:bg-primary/20"
         @mousedown.prevent="startDragRight"
         @dblclick.prevent="rightWidth = 320"
       />
 
       <!-- Right: Properties Sidebar -->
-      <div v-if="selectedConversationId" v-show="isPropertiesVisible" :style="{ width: `${rightWidth}px` }" class="flex-shrink-0 h-full border-l border-border/50 transition-all duration-300">
+      <div 
+        v-if="selectedConversationId" 
+        v-show="isPropertiesVisible" 
+        :style="{ width: `${rightWidth}px` }" 
+        class="hidden xl:block flex-shrink-0 h-full border-l border-border/50 transition-all duration-300"
+      >
         <ConversationPropertiesSidebar
           v-if="activeConversation"
           :conversation="activeConversation"
@@ -320,8 +349,8 @@ onUnmounted(() => {
     </div>
 
     <!-- AI Handoff Dialog -->
-    <AlertDialog :open="showHandoffDialog">
-      <AlertDialogContent class="max-w-md border-border/50">
+    <AlertDialog :open="showHandoffDialog" @update:open="showHandoffDialog = $event">
+      <AlertDialogContent :to="isChatExpanded ? '#chat-container' : 'body'" class="max-w-md border-border/50">
         <!-- Taking over from AI -->
         <template v-if="pendingHandoffAction === 'handoff'">
           <AlertDialogHeader>

@@ -34,6 +34,8 @@ export interface InboxMessageItem {
   sender_type: 'customer' | 'ai' | 'staff'
   text: string
   time: string
+  created_at?: string
+  status?: string
 }
 
 export interface InboxConversationDetail {

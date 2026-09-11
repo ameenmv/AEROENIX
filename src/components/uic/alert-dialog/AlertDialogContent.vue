@@ -13,14 +13,14 @@ import { cn } from '@/utils/cn'
 defineOptions({
   inheritAttrs: false,
 })
-const props = defineProps<AlertDialogContentProps & { class?: HTMLAttributes['class'] }>()
+const props = defineProps<AlertDialogContentProps & { class?: HTMLAttributes['class'], to?: string | HTMLElement }>()
 const emits = defineEmits<AlertDialogContentEmits>()
-const delegatedProps = reactiveOmit(props, 'class')
+const delegatedProps = reactiveOmit(props, 'class', 'to')
 const forwarded = useForwardPropsEmits(delegatedProps, emits)
 </script>
 
 <template>
-  <AlertDialogPortal>
+  <AlertDialogPortal :to="props.to">
     <AlertDialogOverlay
       data-slot="alert-dialog-overlay"
       class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50"
