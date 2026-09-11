@@ -34,7 +34,7 @@ onMounted(() => {
   <component :is="layout">
     <RouterView v-slot="{ Component }">
       <Transition name="fade" mode="out-in">
-        <component :is="Component" :key="route.fullPath" />
+        <component :is="Component" :key="route.path" />
       </Transition>
     </RouterView>
   </component>
