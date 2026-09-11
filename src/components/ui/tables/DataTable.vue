@@ -9,6 +9,7 @@ import { Button as Btn } from '@/components/uic/button'
 import DataTableHeader from './DataTableHeader.vue'
 import DataTableRow from './DataTableRow.vue'
 import FilterSheet from './FilterSheet.vue'
+import { Skeleton } from '@/components/uic/skeleton'
 
 const props = defineProps<{
   columns?: {
@@ -1140,17 +1141,13 @@ function handleTableContextMenu(event: MouseEvent) {
                       :style="{ animationDelay: `${(i - 1) * 75}ms` }"
                     >
                       <TableCell v-if="props.dragAndDrop?.enabled" class="px-2 py-3 w-10">
-                        <div
-                          class="h-5 w-5 bg-muted/70 dark:bg-slate-700/60 rounded-[4px] skeleton-shimmer mx-auto"
-                        />
+                        <Skeleton class="h-5 w-5 rounded-md mx-auto" />
                       </TableCell>
                       <TableCell
                         v-if="props.tableEnhancements?.rowSelection"
                         class="px-2 py-3 text-center w-12"
                       >
-                        <div
-                          class="h-4 w-4 bg-muted/70 dark:bg-slate-700/60 rounded-[4px] skeleton-shimmer mx-auto"
-                        />
+                        <Skeleton class="h-4 w-4 rounded-md mx-auto" />
                       </TableCell>
                       <template v-if="actualColumns.length > 0">
                         <TableCell
@@ -1158,29 +1155,25 @@ function handleTableContextMenu(event: MouseEvent) {
                           :key="`sk-col-${col.key}`"
                           class="px-3 py-3"
                         >
-                          <div
-                            class="h-3.5 bg-muted/70 dark:bg-slate-700/60 rounded-full mx-auto skeleton-shimmer"
-                            :class="[
-                              colIdx === 0
-                                ? 'w-1/2'
-                                : colIdx === actualColumns.length - 1
-                                  ? 'w-8 h-8 rounded-full'
-                                  : 'w-3/4',
-                            ]"
-                          />
+                          <Skeleton
+                          class="h-4 mx-auto rounded-full"
+                          :class="[
+                            colIdx === 0
+                              ? 'w-1/2'
+                              : colIdx === actualColumns.length - 1
+                                ? 'w-8 h-8 rounded-full'
+                                : 'w-3/4',
+                          ]"
+                        />
                         </TableCell>
                       </template>
                       <template v-else>
                         <TableCell v-for="j in 3" :key="`sk-gen-${j}`" class="px-3 py-3">
-                          <div
-                            class="h-3.5 bg-muted/70 dark:bg-slate-700/60 rounded-full w-3/4 mx-auto skeleton-shimmer"
-                          />
+                          <Skeleton class="h-4 w-3/4 rounded-full mx-auto" />
                         </TableCell>
                       </template>
                       <TableCell v-if="$slots.actions" class="px-3 py-3">
-                        <div
-                          class="h-8 w-8 bg-muted/70 dark:bg-slate-700/60 rounded-full mx-auto skeleton-shimmer"
-                        />
+                        <Skeleton class="h-8 w-8 rounded-full mx-auto" />
                       </TableCell>
                     </TableRow>
                   </template>
@@ -1541,17 +1534,13 @@ function handleTableContextMenu(event: MouseEvent) {
                     :style="{ animationDelay: `${(i - 1) * 75}ms` }"
                   >
                     <TableCell v-if="props.dragAndDrop?.enabled" class="px-2 py-3 w-10">
-                      <div
-                        class="h-5 w-5 bg-muted/70 dark:bg-slate-700/60 rounded-[4px] skeleton-shimmer mx-auto"
-                      />
+                      <Skeleton class="h-5 w-5 rounded-md mx-auto" />
                     </TableCell>
                     <TableCell
                       v-if="props.tableEnhancements?.rowSelection"
                       class="px-2 py-3 text-center w-12"
                     >
-                      <div
-                        class="h-4 w-4 bg-muted/70 dark:bg-slate-700/60 rounded-[4px] skeleton-shimmer mx-auto"
-                      />
+                      <Skeleton class="h-4 w-4 rounded-md mx-auto" />
                     </TableCell>
                     <template v-if="actualColumns.length > 0">
                       <TableCell
@@ -1559,8 +1548,8 @@ function handleTableContextMenu(event: MouseEvent) {
                         :key="`sk-col-${col.key}`"
                         class="px-3 py-3"
                       >
-                        <div
-                          class="h-3.5 bg-muted/70 dark:bg-slate-700/60 rounded-full mx-auto skeleton-shimmer"
+                        <Skeleton
+                          class="h-4 mx-auto rounded-full"
                           :class="[
                             colIdx === 0
                               ? 'w-1/2'
@@ -1573,15 +1562,11 @@ function handleTableContextMenu(event: MouseEvent) {
                     </template>
                     <template v-else>
                       <TableCell v-for="j in 3" :key="`sk-gen-${j}`" class="px-3 py-3">
-                        <div
-                          class="h-3.5 bg-muted/70 dark:bg-slate-700/60 rounded-full w-3/4 mx-auto skeleton-shimmer"
-                        />
+                        <Skeleton class="h-4 w-3/4 rounded-full mx-auto" />
                       </TableCell>
                     </template>
                     <TableCell v-if="$slots.actions" class="px-3 py-3">
-                      <div
-                        class="h-8 w-8 bg-muted/70 dark:bg-slate-700/60 rounded-full mx-auto skeleton-shimmer"
-                      />
+                      <Skeleton class="h-8 w-8 rounded-full mx-auto" />
                     </TableCell>
                   </TableRow>
                 </template>
