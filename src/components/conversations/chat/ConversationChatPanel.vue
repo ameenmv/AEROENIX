@@ -26,6 +26,7 @@ const emit = defineEmits<{
   resetZoom: []
   toggleFullscreen: []
   toggleProperties: []
+  back: []
 }>()
 
 const { t } = useI18n()
@@ -63,6 +64,7 @@ const { t } = useI18n()
           @reset-zoom="emit('resetZoom')"
           @toggle-fullscreen="emit('toggleFullscreen')"
           @toggle-properties="emit('toggleProperties')"
+          @back="emit('back')"
         />
 
         <!-- Loading skeleton -->

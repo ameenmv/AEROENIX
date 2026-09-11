@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { ChevronDown, Search } from 'lucide-vue-next'
+import { Search } from 'lucide-vue-next'
 import { WhatsappIcon, InstagramIcon, FacebookIcon, BubbleChatIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/uic/popover'
 import ConversationInboxList from './ConversationInboxList.vue'
 import type { InboxConversationItem } from '@/types/entities/conversation'
 
@@ -25,10 +23,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-// Show first 3 visible tabs, rest in dropdown
-const MAX_VISIBLE_TABS = 3
-const visibleTabs = computed(() => props.providerTabs.slice(0, MAX_VISIBLE_TABS))
-const overflowTabs = computed(() => props.providerTabs.slice(MAX_VISIBLE_TABS))
+// We will display all tabs in a scrollable horizontal list
 
 function getProviderIcon(channelBadgeName: string | null | undefined) {
   const name = (channelBadgeName || '').toLowerCase()
@@ -69,44 +64,22 @@ function selectProvider(id: number | null) {
     </div>
 
     <!-- ── Row 3: Platform Tabs ────────────────────────────────────── -->
-    <div class="flex items-center gap-1.5 flex-shrink-0 relative provider-dropdown-area">
+    <div 
+      class="flex items-center gap-1.5 flex-shrink-0 overflow-x-auto pb-1 no-scrollbar-tabs"
+      style="scrollbar-width: none; -ms-overflow-style: none;"
+    >
       <button
-        v-for="tab in visibleTabs"
-        :key="tab.label"
-        class="flex items-center gap-[4px] px-[10px] py-[5px] rounded-full text-[11px] font-medium whitespace-nowrap transition-all cursor-pointer flex-shrink-0"
+        v-for="tab in providerTabs"
+        :key="tab.id !== null ? tab.id : 'all'"
+        class="flex items-center gap-[4px] px-[12px] py-[6px] rounded-full text-[11px] font-medium whitespace-nowrap transition-all cursor-pointer flex-shrink-0 border border-transparent"
         :class="activeChannelId === tab.id
           ? 'bg-primary text-primary-foreground shadow-sm'
-          : 'bg-transparent text-muted-foreground hover:bg-muted/50'"
+          : 'bg-muted/40 text-muted-foreground hover:bg-muted/80 hover:text-foreground border-border/40'"
         @click="selectProvider(tab.id)"
       >
         <HugeiconsIcon v-if="tab.id !== null" :icon="getProviderIcon(tab.label)" :size="14" class="flex-shrink-0" />
         {{ tab.label }}
       </button>
-
-      <div class="flex-1" />
-
-      <!-- Overflow dropdown -->
-      <Popover v-if="overflowTabs.length > 0">
-        <PopoverTrigger as-child>
-          <button class="flex items-center justify-center w-[24px] h-[24px] rounded-full transition-colors cursor-pointer flex-shrink-0 hover:bg-muted/50">
-            <ChevronDown class="w-3.5 h-3.5 text-muted-foreground" />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent align="end" :side-offset="8" class="w-[188px] !rounded-[24px] !p-3 border border-border bg-background/90 backdrop-blur-[5px] shadow-lg flex flex-col gap-2">
-          <button
-            v-for="tab in overflowTabs"
-            :key="tab.label"
-            class="flex items-center gap-2.5 w-full px-3 py-2 text-[12px] font-medium transition-all cursor-pointer"
-            :class="activeChannelId === tab.id
-              ? 'bg-muted border border-border rounded-[80px] text-foreground'
-              : 'rounded-[24px] text-muted-foreground hover:bg-muted/50 border border-transparent'"
-            @click="selectProvider(tab.id)"
-          >
-            <img v-if="tab.icon" :src="tab.icon" :alt="tab.label" class="w-[14px] h-[14px] object-contain">
-            {{ tab.label }}
-          </button>
-        </PopoverContent>
-      </Popover>
     </div>
 
     <!-- ── Loading Skeleton ───────────────────────────────────────── -->
@@ -136,3 +109,9 @@ function selectProvider(id: number | null) {
     </template>
   </div>
 </template>
+
+<style scoped>
+.no-scrollbar-tabs::-webkit-scrollbar { 
+  display: none; 
+}
+</style>

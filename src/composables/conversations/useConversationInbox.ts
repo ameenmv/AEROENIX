@@ -91,7 +91,7 @@ export function useConversationInbox() {
     }
   }
 
-  function selectConversation(id: number) {
+  function selectConversation(id: number | null) {
     selectedConversationId.value = id
   }
 

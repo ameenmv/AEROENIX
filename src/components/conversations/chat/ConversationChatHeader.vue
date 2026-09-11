@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SparklesIcon, UserGroupIcon, WhatsappIcon, InstagramIcon, FacebookIcon, BubbleChatIcon } from '@hugeicons/core-free-icons'
+import { SparklesIcon, UserGroupIcon, WhatsappIcon, InstagramIcon, FacebookIcon, BubbleChatIcon, ArrowLeft01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { ZoomIn, ZoomOut, Maximize, Minimize, PanelRight, PanelRightClose } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
@@ -20,6 +20,7 @@ const emit = defineEmits<{
   resetZoom: []
   toggleFullscreen: []
   toggleProperties: []
+  back: []
 }>()
 
 const { t } = useI18n()
@@ -47,6 +48,14 @@ function getProviderColorClass(channelBadgeName: string | null | undefined) {
       
       <!-- ── Left: Contact Info ─────────────────────────────────────── -->
       <div class="flex items-center gap-3 min-w-0">
+        <!-- Back Button (Mobile Only) -->
+        <button 
+          class="lg:hidden w-10 h-10 -ml-2 rounded-full flex flex-shrink-0 items-center justify-center hover:bg-muted/50 transition-colors text-foreground"
+          @click="emit('back')"
+        >
+          <HugeiconsIcon :icon="ArrowLeft01Icon" :size="20" />
+        </button>
+
         <!-- Avatar with status indicator dot -->
         <div class="relative w-11 h-11 rounded-full bg-muted/60 flex items-center justify-center overflow-hidden border border-border/50 flex-shrink-0">
           <span class="text-sm font-bold text-foreground">{{ conversation.avatar_initials || '?' }}</span>
