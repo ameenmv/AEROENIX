@@ -9,7 +9,7 @@ import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 import ConfirmModal from '@/components/ui/modals/ConfirmModal.vue'
 import { DataTable } from '@/components/ui/tables'
-import { TableCell, TableHead, TableRow } from '@/components/uic/table'
+
 import { useConfirm } from '@/composables/shared/useConfirm'
 import { useTable } from '@/composables/shared/useTable'
 import { usersService } from '@/services/usersService'
@@ -33,6 +33,14 @@ const activeTab = ref('users')
 
 /** Pending invitations (loaded alongside users) */
 const invitations = ref<HotelInvitation[]>([])
+
+const columns = [
+  { key: "name", label: "users.fields.name" },
+  { key: "email", label: "users.fields.email" },
+  { key: "role", label: "users.fields.role" },
+  { key: "hotel_name", label: "users.fields.hotel" },
+  { key: "status", label: "users.fields.status", className: "text-center" },
+]
 
 const table = useTable<User>({
   resourceName: 'users',
@@ -161,93 +169,69 @@ function u(row: any): User {
         <TabsContent value="users" class="mt-4">
           <DataTable
             :data="table.items.value as any"
+            :columns="columns"
             :loading="table.loading.value"
             :total-items="table.totalItems.value"
             :page="table.page.value"
             :per-page="table.perPage.value"
             server-side
             searchable
+            modern-search
+            transparent-container
+            separated-records
             @update:page="table.goToPage"
             @update:per-page="table.setPerPage"
             @update:search="table.setSearchQuery"
             @sort="table.setSorting"
           >
-            <template #header>
-              <TableRow class="border-none hover:bg-transparent bg-muted/30">
-                <TableHead class="px-4 py-3 text-left text-[11px] uppercase tracking-widest font-medium text-muted-foreground/70 first:rounded-l-lg last:rounded-r-lg">{{ t('users.fields.name') }}</TableHead>
-                <TableHead class="px-4 py-3 text-left text-[11px] uppercase tracking-widest font-medium text-muted-foreground/70 first:rounded-l-lg last:rounded-r-lg">{{ t('users.fields.email') }}</TableHead>
-                <TableHead class="px-4 py-3 text-left text-[11px] uppercase tracking-widest font-medium text-muted-foreground/70 first:rounded-l-lg last:rounded-r-lg">{{ t('users.fields.role') }}</TableHead>
-                <TableHead class="px-4 py-3 text-left text-[11px] uppercase tracking-widest font-medium text-muted-foreground/70 first:rounded-l-lg last:rounded-r-lg">{{ t('users.fields.hotel') }}</TableHead>
-                <TableHead class="px-4 py-3 text-center text-[11px] uppercase tracking-widest font-medium text-muted-foreground/70 first:rounded-l-lg last:rounded-r-lg">{{ t('users.fields.status') }}</TableHead>
-                <TableHead class="px-4 py-3 text-center text-[11px] uppercase tracking-widest font-medium text-muted-foreground/70 first:rounded-l-lg last:rounded-r-lg w-16" />
-              </TableRow>
+            <template #name="{ value }">
+              <span class="font-medium text-foreground">{{ value }}</span>
             </template>
-
-            <template #row="{ row }">
-              <TableRow class="bg-card border-none hover:bg-muted/50 transition-colors">
-                <TableCell class="px-4 py-4 text-left first:rounded-l-lg last:rounded-r-lg">
-                  <span class="font-medium text-foreground">{{ u(row).name }}</span>
-                </TableCell>
-
-                <TableCell class="px-4 py-4 text-left first:rounded-l-lg last:rounded-r-lg">
-                  <span class="text-muted-foreground text-sm">{{ u(row).email }}</span>
-                </TableCell>
-
-                <TableCell class="px-4 py-4 text-left first:rounded-l-lg last:rounded-r-lg">
-                  <span v-if="u(row).role" class="text-sm">
-                    {{ u(row).role?.name }}
-                  </span>
-                  <span v-else class="text-xs text-muted-foreground/50">—</span>
-                </TableCell>
-
-                <TableCell class="px-4 py-4 text-left first:rounded-l-lg last:rounded-r-lg">
-                  <span class="text-sm">{{ u(row).hotel_name || '—' }}</span>
-                </TableCell>
-
-                <TableCell class="px-4 py-4 text-center first:rounded-l-lg last:rounded-r-lg">
-                  <span
-                    class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium capitalize"
-                    :class="u(row).status === 'active'
-                      ? 'bg-emerald-500/10 text-emerald-500'
-                      : 'bg-red-500/10 text-red-500'"
-                  >
-                    {{ u(row).status }}
-                  </span>
-                </TableCell>
-
-                <!-- Actions dropdown -->
-                <TableCell class="px-4 py-4 text-center first:rounded-l-lg last:rounded-r-lg w-16">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger as-child>
-                      <Button variant="ghost" size="icon" class="h-8 w-8 rounded-lg hover:bg-muted">
-                        <HugeiconsIcon :icon="MoreHorizontalIcon" :size="18" class="text-muted-foreground" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" class="w-44">
-                      <DropdownMenuItem
-                        @click="router.push({ name: 'admin-users-show', params: { id: String(u(row).id) } })"
-                      >
-                        <HugeiconsIcon :icon="ViewIcon" :size="16" />
-                        {{ t('actions.view') }}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        @click="handleToggleStatus(u(row))"
-                      >
-                        <HugeiconsIcon :icon="Cancel01Icon" :size="16" />
-                        {{ u(row).status === 'active' ? t('users.actions.suspend') : t('users.actions.activate') }}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        variant="destructive"
-                        @click="handleDelete(u(row).id)"
-                      >
-                        <HugeiconsIcon :icon="Delete02Icon" :size="16" />
-                        {{ t('actions.delete') }}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
+            <template #email="{ value }">
+              <span class="text-muted-foreground text-sm">{{ value }}</span>
+            </template>
+            <template #role="{ row }">
+              <span v-if="u(row).role" class="text-sm">{{ u(row).role?.name }}</span>
+              <span v-else class="text-xs text-muted-foreground/50">—</span>
+            </template>
+            <template #hotel_name="{ value }">
+              <span class="text-sm">{{ value || '—' }}</span>
+            </template>
+            <template #status="{ value }">
+              <div class="w-full flex justify-center">
+                <span
+                  class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium capitalize"
+                  :class="value === 'active'
+                    ? 'bg-emerald-500/10 text-emerald-500'
+                    : 'bg-red-500/10 text-red-500'"
+                >
+                  {{ value }}
+                </span>
+              </div>
+            </template>
+            <template #actions="{ row }">
+              <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                  <Button variant="ghost" size="icon" class="h-8 w-8 rounded-lg hover:bg-muted">
+                    <HugeiconsIcon :icon="MoreHorizontalIcon" :size="18" class="text-muted-foreground" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" class="w-44">
+                  <DropdownMenuItem @click="router.push({ name: 'admin-users-show', params: { id: String(u(row).id) } })">
+                    <HugeiconsIcon :icon="ViewIcon" :size="16" />
+                    {{ t('actions.view') }}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem @click="handleToggleStatus(u(row))">
+                    <HugeiconsIcon :icon="Cancel01Icon" :size="16" />
+                    {{ u(row).status === 'active' ? t('users.actions.suspend') : t('users.actions.activate') }}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem variant="destructive" @click="handleDelete(u(row).id)">
+                    <HugeiconsIcon :icon="Delete02Icon" :size="16" />
+                    {{ t('actions.delete') }}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </template>
           </DataTable>
         </TabsContent>

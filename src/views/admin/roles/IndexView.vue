@@ -10,8 +10,9 @@ import { useRoles } from '@/composables'
 import { rolesService } from '@/services/rolesService'
 import type { Role } from '@/types/entities/role'
 import { Button } from '@/components/uic/button'
-import { Skeleton } from '@/components/uic/skeleton'
+
 import { Badge } from '@/components/uic/badge'
+import { DataTable } from '@/components/ui/tables'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,6 +34,12 @@ const router = useRouter()
 const queryClient = useQueryClient()
 
 const { roles, isLoading, isFetching } = useRoles()
+
+const columns = [
+  { key: 'name', label: 'roles.fields.name' },
+  { key: 'scope', label: 'roles.fields.scope' },
+  { key: 'permissions', label: 'roles.fields.permissions_count', className: 'text-center' },
+]
 
 const isDeleteDialogOpen = ref(false)
 const roleToDelete = ref<Role | null>(null)
@@ -84,88 +91,56 @@ function confirmDelete() {
         </Button>
       </div>
 
-      <!-- Loading State Skeleton -->
-      <div v-if="isLoading || isFetching" class="overflow-x-auto rounded-lg border border-border/50">
-        <table class="w-full text-sm border-separate border-spacing-y-0">
-          <thead>
-            <tr>
-              <th class="sticky left-0 z-10 bg-muted/30 px-4 py-3.5 text-left w-64">
-                <Skeleton class="h-4 w-28" />
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="row in 3" :key="`sk-row-${row}`">
-              <td class="sticky left-0 z-10 bg-background px-4 py-3.5">
-                <Skeleton class="h-4 w-44" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
       <!-- Roles List -->
-      <div v-else-if="roles.length > 0" class="overflow-x-auto">
-        <table class="w-full border-separate border-spacing-y-2">
-          <thead>
-            <tr class="border-none bg-muted/30 rounded-lg">
-              <th class="px-4 py-3 text-left text-[11px] uppercase tracking-widest font-medium text-muted-foreground/70 first:rounded-l-lg last:rounded-r-lg">{{ t('roles.fields.name', 'Role Name') }}</th>
-              <th class="px-4 py-3 text-left text-[11px] uppercase tracking-widest font-medium text-muted-foreground/70 first:rounded-l-lg last:rounded-r-lg">{{ t('roles.fields.scope', 'Scope') }}</th>
-              <th class="px-4 py-3 text-center text-[11px] uppercase tracking-widest font-medium text-muted-foreground/70 first:rounded-l-lg last:rounded-r-lg">{{ t('roles.fields.permissions_count', 'Permissions') }}</th>
-              <th class="px-4 py-3 text-center text-[11px] uppercase tracking-widest font-medium text-muted-foreground/70 first:rounded-l-lg last:rounded-r-lg w-16" />
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="role in roles"
-              :key="role.id"
-              class="bg-card hover:bg-muted/50 transition-colors"
-            >
-              <td class="px-4 py-4 text-left first:rounded-l-lg last:rounded-r-lg">
-                <span class="font-medium text-sm text-foreground">{{ role.name }}</span>
-              </td>
-              <td class="px-4 py-4 text-left first:rounded-l-lg last:rounded-r-lg">
-                <Badge :variant="role.scope === 'platform' ? 'default' : 'secondary'" class="capitalize text-[10px]">
-                  {{ role.scope }}
-                </Badge>
-              </td>
-              <td class="px-4 py-4 text-center first:rounded-l-lg last:rounded-r-lg">
-                <span class="text-sm text-muted-foreground">{{ role.permissions.length }}</span>
-              </td>
-              <td class="px-4 py-4 text-center first:rounded-l-lg last:rounded-r-lg w-16">
-                <DropdownMenu>
-                  <DropdownMenuTrigger as-child>
-                    <Button variant="ghost" size="icon" class="h-8 w-8 rounded-lg hover:bg-muted">
-                      <HugeiconsIcon :icon="MoreHorizontalIcon" :size="18" class="text-muted-foreground" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" class="w-44">
-                    <DropdownMenuItem
-                      @click="router.push({ name: 'admin-roles-show', params: { id: String(role.id) } })"
-                    >
-                      <HugeiconsIcon :icon="ViewIcon" :size="16" />
-                      {{ t('actions.view', 'View') }}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      @click="router.push({ name: 'admin-roles-edit', params: { id: String(role.id) } })"
-                    >
-                      <HugeiconsIcon :icon="PencilEdit01Icon" :size="16" />
-                      {{ t('actions.edit', 'Edit') }}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      class="text-destructive focus:text-destructive focus:bg-destructive/10"
-                      @click="openDeleteDialog(role)"
-                    >
-                      <HugeiconsIcon :icon="Delete02Icon" :size="16" />
-                      {{ t('actions.delete', 'Delete') }}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        v-if="isLoading || isFetching || roles.length > 0"
+        :data="roles as any[]"
+        :columns="columns"
+        :loading="isLoading || isFetching"
+        searchable
+        modern-search
+        transparent-container
+        separated-records
+      >
+        <template #name="{ value }">
+          <span class="font-medium text-sm text-foreground">{{ value }}</span>
+        </template>
+        <template #scope="{ value }">
+          <Badge :variant="value === 'platform' ? 'default' : 'secondary'" class="capitalize text-[10px]">
+            {{ value }}
+          </Badge>
+        </template>
+        <template #permissions="{ value }">
+          <div class="w-full text-center">
+            <span class="text-sm text-muted-foreground">{{ (value || []).length }}</span>
+          </div>
+        </template>
+        <template #actions="{ row }">
+          <div class="w-full flex justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button variant="ghost" size="icon" class="h-8 w-8 rounded-lg hover:bg-muted">
+                  <HugeiconsIcon :icon="MoreHorizontalIcon" :size="18" class="text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" class="w-44">
+                <DropdownMenuItem @click="router.push({ name: 'admin-roles-show', params: { id: String((row as any).id) } })">
+                  <HugeiconsIcon :icon="ViewIcon" :size="16" />
+                  {{ t('actions.view', 'View') }}
+                </DropdownMenuItem>
+                <DropdownMenuItem @click="router.push({ name: 'admin-roles-edit', params: { id: String((row as any).id) } })">
+                  <HugeiconsIcon :icon="PencilEdit01Icon" :size="16" />
+                  {{ t('actions.edit', 'Edit') }}
+                </DropdownMenuItem>
+                <DropdownMenuItem class="text-destructive focus:text-destructive focus:bg-destructive/10" @click="openDeleteDialog(row as any)">
+                  <HugeiconsIcon :icon="Delete02Icon" :size="16" />
+                  {{ t('actions.delete', 'Delete') }}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </template>
+      </DataTable>
 
       <!-- Empty State -->
       <div v-else class="flex flex-col items-center justify-center py-12 text-muted-foreground">

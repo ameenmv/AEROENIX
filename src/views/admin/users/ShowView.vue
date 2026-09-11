@@ -16,7 +16,7 @@ import { useDetails } from '@/composables/useDetails'
 import { usersService } from '@/services/usersService'
 import { Button } from '@/components/uic/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/uic/tabs'
-import { TableCell, TableHead, TableRow } from '@/components/uic/table'
+
 import { DataTable } from '@/components/ui/tables'
 
 const { t } = useI18n()
@@ -34,6 +34,11 @@ interface DetailField {
   icon: any
   dir?: string
 }
+
+const columns = [
+  { key: 'description', label: 'common.description' },
+  { key: 'created_at', label: 'common.timestamp', className: 'text-right' },
+]
 
 function getFields(user: User): DetailField[] {
   return [
@@ -143,28 +148,19 @@ function getFields(user: User): DetailField[] {
           <TabsContent value="activity" class="p-6 mt-0">
             <DataTable
               :data="(item.activity_log || []) as any"
+              :columns="columns"
               :loading="false"
               :total-items="(item.activity_log || []).length"
+              transparent-container
+              separated-records
             >
-              <template #header>
-                <TableRow class="border-none hover:bg-transparent bg-muted/30">
-                  <TableHead class="px-4 py-3 text-left text-[11px] uppercase tracking-widest font-medium text-muted-foreground/70 first:rounded-l-lg last:rounded-r-lg">
-                    {{ t('common.description', 'Description') }}
-                  </TableHead>
-                  <TableHead class="px-4 py-3 text-right text-[11px] uppercase tracking-widest font-medium text-muted-foreground/70 first:rounded-l-lg last:rounded-r-lg">
-                    {{ t('common.timestamp', 'Timestamp') }}
-                  </TableHead>
-                </TableRow>
+              <template #description="{ value }">
+                <span class="text-sm">{{ value }}</span>
               </template>
-              <template #row="{ row }">
-                <TableRow class="bg-card border-none hover:bg-muted/50 transition-colors">
-                  <TableCell class="px-4 py-4 text-left text-sm first:rounded-l-lg last:rounded-r-lg">
-                    {{ (row as any).description }}
-                  </TableCell>
-                  <TableCell class="px-4 py-4 text-right text-xs text-muted-foreground whitespace-nowrap first:rounded-l-lg last:rounded-r-lg">
-                    {{ new Date((row as any).created_at).toLocaleString() }}
-                  </TableCell>
-                </TableRow>
+              <template #created_at="{ value }">
+                <div class="text-right w-full">
+                  <span class="text-xs text-muted-foreground whitespace-nowrap">{{ new Date(value as string).toLocaleString() }}</span>
+                </div>
               </template>
             </DataTable>
           </TabsContent>

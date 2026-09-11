@@ -1,16 +1,6 @@
 <script setup lang="ts">
 import { DragDropVerticalIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import CheckboxField from '@/components/uic/inputs/CheckboxField.vue'
-import { TableCell, TableRow } from '@/components/uic/table'
-
-export interface ContextMenuAction {
-  label: string
-  icon?: string | object
-  onClick?: (row?: Record<string, unknown>) => void | Promise<any>
-  variant?: 'default' | 'delete'
-  separator?: boolean
-}
 
 const props = defineProps<{
   row: any
@@ -25,7 +15,6 @@ const props = defineProps<{
   editValue: any
   hasActions: boolean
 }>()
-
 const emit = defineEmits<{
   (e: 'toggleSelection'): void
   (e: 'dragstart', event: DragEvent, index: number): void
@@ -38,7 +27,6 @@ const emit = defineEmits<{
   (e: 'cancelEdit'): void
   (e: 'update:editValue', val: any): void
 }>()
-
 function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
   if (!path)
     return ''
@@ -53,9 +41,9 @@ function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
 
 <template>
   <TableRow
-    class="bg-card transition-colors relative border-none hover:bg-muted/50 text-foreground text-sm"
+    class="bg-card transition-colors relative border-none hover:bg-muted text-foreground text-sm"
     :class="{
-      'bg-muted/80 font-medium': props.isSelected,
+      'bg-muted font-semibold': props.isSelected,
       'opacity-50': props.isDragged,
       'border-t-2 border-primary': props.dragOverState === 'top',
       'border-b-2 border-primary': props.dragOverState === 'bottom',
@@ -69,13 +57,13 @@ function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
   >
     <TableCell
       v-if="props.dragAndDrop?.enabled"
-      class="px-2 py-3 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground w-10 first:rounded-l-lg last:rounded-r-lg"
+      class="px-2 py-3 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground w-10"
     >
       <HugeiconsIcon :icon="DragDropVerticalIcon" :size="20" />
     </TableCell>
     <TableCell
       v-if="props.tableEnhancements?.rowSelection"
-      class="px-2 py-3 text-center w-12 flex justify-center align-middle h-full pt-[6%] first:rounded-l-lg last:rounded-r-lg"
+      class="px-2 py-3 text-center w-12 flex justify-center align-middle h-full pt-[6%]"
     >
       <CheckboxField
         :model-value="props.isSelected"
@@ -86,8 +74,7 @@ function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
     <TableCell
       v-for="col in props.columns"
       :key="col.key"
-      class="px-4 py-4 align-middle first:rounded-l-lg last:rounded-r-lg"
-      :class="col.className || 'text-left'"
+      :class="col.className"
       @dblclick="
         emit('startEdit', props.row, col.key, getNestedValue(props.row, col.key), !!col.editable)
       "
@@ -114,7 +101,7 @@ function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
         </slot>
       </template>
     </TableCell>
-    <TableCell v-if="props.hasActions" class="first:rounded-l-lg last:rounded-r-lg">
+    <TableCell v-if="props.hasActions" class="w-[70px] flex-none px-0 text-center">
       <div class="flex items-center justify-center">
         <slot name="actions" :row="props.row" />
       </div>

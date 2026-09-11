@@ -19,7 +19,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -63,15 +62,12 @@ const permissionStore = usePermissionStore()
 function isVisible(permission?: string) {
   if (!permission)
     return true
-  // Permissions not loaded yet → hide protected items
   if (permissionStore.permissions.length === 0)
     return false
-  // hasPermission handles aliases + resource normalization
   return permissionStore.hasPermission(permission)
 }
 
 function isItemVisible(item: NavItem) {
-  // If no permission, rely on the custom logic
   if (!isVisible(item.permission))
     return false
 
@@ -121,13 +117,11 @@ async function loadDynamicNavChildren() {
         const pages = result.data || []
 
         dynamicNavChildren[item.name] = pages.map((page: any) => {
-          // Get translated slug — could be object { en, ar } or string
           const slug
             = typeof page.slug === 'string'
               ? page.slug
               : page.slug?.[locale.value] || page.slug?.en || ''
 
-          // Get translated title for the label
           const title
             = typeof page.title === 'string'
               ? page.title
@@ -135,10 +129,10 @@ async function loadDynamicNavChildren() {
 
           return {
             name: `content-${slug}`,
-            label: title, // direct label, not an i18n key
+            label: title,
             icon: File01Icon,
             to: `/admin/content/${slug}`,
-            _isDirectLabel: true, // flag to skip t() translation
+            _isDirectLabel: true,
           } as NavItem & { _isDirectLabel?: boolean }
         })
       }
@@ -153,7 +147,6 @@ async function loadDynamicNavChildren() {
   }
 }
 
-/** Get effective children for a nav item (static or dynamic) */
 function getNavChildren(item: NavItem): NavItem[] {
   if (item.dynamicChildren && dynamicNavChildren[item.name]?.length) {
     return dynamicNavChildren[item.name]!
@@ -161,15 +154,13 @@ function getNavChildren(item: NavItem): NavItem[] {
   return item.children || []
 }
 
-/** Check if a nav item has children (static or dynamic) */
 function hasNavChildren(item: NavItem): boolean {
   if (item.dynamicChildren)
-    return true // render collapsible even while loading
+    return true
   return !!(item.children && item.children.length > 0)
 }
 
 onMounted(() => {
-  // Only load dynamic nav children if the user is authenticated
   if (authStore.token) {
     loadDynamicNavChildren()
   }
@@ -177,30 +168,36 @@ onMounted(() => {
 </script>
 
 <template>
-  <Sidebar collapsible="icon" :side="sidebarSide">
-    <SidebarHeader class="flex h-[70px] items-center justify-center">
-      <Logo :icon-only="isCollapsed" :animated="false" />
+  <Sidebar
+    collapsible="icon"
+    :side="sidebarSide"
+    class="group/sidebar border-r z-20"
+  >
+    <SidebarHeader class="flex items-center justify-center pt-8 pb-0 border-none bg-transparent">
+      <Logo :icon-only="isCollapsed" :animated="false" variant="white" />
     </SidebarHeader>
 
-    <SidebarContent class="custom-scrollbar">
+    <SidebarContent class="custom-scrollbar pt-4">
       <SidebarGroup>
-        <SidebarGroupLabel class="text-xs uppercase tracking-wider">
-          {{ t('menu.navigation') || 'Navigation' }}
-        </SidebarGroupLabel>
         <SidebarGroupContent>
-          <SidebarMenu>
-            <template v-for="item in navigationConfig" :key="item.name">
+          <SidebarMenu class="gap-4 px-4 items-center flex-col">
+            <template v-for="(item, index) in navigationConfig" :key="item.name">
               <!-- Simple item (no children) -->
-              <SidebarMenuItem v-if="!hasNavChildren(item) && isItemVisible(item)">
+              <SidebarMenuItem
+                v-if="!hasNavChildren(item) && isItemVisible(item)"
+                class="w-full "
+                :style="{ '--stagger-i': index }"
+              >
                 <SidebarMenuButton
                   as-child
                   :tooltip="t(item.label)"
                   :is-active="isActive(item.to)"
                   @contextmenu="openSidebarCtx($event, item)"
+                  class="relative transition-all duration-200 hover:bg-muted/50 data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-semibold w-full justify-start rounded-md h-10 px-3"
                 >
                   <RouterLink :to="`${adminPrefix}${item.to?.replace('/admin', '')}`">
-                    <HugeiconsIcon v-if="item.icon" :icon="item.icon" :size="20" />
-                    <span>{{ t(item.label) }}</span>
+                    <HugeiconsIcon v-if="item.icon" :icon="item.icon" :size="20" class="size-5 shrink-0" />
+                    <span class="ml-3 font-medium group-data-[collapsible=icon]:hidden whitespace-nowrap overflow-hidden transition-all duration-100">{{ t(item.label) }}</span>
                   </RouterLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -211,15 +208,22 @@ onMounted(() => {
                 v-model:open="openMenus[item.name]"
                 as-child
               >
-                <SidebarMenuItem>
+                <SidebarMenuItem
+                  class="w-full "
+                  :style="{ '--stagger-i': index }"
+                >
                   <CollapsibleTrigger as-child>
-                    <SidebarMenuButton :tooltip="t(item.label)">
-                      <HugeiconsIcon v-if="item.icon" :icon="item.icon" :size="20" />
-                      <span>{{ t(item.label) }}</span>
+                    <SidebarMenuButton
+                      :tooltip="t(item.label)"
+                      class="relative transition-all duration-200 hover:bg-muted/50 data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-semibold w-full justify-start rounded-md h-10 px-3"
+                      :is-active="item.children && item.children.some((child) => isActive(child.to))"
+                    >
+                      <HugeiconsIcon v-if="item.icon" :icon="item.icon" :size="20" class="size-5 shrink-0" />
+                      <span class="ml-3 font-medium group-data-[collapsible=icon]:hidden whitespace-nowrap overflow-hidden transition-all duration-100">{{ t(item.label) }}</span>
                       <HugeiconsIcon
                         :icon="ArrowDown01Icon"
-                        :size="18"
-                        class="ms-auto transition-transform duration-200"
+                        :size="16"
+                        class="ms-auto transition-transform duration-100 group-data-[collapsible=icon]:hidden"
                         :class="{ 'rotate-180': openMenus[item.name] }"
                       />
                     </SidebarMenuButton>
@@ -227,7 +231,10 @@ onMounted(() => {
                   <CollapsibleContent>
                     <SidebarMenuSub>
                       <!-- Loading state for dynamic children -->
-                      <SidebarMenuSubItem v-if="item.dynamicChildren && dynamicLoading[item.name]">
+                      <SidebarMenuSubItem
+                        v-if="item.dynamicChildren && dynamicLoading[item.name]"
+                        class=""
+                      >
                         <SidebarMenuSubButton as-child>
                           <span class="text-muted-foreground text-xs animate-pulse">{{
                             t('common.loading', 'Loading...')
@@ -236,27 +243,28 @@ onMounted(() => {
                       </SidebarMenuSubItem>
 
                       <!-- Dynamic or static children -->
-                      <SidebarMenuSubItem v-for="child in getNavChildren(item)" :key="child.name">
+                      <SidebarMenuSubItem
+                        v-for="(child, childIndex) in getNavChildren(item)"
+                        :key="child.name"
+                        class=""
+                        :style="{ '--stagger-i': childIndex }"
+                      >
                         <SidebarMenuSubButton
                           v-if="isVisible(child.permission)"
                           as-child
                           :is-active="isActive(child.to)"
+                          class="transition-all duration-200 hover:bg-muted/50 data-[active=true]:bg-primary/10 data-[active=true]:text-primary rounded-md"
                         >
                           <RouterLink :to="`${adminPrefix}${child.to?.replace('/admin', '')}`">
-                            <span>{{
-                              (child as any)._isDirectLabel ? child.label : t(child.label)
-                            }}</span>
+                            <span>{{ (child as any)._isDirectLabel ? child.label : t(child.label) }}</span>
                           </RouterLink>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
 
                       <!-- Empty state for dynamic children -->
                       <SidebarMenuSubItem
-                        v-if="
-                          item.dynamicChildren
-                            && !dynamicLoading[item.name]
-                            && getNavChildren(item).length === 0
-                        "
+                        v-if="item.dynamicChildren && !dynamicLoading[item.name] && getNavChildren(item).length === 0"
+                        class=""
                       >
                         <SidebarMenuSubButton as-child>
                           <span class="text-muted-foreground text-xs italic">{{
@@ -274,16 +282,16 @@ onMounted(() => {
       </SidebarGroup>
     </SidebarContent>
 
-    <SidebarFooter>
-      <SidebarMenu>
-        <SidebarMenuItem>
+    <SidebarFooter class="pb-8">
+      <SidebarMenu class="px-4">
+        <SidebarMenuItem class="w-full flex justify-center">
           <SidebarMenuButton
             :tooltip="t('menu.logout')"
-            class="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+            class="relative transition-all duration-200 hover:bg-destructive hover:text-white text-destructive w-full justify-start rounded-md h-10 px-3"
             @click="handleLogout"
           >
-            <HugeiconsIcon :icon="Logout02Icon" :size="20" />
-            <span>{{ t('menu.logout') }}</span>
+            <HugeiconsIcon :icon="Logout02Icon" :size="20" class="size-5 shrink-0" />
+            <span class="ml-3 font-medium group-data-[collapsible=icon]:hidden whitespace-nowrap overflow-hidden transition-all duration-100">{{ t('menu.logout') }}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
@@ -292,3 +300,4 @@ onMounted(() => {
     <SidebarRail />
   </Sidebar>
 </template>
+

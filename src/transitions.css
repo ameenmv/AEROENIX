@@ -1,0 +1,301 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SEEN — Global Transition & Animation System
+   Foundation layer for all micro-interactions across the app.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Spring Physics Presets ────────────────────────────────────────────────
+   Named easing curves that simulate real-world spring physics.
+   Use as: transition-timing-function: var(--ease-spring);
+   ──────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Gentle spring — subtle bounce at the end */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Smooth out — fast start, gentle land */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Snappy — quick with minimal overshoot */
+  --ease-snappy: cubic-bezier(0.2, 0.9, 0.3, 1.05);
+  /* Buttery — smooth deceleration */
+  --ease-butter: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Dramatic — strong overshoot for attention */
+  --ease-dramatic: cubic-bezier(0.18, 1.8, 0.58, 1);
+}
+
+/* ── Page Transitions ─────────────────────────────────────────────────────
+   Directional slide transitions for route changes.
+   Applied via <PageTransition> component.
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Forward (deeper navigation) — slide left */
+.page-slide-left-enter-active,
+.page-slide-left-leave-active {
+  transition:
+    transform 0.4s var(--ease-out-expo),
+    opacity 0.35s var(--ease-butter);
+}
+.page-slide-left-enter-from {
+  opacity: 0;
+  transform: translateX(30px);
+}
+.page-slide-left-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+/* Backward (shallower navigation) — slide right */
+.page-slide-right-enter-active,
+.page-slide-right-leave-active {
+  transition:
+    transform 0.4s var(--ease-out-expo),
+    opacity 0.35s var(--ease-butter);
+}
+.page-slide-right-enter-from {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+.page-slide-right-leave-to {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+/* Same level — crossfade with subtle scale */
+.page-crossfade-enter-active {
+  transition:
+    opacity 0.3s var(--ease-butter),
+    transform 0.3s var(--ease-out-expo);
+}
+.page-crossfade-leave-active {
+  transition:
+    opacity 0.2s var(--ease-butter),
+    transform 0.2s ease-in;
+}
+.page-crossfade-enter-from {
+  opacity: 0;
+  transform: scale(0.98) translateY(6px);
+}
+.page-crossfade-leave-to {
+  opacity: 0;
+  transform: scale(0.99) translateY(-4px);
+}
+
+/* ── RTL Overrides for Page Transitions ───────────────────────────────── */
+html[dir='rtl'] .page-slide-left-enter-from {
+  transform: translateX(-30px);
+}
+html[dir='rtl'] .page-slide-left-leave-to {
+  transform: translateX(20px);
+}
+html[dir='rtl'] .page-slide-right-enter-from {
+  transform: translateX(30px);
+}
+html[dir='rtl'] .page-slide-right-leave-to {
+  transform: translateX(-20px);
+}
+
+/* ── Modal / Dialog Transitions ──────────────────────────────────────── */
+.modal-spring-enter-active {
+  transition:
+    opacity 0.25s var(--ease-butter),
+    transform 0.35s var(--ease-spring);
+}
+.modal-spring-leave-active {
+  transition:
+    opacity 0.15s ease-in,
+    transform 0.2s ease-in;
+}
+.modal-spring-enter-from {
+  opacity: 0;
+  transform: scale(0.9) translateY(10px);
+}
+.modal-spring-leave-to {
+  opacity: 0;
+  transform: scale(0.95) translateY(5px);
+}
+
+/* ── Dropdown / Popover Transitions ──────────────────────────────────── */
+.dropdown-spring-enter-active {
+  transition:
+    opacity 0.2s var(--ease-butter),
+    transform 0.25s var(--ease-spring);
+}
+.dropdown-spring-leave-active {
+  transition:
+    opacity 0.12s ease-in,
+    transform 0.15s ease-in;
+}
+.dropdown-spring-enter-from {
+  opacity: 0;
+  transform: scale(0.92) translateY(-4px);
+}
+.dropdown-spring-leave-to {
+  opacity: 0;
+  transform: scale(0.96) translateY(-2px);
+}
+
+/* ── Toast / Notification Pop Transitions ────────────────────────────── */
+.toast-pop-enter-active {
+  transition:
+    opacity 0.3s var(--ease-butter),
+    transform 0.4s var(--ease-spring);
+}
+.toast-pop-leave-active {
+  transition:
+    opacity 0.15s ease-in,
+    transform 0.2s ease-in;
+}
+.toast-pop-enter-from {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.9);
+}
+.toast-pop-leave-to {
+  opacity: 0;
+  transform: translateX(40px) scale(0.95);
+}
+
+/* ── Stagger Utilities ───────────────────────────────────────────────────
+   Apply `--stagger-i` via :style or inline CSS on each child,
+   then use the `.stagger-children` parent class.
+   ──────────────────────────────────────────────────────────────────────── */
+.stagger-enter-active {
+  transition:
+    opacity 0.4s var(--ease-butter),
+    transform 0.5s var(--ease-spring);
+  transition-delay: calc(var(--stagger-i, 0) * 50ms);
+}
+.stagger-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+/* ── Shimmer Animation (Skeletons) ───────────────────────────────────── */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+html[dir='rtl'] .shimmer {
+  animation-direction: reverse;
+}
+
+/* ── Breathing Pulse ─────────────────────────────────────────────────── */
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.92);
+  }
+}
+
+/* ── Number Counter Roll ─────────────────────────────────────────────── */
+@keyframes count-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Subtle Float ────────────────────────────────────────────────────── */
+@keyframes subtle-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* ── Glow Pulse ──────────────────────────────────────────────────────── */
+:root {
+  --glow-pulse-color: rgba(0, 33, 82, 0.15);
+  --glow-pulse-active: rgba(0, 33, 82, 0.08);
+}
+.dark {
+  --glow-pulse-color: rgba(59, 130, 246, 0.15);
+  --glow-pulse-active: rgba(59, 130, 246, 0.08);
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--glow-pulse-color);
+  }
+  50% {
+    box-shadow: 0 0 12px 4px var(--glow-pulse-active);
+  }
+}
+
+/* ── Bell Wiggle (Notifications) ─────────────────────────────────────── */
+@keyframes bell-ring {
+  0% {
+    transform: rotate(0);
+  }
+  10% {
+    transform: rotate(14deg);
+  }
+  20% {
+    transform: rotate(-12deg);
+  }
+  30% {
+    transform: rotate(10deg);
+  }
+  40% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+  60% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+
+/* ── Badge Bounce In ─────────────────────────────────────────────────── */
+@keyframes badge-bounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ── Reduced Motion ──────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .page-slide-left-enter-from,
+  .page-slide-left-leave-to,
+  .page-slide-right-enter-from,
+  .page-slide-right-leave-to,
+  .page-crossfade-enter-from,
+  .page-crossfade-leave-to {
+    transform: none;
+  }
+}

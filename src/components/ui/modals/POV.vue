@@ -1,18 +1,7 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
 import { Cancel01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { computed } from 'vue'
 import { Button as Btn } from '@/components/uic/button'
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/uic/dialog'
 
 interface Action {
   component?: string | Component
