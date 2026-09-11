@@ -193,7 +193,7 @@ onMounted(() => {
                   :tooltip="t(item.label)"
                   :is-active="isActive(item.to)"
                   @contextmenu="openSidebarCtx($event, item)"
-                  class="relative transition-all duration-200 hover:bg-muted/50 data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-semibold w-full justify-start rounded-md h-10 px-3"
+                  class="relative transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-foreground data-[active=true]:text-sidebar shadow-sm data-[active=true]:font-semibold w-full justify-start rounded-md h-10 px-3"
                 >
                   <RouterLink :to="`${adminPrefix}${item.to?.replace('/admin', '')}`">
                     <HugeiconsIcon v-if="item.icon" :icon="item.icon" :size="20" class="size-5 shrink-0" />
@@ -215,7 +215,7 @@ onMounted(() => {
                   <CollapsibleTrigger as-child>
                     <SidebarMenuButton
                       :tooltip="t(item.label)"
-                      class="relative transition-all duration-200 hover:bg-muted/50 data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-semibold w-full justify-start rounded-md h-10 px-3"
+                      class="relative transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-foreground data-[active=true]:text-sidebar shadow-sm data-[active=true]:font-semibold w-full justify-start rounded-md h-10 px-3"
                       :is-active="item.children && item.children.some((child) => isActive(child.to))"
                     >
                       <HugeiconsIcon v-if="item.icon" :icon="item.icon" :size="20" class="size-5 shrink-0" />
@@ -253,7 +253,7 @@ onMounted(() => {
                           v-if="isVisible(child.permission)"
                           as-child
                           :is-active="isActive(child.to)"
-                          class="transition-all duration-200 hover:bg-muted/50 data-[active=true]:bg-primary/10 data-[active=true]:text-primary rounded-md"
+                          class="transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-foreground data-[active=true]:text-sidebar shadow-sm rounded-md"
                         >
                           <RouterLink :to="`${adminPrefix}${child.to?.replace('/admin', '')}`">
                             <span>{{ (child as any)._isDirectLabel ? child.label : t(child.label) }}</span>
