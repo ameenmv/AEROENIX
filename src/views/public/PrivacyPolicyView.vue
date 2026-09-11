@@ -2,7 +2,7 @@
 import { onMounted } from 'vue'
 
 onMounted(() => {
-  document.title = 'Privacy Policy | Aeroenix'
+  document.title = 'Privacy Policy | AZUL'
 })
 </script>
 
@@ -16,7 +16,7 @@ onMounted(() => {
           <div class="w-8 h-8 rounded bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
             A
           </div>
-          <span class="font-semibold text-lg tracking-tight">Aeroenix</span>
+          <span class="font-semibold text-lg tracking-tight">AZUL</span>
         </div>
       </div>
     </header>
@@ -29,7 +29,7 @@ onMounted(() => {
 
         <div class="space-y-8 text-base/relaxed">
           <p>
-            <strong>Aeroenix</strong> ("we", "our", or "us") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and protect information when you use the Aeroenix application and its communication services.
+            <strong>AZUL</strong> ("we", "our", or "us") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and protect information when you use the AZUL application and its communication services.
           </p>
 
           <section>
@@ -50,7 +50,7 @@ onMounted(() => {
             <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">2. How We Use Your Information</h2>
             <p class="mb-3">We may use collected information to:</p>
             <ul class="list-disc pl-6 space-y-2 mb-4">
-              <li>Provide and operate Aeroenix services.</li>
+              <li>Provide and operate AZUL services.</li>
               <li>Manage user accounts and authentication.</li>
               <li>Respond to customer inquiries and requests.</li>
               <li>Manage customer communications through supported channels.</li>
@@ -63,10 +63,10 @@ onMounted(() => {
           <section>
             <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">3. Meta Platforms and Third-Party Services</h2>
             <p class="mb-4">
-              Aeroenix may integrate with Meta services, including WhatsApp, Instagram, and Messenger, to enable communication between customers and the business.
+              AZUL may integrate with Meta services, including WhatsApp, Instagram, and Messenger, to enable communication between customers and the business.
             </p>
             <p class="mb-4">
-              When you interact with Aeroenix through these services, information may be processed through the relevant Meta platform according to its own privacy policies and terms.
+              When you interact with AZUL through these services, information may be processed through the relevant Meta platform according to its own privacy policies and terms.
             </p>
             <p>
               We only request and use the permissions and information necessary for the functionality provided by our application.
@@ -129,7 +129,7 @@ onMounted(() => {
           <section>
             <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">9. Children's Privacy</h2>
             <p>
-              Aeroenix is not intended to knowingly collect personal information from children where such collection is prohibited by applicable law.
+              AZUL is not intended to knowingly collect personal information from children where such collection is prohibited by applicable law.
             </p>
           </section>
 
@@ -146,7 +146,7 @@ onMounted(() => {
               If you have questions, concerns, or requests regarding this Privacy Policy or your personal information, please contact us:
             </p>
             <div class="bg-muted p-4 rounded-md">
-              <p class="font-semibold mb-2">Aeroenix</p>
+              <p class="font-semibold mb-2">AZUL</p>
               <p class="mb-1"><strong>Email:</strong> <a href="mailto:aeroenix10@gmail.com" class="text-primary hover:underline">aeroenix10@gmail.com</a></p>
               <p><strong>Website:</strong> <a href="https://aeroenix.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">aeroenix.vercel.app</a></p>
             </div>
@@ -159,7 +159,7 @@ onMounted(() => {
     <footer class="border-t border-border mt-auto bg-card">
       <div class="container mx-auto px-4 py-8">
         <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <p>&copy; {{ new Date().getFullYear() }} Aeroenix. All rights reserved.</p>
+          <p>&copy; {{ new Date().getFullYear() }} AZUL. All rights reserved.</p>
           <div class="flex gap-4">
             <a href="https://aeroenix.vercel.app/" class="hover:text-foreground transition-colors">Home</a>
             <router-link to="/privacy-policy" class="hover:text-foreground transition-colors">Privacy Policy</router-link>
