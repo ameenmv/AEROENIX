@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 import { Tick02Icon, Calendar03Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { CalendarDate, parseDate, getLocalTimeZone, DateFormatter } from '@internationalized/date'
+import { parseDate, getLocalTimeZone, DateFormatter } from '@internationalized/date'
 import { cn } from '@/utils/cn'
 
 import { roomsService } from '@/services/roomsService'
@@ -115,7 +115,7 @@ const { mutate: submitForm, isPending } = useMutation({
     
     if (error.response?.data?.errors) {
       const firstError = Object.values(error.response.data.errors)[0] as string[]
-      if (Array.isArray(firstError) && firstError.length > 0) {
+      if (Array.isArray(firstError) && firstError.length > 0 && firstError[0]) {
         errorMessage = firstError[0]
       }
     } else if (error.response?.data?.message) {
