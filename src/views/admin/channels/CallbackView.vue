@@ -40,7 +40,7 @@ async function processCallback() {
     errorMessage.value = 'Authorization code was not found in the callback request.'
     if (window.opener) {
       window.opener.postMessage(
-        { type: 'AEROENIX_CHANNEL_ERROR', message: errorMessage.value },
+        { type: 'AZUL_CHANNEL_ERROR', message: errorMessage.value },
         '*',
       )
     }
@@ -54,7 +54,7 @@ async function processCallback() {
     // Notify parent window & close popup window automatically
     if (window.opener) {
       window.opener.postMessage(
-        { type: 'AEROENIX_CHANNEL_CONNECTED', data, provider },
+        { type: 'AZUL_CHANNEL_CONNECTED', data, provider },
         '*',
       )
       setTimeout(() => {
@@ -66,7 +66,7 @@ async function processCallback() {
     errorMessage.value = err?.message || 'Failed to complete channel authorization.'
     if (window.opener) {
       window.opener.postMessage(
-        { type: 'AEROENIX_CHANNEL_ERROR', message: errorMessage.value },
+        { type: 'AZUL_CHANNEL_ERROR', message: errorMessage.value },
         '*',
       )
     }
@@ -125,7 +125,7 @@ onMounted(() => {
         <p class="text-xs text-muted-foreground leading-relaxed">
           {{
             status === 'loading'
-              ? 'Please wait while we link your messaging channel to Aeroenix.'
+              ? 'Please wait while we link your messaging channel to Azul.'
               : status === 'success'
                 ? 'Your channel has been linked. Closing window…'
                 : errorMessage

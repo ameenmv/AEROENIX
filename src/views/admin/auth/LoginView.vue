@@ -27,14 +27,14 @@ const form = useForm<string | null>({
   action: 'custom',
   showNotifications: false,
   initialValues: {
-    email: 'admin@aeroenix.com',
+    email: 'admin@azul.com',
     password: 'password123',
     remember: false,
   },
   mutationFn: data => authStore.login(data),
   onSuccess: () => {
     const lang = (route.params.lang as string) || 'en'
-    // Direct login — Aeroenix backend has no OTP/2FA
+    // Direct login — Azul backend has no OTP/2FA
     router.push({ path: `/${lang}/admin/dashboard` })
   },
 })

@@ -4,7 +4,7 @@ import { computed, ref } from 'vue'
 import { rolesService } from '@/services/rolesService'
 
 /**
- * Roles composable — aligned with Aeroenix backend RoleController.
+ * Roles composable — aligned with Azul backend RoleController.
  *
  * The backend uses a matrix API (GET /platform/roles-permissions)
  * that returns all roles + all permission modules in a single call.

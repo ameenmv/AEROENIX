@@ -186,7 +186,7 @@ function getIconForActivity(iconName: string) {
             {{ t('common.Dashboard', 'Dashboard') }}
           </h1>
           <p class="text-muted-foreground mt-1 text-sm">
-            {{ t('common.dashboard_subtitle', 'Overview of Aeroenix Hotel platform performance.') }}
+            {{ t('common.dashboard_subtitle', 'Overview of Azul Hotel platform performance.') }}
           </p>
         </div>
 

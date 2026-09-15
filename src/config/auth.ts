@@ -2,10 +2,10 @@ import type { AuthConfig } from '@/types/auth'
 
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * Auth Environment Configuration — Aeroenix Dashboard
+ * Auth Environment Configuration — Azul Dashboard
  *
  * Reads VITE_AUTH_* env vars and builds frontend-only auth config.
- * The Aeroenix backend does not have a /auth/config endpoint,
+ * The Azul backend does not have a /auth/config endpoint,
  * so the frontend is fully driven by these env vars.
  *
  * Defaults:

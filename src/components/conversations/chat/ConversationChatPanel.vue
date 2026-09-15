@@ -40,7 +40,7 @@ const { t } = useI18n()
         <MessageSquare class="w-10 h-10 text-primary" />
       </div>
       <h2 class="text-2xl font-light text-foreground mb-3">
-        {{ t('conversations.welcome_title', 'Aeroenix Conversations') }}
+        {{ t('conversations.welcome_title', 'Azul Conversations') }}
       </h2>
       <p class="text-[14px] text-muted-foreground max-w-[400px]">
         {{ t('conversations.welcome_subtitle', 'Select a conversation from the inbox to start chatting and managing leads.') }}

@@ -108,7 +108,7 @@ function getProviderColorClass(channelBadgeName: string | null | undefined) {
 
         <div class="h-5 w-px bg-border/60 hidden sm:block" />
 
-        <!-- AI Handoff Button (Aeroenix Specific) -->
+        <!-- AI Handoff Button (Azul Specific) -->
         <button
           v-if="status"
           class="shrink-0 flex items-center justify-center w-9 h-9 sm:w-auto sm:px-3 rounded-full border transition-all duration-300"

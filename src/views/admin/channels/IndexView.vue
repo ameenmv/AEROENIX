@@ -97,11 +97,11 @@ function openOAuthPopup(url: string) {
 
 // PostMessage Listener for popup callback messages
 function handlePostMessage(event: MessageEvent) {
-  if (event.data?.type === 'CHANNEL_CONNECTED' || event.data?.type === 'AEROENIX_CHANNEL_CONNECTED') {
+  if (event.data?.type === 'CHANNEL_CONNECTED' || event.data?.type === 'AZUL_CHANNEL_CONNECTED') {
     const channelName = event.data?.channel?.name || event.data?.data?.channel?.name || 'Channel'
     toast.success(`${channelName} connected successfully!`)
     queryClient.invalidateQueries({ queryKey: ['channels'] })
-  } else if (event.data?.type === 'CHANNEL_AUTH_ERROR' || event.data?.type === 'AEROENIX_CHANNEL_ERROR') {
+  } else if (event.data?.type === 'CHANNEL_AUTH_ERROR' || event.data?.type === 'AZUL_CHANNEL_ERROR') {
     toast.error(event.data?.message || 'Failed to connect channel.')
   }
 }

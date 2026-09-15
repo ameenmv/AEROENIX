@@ -1,8 +1,8 @@
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * Auth Types — Aeroenix Dashboard
+ * Auth Types — Azul Dashboard
  *
- * Aligned with the Aeroenix Laravel backend:
+ * Aligned with the Azul Laravel backend:
  *   Routes:  routes/api.php → auth group
  *   OpenAPI: openapi.json
  *
@@ -31,13 +31,13 @@ export type AuthStep = 'credentials' | 'complete'
 /**
  * Frontend auth configuration (env-driven).
  *
- * Aeroenix backend does not have a /auth/config endpoint.
+ * Azul backend does not have a /auth/config endpoint.
  * This is purely for frontend UI logic.
  */
 export interface AuthConfig {
   /** How users authenticate */
   login_method: 'email_password'
-  /** Whether 2FA is enabled — false for Aeroenix */
+  /** Whether 2FA is enabled — false for Azul */
   two_factor: boolean
   /** Whether self-registration is enabled — false for admin */
   registration_enabled: boolean
@@ -168,7 +168,7 @@ export interface AcceptInvitationResponse {
 
 // ── Change Password ─────────────────────────────────────────────────────────
 /**
- * Change password — not implemented in Aeroenix backend yet.
+ * Change password — not implemented in Azul backend yet.
  * Types kept for future use.
  */
 export interface ChangePasswordPayload {

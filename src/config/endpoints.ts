@@ -1,6 +1,6 @@
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * API Endpoints — Aligned with Aeroenix Laravel Backend (v1)
+ * API Endpoints — Aligned with Azul Laravel Backend (v1)
  * ──────────────────────────────────────────────────────────────────────────────
  */
 

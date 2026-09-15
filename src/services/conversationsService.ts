@@ -10,7 +10,7 @@ import api from './api'
 
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * Conversations Service — aligned with Aeroenix backend InboxController &
+ * Conversations Service — aligned with Azul backend InboxController &
  * ConversationHandoffController.
  *
  * Backend routes:

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * OTP View — not supported by Aeroenix backend.
+ * OTP View — not supported by Azul backend.
  * Redirects to login page.
  */
 const route = useRoute()

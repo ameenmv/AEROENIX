@@ -41,7 +41,7 @@ function toggleLanguage() {
 
       <div class="relative z-10 mt-auto pb-10">
         <h1 class="text-4xl lg:text-5xl font-bold tracking-tight mb-4 text-white drop-shadow-sm">
-          {{ t('auth.welcome_title', 'Welcome to Aeroenix') }}
+          {{ t('auth.welcome_title', 'Welcome to Azul') }}
         </h1>
         <p class="text-lg lg:text-xl text-zinc-200 max-w-md font-medium leading-relaxed drop-shadow-sm">
           {{ t('auth.welcome_subtitle', 'Experience the next generation of intuitive, lightning-fast dashboard management.') }}

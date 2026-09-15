@@ -1,5 +1,5 @@
 /**
- * Role entity — aligned with Aeroenix backend RoleController matrix response.
+ * Role entity — aligned with Azul backend RoleController matrix response.
  *
  * Backend: app/Http/Controllers/V1/Platform/RoleController.php
  *

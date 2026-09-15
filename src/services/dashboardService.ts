@@ -3,7 +3,7 @@ import api from './api'
 
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * Dashboard Service — aligned with Aeroenix backend DashboardController.
+ * Dashboard Service — aligned with Azul backend DashboardController.
  *
  * Backend route:
  *   GET /platform/dashboard   → aggregated dashboard stats

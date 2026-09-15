@@ -1,5 +1,5 @@
 /**
- * Users endpoint — aligned with Aeroenix backend.
+ * Users endpoint — aligned with Azul backend.
  *
  * Backend routes: /api/v1/platform/users
  *   GET    /                                 → users.index

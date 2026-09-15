@@ -1,9 +1,9 @@
-# AEROENIX - Hotel Chatbot Dashboard
+# AZUL - Hotel Chatbot Dashboard
 
-This repository contains the dashboard and the base architecture for the **AEROENIX Hotel Customer Service & Booking Chatbot**.
+This repository contains the dashboard and the base architecture for the **AZUL Hotel Customer Service & Booking Chatbot**.
 
 ## Overview
-Aeroenix provides an AI-powered customer service and booking chatbot tailored for hotels. The solution seamlessly handles guest inquiries across Facebook Messenger, Instagram Direct, and WhatsApp. It utilizes **Retrieval-Augmented Generation (RAG)** to provide accurate, natural language answers from a supervised knowledge base.
+Azul provides an AI-powered customer service and booking chatbot tailored for hotels. The solution seamlessly handles guest inquiries across Facebook Messenger, Instagram Direct, and WhatsApp. It utilizes **Retrieval-Augmented Generation (RAG)** to provide accurate, natural language answers from a supervised knowledge base.
 
 ### Key Features
 - **Multi-channel integration:** Unified inbox for Meta platforms (WhatsApp, Messenger, IG).

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * RegisterView — not supported by Aeroenix backend.
+ * RegisterView — not supported by Azul backend.
  * Users are created via invitations only.
  * Redirects to login page.
  */

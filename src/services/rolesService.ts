@@ -4,7 +4,7 @@ import api from './api'
 
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * Roles Service — aligned with Aeroenix backend RoleController.
+ * Roles Service — aligned with Azul backend RoleController.
  *
  * Backend: app/Http/Controllers/V1/Platform/RoleController.php
  * Routes:

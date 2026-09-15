@@ -1,5 +1,5 @@
 /**
- * Roles endpoint — aligned with Aeroenix backend.
+ * Roles endpoint — aligned with Azul backend.
  *
  * Backend routes: /api/v1/platform/roles*
  *   GET  /roles-permissions           → matrix (all roles + permissions)

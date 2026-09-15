@@ -1,5 +1,5 @@
 /**
- * Permission entity — aligned with Aeroenix backend.
+ * Permission entity — aligned with Azul backend.
  *
  * Backend: app/Http/Controllers/V1/Platform/PermissionController.php
  *

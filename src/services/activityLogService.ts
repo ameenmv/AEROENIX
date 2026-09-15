@@ -3,7 +3,7 @@ import api from './api'
 
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * Activity Log Service — aligned with Aeroenix ActivityLogController.
+ * Activity Log Service — aligned with Azul ActivityLogController.
  *
  * Backend route:
  *   GET /platform/activity-logs → paginated audit trail

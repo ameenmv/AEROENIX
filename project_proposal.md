@@ -1,10 +1,10 @@
-# AEROENIX - Technical & Financial Proposal
+# AZUL - Technical & Financial Proposal
 ## Hotel Customer Service & Booking Chatbot
 
 **Phase 1 — Pilot · Multi-Channel AI Assistant for Meta Platforms**
 
 ### 1. Executive Summary
-This proposal sets out Aeroenix's approach, technology, timeline and investment for building an AI-powered customer service and booking chatbot for the client's hotel. The solution responds to guest inquiries across Facebook Messenger, Instagram Direct and WhatsApp, helping guests with hotel information, room types, availability, pricing and booking requests.
+This proposal sets out Azul's approach, technology, timeline and investment for building an AI-powered customer service and booking chatbot for the client's hotel. The solution responds to guest inquiries across Facebook Messenger, Instagram Direct and WhatsApp, helping guests with hotel information, room types, availability, pricing and booking requests.
 
 Phase 1 is delivered as a controlled pilot on one hotel for 6–8 Weeks, balancing automation with human supervision: the chatbot handles repetitive questions and collects booking details, while staff confirm every booking before the guest receives final confirmation. The architecture is built clean and multi-tenant from day one, so additional hotels can be added in later phases without re-engineering the core.
 
@@ -33,7 +33,7 @@ The Phase 1 delivery includes the following capabilities:
 - **Data handling & privacy** — guest/conversation data with sensitive ID/passport details excluded from the chatbot, plus staff activity logs.
 
 ### 4. Proposed Solution & Technology Stack
-Aeroenix recommends a custom build (rather than an off-the-shelf bot platform), because the multi-hotel dashboard, approval-driven knowledge base and per-hotel configuration are difficult to achieve cleanly on closed platforms. The proposed stack:
+Azul recommends a custom build (rather than an off-the-shelf bot platform), because the multi-hotel dashboard, approval-driven knowledge base and per-hotel configuration are difficult to achieve cleanly on closed platforms. The proposed stack:
 
 | Layer | Technology |
 |---|---|
@@ -111,8 +111,8 @@ A few items in the BRD need a decision before final pricing and the timeline are
 4. **Expected Conversation Volume**: Confirm the expected monthly conversation volume to estimate AI operating costs accurately. 
 5. **Hosting Environment**: Confirm whether the client will provide the cloud hosting environment or require deployment assistance. 
 
-### 11. Why Aeroenix
-Aeroenix builds custom web and mobile applications with a focus on practical, production-ready delivery. We pair modern AI (LLM + RAG) with clean, scalable architecture, and we design human-in-the-loop safeguards so automation never outruns the hotel team's control.
+### 11. Why Azul
+Azul builds custom web and mobile applications with a focus on practical, production-ready delivery. We pair modern AI (LLM + RAG) with clean, scalable architecture, and we design human-in-the-loop safeguards so automation never outruns the hotel team's control.
 
 ### 12. Next Steps
 1. Confirm the open points in Section 10.

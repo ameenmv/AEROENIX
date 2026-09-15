@@ -17,7 +17,7 @@ import { authService } from '@/services/auth'
 
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * Auth Store — Aeroenix Dashboard
+ * Auth Store — Azul Dashboard
  *
  * Manages the complete auth lifecycle:
  *   credentials → complete
@@ -58,7 +58,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   /**
    * Auth config — initialized from env vars.
-   * Aeroenix backend does not have a config endpoint.
+   * Azul backend does not have a config endpoint.
    */
   const authConfig = shallowRef<AuthConfig>(buildAuthConfigFromEnv())
 

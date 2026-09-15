@@ -1,5 +1,5 @@
 /**
- * User entity — aligned with Aeroenix backend UserResource.
+ * User entity — aligned with Azul backend UserResource.
  *
  * Backend: app/Http/Resources/V1/Platform/UserResource.php
  *

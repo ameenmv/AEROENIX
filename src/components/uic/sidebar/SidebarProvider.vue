@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { HTMLAttributes, Ref } from 'vue'
-import { defaultDocument, useEventListener, useMediaQuery, useVModel } from '@vueuse/core'
+import { defaultDocument, useEventListener, useMediaQuery, useVModel, useLocalStorage } from '@vueuse/core'
 import { TooltipProvider } from 'reka-ui'
 import { computed, ref } from 'vue'
 import { cn } from '@/utils/cn'
@@ -54,6 +54,12 @@ useEventListener('keydown', (event: KeyboardEvent) => {
 // We add a state so that we can do data-state="expanded" or "collapsed".
 // This makes it easier to style the sidebar with Tailwind classes.
 const state = computed(() => (open.value ? 'expanded' : 'collapsed'))
+
+const sidebarWidth = useLocalStorage('sidebar_width', SIDEBAR_WIDTH)
+function setSidebarWidth(width: string) {
+  sidebarWidth.value = width
+}
+
 provideSidebarContext({
   state,
   open,
@@ -62,6 +68,8 @@ provideSidebarContext({
   openMobile,
   setOpenMobile,
   toggleSidebar,
+  sidebarWidth,
+  setSidebarWidth,
 })
 </script>
 
@@ -70,7 +78,7 @@ provideSidebarContext({
     <div
       data-slot="sidebar-wrapper"
       :style="{
-        '--sidebar-width': SIDEBAR_WIDTH,
+        '--sidebar-width': sidebarWidth,
         '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
       }"
       :class="

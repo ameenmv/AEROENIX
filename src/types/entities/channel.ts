@@ -1,5 +1,5 @@
 /**
- * Channel Integration Types — aligned with Aeroenix backend channel models & controllers.
+ * Channel Integration Types — aligned with Azul backend channel models & controllers.
  */
 
 export type ChannelProvider =

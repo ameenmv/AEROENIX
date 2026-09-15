@@ -1,5 +1,5 @@
 /**
- * Conversation & Handoff types — aligned with Aeroenix backend Conversation model & InboxController.
+ * Conversation & Handoff types — aligned with Azul backend Conversation model & InboxController.
  */
 
 export type HandoffStatus = 'bot' | 'human'

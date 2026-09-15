@@ -10,7 +10,7 @@ import api from './api'
 
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * Channels Service — aligned with Aeroenix backend channel controllers:
+ * Channels Service — aligned with Azul backend channel controllers:
  *   - WhatsAppBusinessController
  *   - InstagramProfessionalController
  *   - FacebookMessengerController

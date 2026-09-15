@@ -1,5 +1,5 @@
 /**
- * Hotel types — aligned with Aeroenix backend HotelResource.
+ * Hotel types — aligned with Azul backend HotelResource.
  *
  * Backend: app/Http/Resources/V1/Platform/HotelResource.php
  * Endpoints:

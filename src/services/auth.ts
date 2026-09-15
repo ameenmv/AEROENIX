@@ -15,7 +15,7 @@ import type { ApiSuccessResponse } from '@/types/services/api'
 
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * Auth Service — Pure API layer for Aeroenix backend
+ * Auth Service — Pure API layer for Azul backend
  *
  * Covers all auth routes from the backend (routes/api.php):
  *
@@ -150,7 +150,7 @@ export const authService = {
 
   /**
    * Returns frontend-only auth config.
-   * Aeroenix backend does not have a /auth/config endpoint.
+   * Azul backend does not have a /auth/config endpoint.
    */
   async getConfig(): Promise<AuthConfig> {
     return {

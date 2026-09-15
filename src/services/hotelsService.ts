@@ -4,7 +4,7 @@ import api from './api'
 
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * Hotels Service — aligned with Aeroenix backend HotelController.
+ * Hotels Service — aligned with Azul backend HotelController.
  *
  * Backend: app/Http/Controllers/V1/Platform/HotelController.php
  * Routes:

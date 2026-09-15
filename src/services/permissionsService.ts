@@ -4,7 +4,7 @@ import api from './api'
 
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * Permissions Service — aligned with Aeroenix backend PermissionController.
+ * Permissions Service — aligned with Azul backend PermissionController.
  *
  * Backend: app/Http/Controllers/V1/Platform/PermissionController.php
  * Routes:

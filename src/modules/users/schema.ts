@@ -5,7 +5,7 @@ type TranslateFn = (key: string, fallback?: string) => string
 
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * User Validation Schemas — aligned with Aeroenix backend.
+ * User Validation Schemas — aligned with Azul backend.
  *
  * Backend does NOT have admin-managed user CRUD.
  * Users are created via invitations only (InviteUserRequest).

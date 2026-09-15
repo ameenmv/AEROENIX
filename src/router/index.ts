@@ -138,9 +138,9 @@ router.beforeEach((to, _from, next) => {
     if (!localStorage.getItem('auth_user')) {
       localStorage.setItem('auth_user', JSON.stringify({
         id: 1,
-        name: 'Aeroenix Admin',
-        email: 'admin@aeroenix.com',
-        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aeroenix',
+        name: 'Azul Admin',
+        email: 'admin@azul.com',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Azul',
         role: 'super-admin',
         roles: ['super_admin'],
         permissions: ['*'],

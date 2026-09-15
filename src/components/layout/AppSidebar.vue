@@ -180,7 +180,7 @@ onMounted(() => {
     <SidebarContent class="custom-scrollbar pt-4">
       <SidebarGroup>
         <SidebarGroupContent>
-          <SidebarMenu class="gap-4 px-4 items-center flex-col">
+          <SidebarMenu class="gap-4 px-4 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center flex-col">
             <template v-for="(item, index) in navigationConfig" :key="item.name">
               <!-- Simple item (no children) -->
               <SidebarMenuItem
@@ -193,7 +193,7 @@ onMounted(() => {
                   :tooltip="t(item.label)"
                   :is-active="isActive(item.to)"
                   @contextmenu="openSidebarCtx($event, item)"
-                  class="relative transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-foreground data-[active=true]:text-sidebar shadow-sm data-[active=true]:font-semibold w-full justify-start rounded-md h-10 px-3"
+                  class="relative transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-foreground data-[active=true]:text-sidebar shadow-sm data-[active=true]:font-semibold w-full justify-start group-data-[collapsible=icon]:justify-center rounded-md h-10 px-3 group-data-[collapsible=icon]:px-0"
                 >
                   <RouterLink :to="`${adminPrefix}${item.to?.replace('/admin', '')}`">
                     <HugeiconsIcon v-if="item.icon" :icon="item.icon" :size="20" class="size-5 shrink-0" />
@@ -215,7 +215,7 @@ onMounted(() => {
                   <CollapsibleTrigger as-child>
                     <SidebarMenuButton
                       :tooltip="t(item.label)"
-                      class="relative transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-foreground data-[active=true]:text-sidebar shadow-sm data-[active=true]:font-semibold w-full justify-start rounded-md h-10 px-3"
+                      class="relative transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-foreground data-[active=true]:text-sidebar shadow-sm data-[active=true]:font-semibold w-full justify-start group-data-[collapsible=icon]:justify-center rounded-md h-10 px-3 group-data-[collapsible=icon]:px-0"
                       :is-active="item.children && item.children.some((child) => isActive(child.to))"
                     >
                       <HugeiconsIcon v-if="item.icon" :icon="item.icon" :size="20" class="size-5 shrink-0" />
@@ -283,11 +283,11 @@ onMounted(() => {
     </SidebarContent>
 
     <SidebarFooter class="pb-8">
-      <SidebarMenu class="px-4">
-        <SidebarMenuItem class="w-full flex justify-center">
+      <SidebarMenu class="px-4 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
+        <SidebarMenuItem class="w-full flex justify-center group-data-[collapsible=icon]:w-auto">
           <SidebarMenuButton
             :tooltip="t('menu.logout')"
-            class="relative transition-all duration-200 hover:bg-destructive hover:text-white text-destructive w-full justify-start rounded-md h-10 px-3"
+            class="relative transition-all duration-200 hover:bg-destructive hover:text-white text-destructive w-full justify-start group-data-[collapsible=icon]:justify-center rounded-md h-10 px-3 group-data-[collapsible=icon]:px-0"
             @click="handleLogout"
           >
             <HugeiconsIcon :icon="Logout02Icon" :size="20" class="size-5 shrink-0" />

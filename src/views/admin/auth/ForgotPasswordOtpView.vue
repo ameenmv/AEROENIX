@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * ForgotPasswordOtpView — not supported by Aeroenix backend.
+ * ForgotPasswordOtpView — not supported by Azul backend.
  * Password reset uses email links, not OTP.
  * Redirects to forgot-password page.
  */

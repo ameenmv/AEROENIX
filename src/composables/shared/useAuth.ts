@@ -4,7 +4,7 @@ import type { LoginCredentials } from '@/types/auth'
  * ──────────────────────────────────────────────────────────────────────────────
  * useAuth — View-facing composable for authentication
  *
- * Simplified for Aeroenix backend:
+ * Simplified for Azul backend:
  * - Email + password login (Sanctum tokens)
  * - Forgot password → reset via email link
  * - Accept invitation
@@ -44,7 +44,7 @@ export function useAuth() {
 
   // ── Simplified Actions ────────────────────────────────────────────────────
 
-  /** Login — always returns null (no OTP in Aeroenix) */
+  /** Login — always returns null (no OTP in Azul) */
   async function login(credentials: LoginCredentials): Promise<string | null> {
     return store.login(credentials)
   }

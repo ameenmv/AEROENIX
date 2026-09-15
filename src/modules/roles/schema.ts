@@ -5,7 +5,7 @@ type TranslateFn = (key: string, fallback?: string) => string
 
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * Role Validation Schemas — aligned with Aeroenix backend CreateRoleRequest.
+ * Role Validation Schemas — aligned with Azul backend CreateRoleRequest.
  *
  * Backend rules:
  *   name:        required, string

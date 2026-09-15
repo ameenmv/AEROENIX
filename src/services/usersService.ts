@@ -4,7 +4,7 @@ import api from './api'
 
 /**
  * ──────────────────────────────────────────────────────────────────────────────
- * Users Service — aligned with Aeroenix backend UserController.
+ * Users Service — aligned with Azul backend UserController.
  *
  * Backend: app/Http/Controllers/V1/Platform/UserController.php
  * Routes:
