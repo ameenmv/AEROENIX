@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMutation } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
-import { Tick02Icon } from '@hugeicons/core-free-icons'
+import { Tick02Icon, Calendar03Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import { CalendarDate, parseDate, getLocalTimeZone, DateFormatter } from '@internationalized/date'
+import { cn } from '@/utils/cn'
 
 import { roomsService } from '@/services/roomsService'
 import type { Room, RoomCreatePayload } from '@/types/entities/room'
@@ -28,6 +30,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/uic/select'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/uic/popover'
+import { Calendar } from '@/components/uic/calendar'
 
 const props = defineProps<{
   open: boolean
@@ -41,6 +45,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const df = new DateFormatter('en-US', { dateStyle: 'long' })
 
 const form = ref<RoomCreatePayload>({
   name: '',
@@ -48,6 +53,8 @@ const form = ref<RoomCreatePayload>({
   price: 0,
   capacity: 2,
   status: 'available',
+  check_in: '',
+  check_out: '',
 })
 
 watch(() => props.open, (isOpen) => {
@@ -59,6 +66,8 @@ watch(() => props.open, (isOpen) => {
         price: props.room.price,
         capacity: props.room.capacity,
         status: props.room.status,
+        check_in: props.room.check_in || '',
+        check_out: props.room.check_out || '',
       }
     } else {
       form.value = {
@@ -67,8 +76,24 @@ watch(() => props.open, (isOpen) => {
         price: 0,
         capacity: 2,
         status: 'available',
+        check_in: '',
+        check_out: '',
       }
     }
+  }
+})
+
+const checkInDate = computed({
+  get: () => form.value.check_in ? parseDate(form.value.check_in) : undefined,
+  set: (val) => {
+    form.value.check_in = val ? val.toString() : ''
+  }
+})
+
+const checkOutDate = computed({
+  get: () => form.value.check_out ? parseDate(form.value.check_out) : undefined,
+  set: (val) => {
+    form.value.check_out = val ? val.toString() : ''
   }
 })
 
@@ -85,8 +110,19 @@ const { mutate: submitForm, isPending } = useMutation({
     emit('saved')
     emit('update:open', false)
   },
-  onError: () => {
-    toast.error(props.room ? t('rooms.update_error', 'Failed to update room.') : t('rooms.create_error', 'Failed to create room.'))
+  onError: (error: any) => {
+    let errorMessage = props.room ? t('rooms.update_error', 'Failed to update room.') : t('rooms.create_error', 'Failed to create room.')
+    
+    if (error.response?.data?.errors) {
+      const firstError = Object.values(error.response.data.errors)[0] as string[]
+      if (Array.isArray(firstError) && firstError.length > 0) {
+        errorMessage = firstError[0]
+      }
+    } else if (error.response?.data?.message) {
+      errorMessage = error.response.data.message
+    }
+    
+    toast.error(errorMessage)
   }
 })
 
@@ -95,6 +131,14 @@ function handleSubmit() {
     toast.error(t('rooms.name_required', 'Room name is required.'))
     return
   }
+  
+  if (checkInDate.value && checkOutDate.value) {
+    if (checkOutDate.value.compare(checkInDate.value) <= 0) {
+      toast.error(t('rooms.checkout_invalid', 'The check out field must be a date after check in.'))
+      return
+    }
+  }
+
   submitForm(form.value)
 }
 </script>
@@ -123,6 +167,43 @@ function handleSubmit() {
           <div class="grid gap-2">
             <Label for="capacity">{{ t('rooms.capacity', 'Max Guests') }} <span class="text-red-500">*</span></Label>
             <Input id="capacity" type="number" v-model="form.capacity" min="1" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="grid gap-2">
+            <Label for="check_in">{{ t('rooms.check_in', 'Check-in Date') }}</Label>
+            <Popover>
+              <PopoverTrigger as-child>
+                <Button
+                  variant="outline"
+                  :class="cn('w-full justify-start text-left font-normal h-9 px-3', !checkInDate && 'text-muted-foreground')"
+                >
+                  <HugeiconsIcon :icon="Calendar03Icon" class="mr-2 h-4 w-4" />
+                  {{ checkInDate ? df.format(checkInDate.toDate(getLocalTimeZone())) : t('rooms.pick_date', 'Pick a date') }}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent class="w-auto p-0">
+                <Calendar v-model="checkInDate" initial-focus />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div class="grid gap-2">
+            <Label for="check_out">{{ t('rooms.check_out', 'Check-out Date') }}</Label>
+            <Popover>
+              <PopoverTrigger as-child>
+                <Button
+                  variant="outline"
+                  :class="cn('w-full justify-start text-left font-normal h-9 px-3', !checkOutDate && 'text-muted-foreground')"
+                >
+                  <HugeiconsIcon :icon="Calendar03Icon" class="mr-2 h-4 w-4" />
+                  {{ checkOutDate ? df.format(checkOutDate.toDate(getLocalTimeZone())) : t('rooms.pick_date', 'Pick a date') }}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent class="w-auto p-0">
+                <Calendar v-model="checkOutDate" initial-focus :min-value="checkInDate" />
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
