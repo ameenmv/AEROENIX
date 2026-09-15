@@ -1,0 +1,93 @@
+{
+  "title": "Privacy Policy",
+  "last_updated": "Last Updated:",
+  "date": "September 11, 2026",
+  "intro": "{brand} (\"we\", \"our\", or \"us\") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and protect information when you use the {brand} application and its communication services.",
+  "sections": {
+    "1": {
+      "title": "1. Information We Collect",
+      "intro": "Depending on how you use the application, we may collect:",
+      "list": {
+        "1": "Name and basic profile information.",
+        "2": "Email address and contact information.",
+        "3": "Account and authentication information.",
+        "4": "Messages and communication data exchanged through supported communication channels.",
+        "5": "Information provided through WhatsApp, Instagram, Messenger, or other supported Meta services.",
+        "6": "Technical information such as IP address, browser/device information, and application usage data."
+      },
+      "outro": "We only collect information that is necessary to provide and improve our services."
+    },
+    "2": {
+      "title": "2. How We Use Your Information",
+      "intro": "We may use collected information to:",
+      "list": {
+        "1": "Provide and operate {brand} services.",
+        "2": "Manage user accounts and authentication.",
+        "3": "Respond to customer inquiries and requests.",
+        "4": "Manage customer communications through supported channels.",
+        "5": "Improve application functionality and user experience.",
+        "6": "Maintain security and prevent unauthorized access or abuse.",
+        "7": "Comply with applicable laws and legal requirements."
+      }
+    },
+    "3": {
+      "title": "3. Meta Platforms and Third-Party Services",
+      "p1": "{brand} may integrate with Meta services, including WhatsApp, Instagram, and Messenger, to enable communication between customers and the business.",
+      "p2": "When you interact with {brand} through these services, information may be processed through the relevant Meta platform according to its own privacy policies and terms.",
+      "p3": "We only request and use the permissions and information necessary for the functionality provided by our application."
+    },
+    "4": {
+      "title": "4. Sharing of Information",
+      "p1": "We do not sell or rent users' personal information.",
+      "p2": "Information may be shared with trusted service providers or third-party services when necessary to operate the application, provide requested functionality, maintain security, or comply with legal obligations."
+    },
+    "5": {
+      "title": "5. Data Security",
+      "p1": "We take reasonable technical and organizational measures to protect personal information against unauthorized access, disclosure, alteration, or destruction.",
+      "p2": "However, no online service can guarantee complete security of information."
+    },
+    "6": {
+      "title": "6. Data Retention",
+      "p1": "We retain personal information only for as long as necessary to provide our services, fulfill legitimate business purposes, resolve disputes, maintain security, or comply with legal obligations.",
+      "p2": "When information is no longer required, it may be deleted or anonymized where appropriate."
+    },
+    "7": {
+      "title": "7. Your Rights",
+      "intro": "Depending on applicable laws, you may have the right to:",
+      "list": {
+        "1": "Request access to your personal information.",
+        "2": "Request correction of inaccurate information.",
+        "3": "Request deletion of your personal information.",
+        "4": "Withdraw consent where applicable.",
+        "5": "Ask questions about how your information is processed."
+      }
+    },
+    "8": {
+      "title": "8. Data Deletion",
+      "p1": "Users may request deletion of their personal information by contacting us through the contact information provided below.",
+      "p2": "Upon receiving a valid request, we will review and process the request in accordance with applicable laws and our data retention requirements.",
+      "request": "Data Deletion Request:"
+    },
+    "9": {
+      "title": "9. Children's Privacy",
+      "p1": "{brand} is not intended to knowingly collect personal information from children where such collection is prohibited by applicable law."
+    },
+    "10": {
+      "title": "10. Changes to This Privacy Policy",
+      "p1": "We may update this Privacy Policy from time to time. Any changes will be published on this page with an updated \"Last Updated\" date."
+    },
+    "11": {
+      "title": "11. Contact Us",
+      "p1": "If you have questions, concerns, or requests regarding this Privacy Policy or your personal information, please contact us:"
+    }
+  },
+  "contact": {
+    "email_label": "Email:",
+    "website_label": "Website:"
+  },
+  "footer": {
+    "copyright": "© {year} {brand}. All rights reserved.",
+    "home": "Home",
+    "privacy": "Privacy Policy"
+  }
+}

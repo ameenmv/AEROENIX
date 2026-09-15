@@ -322,7 +322,7 @@
   --card-foreground: #1e2025;
   --popover: #ffffff;
   --popover-foreground: #1e2025;
-  --primary: #002152;
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
   --secondary: #f1f3f5;
   --secondary-foreground: #1e2025;
@@ -333,7 +333,7 @@
   --destructive: #ea0606;
   --border: rgba(0, 0, 0, 0.15);
   --input: rgba(0, 0, 0, 0.2);
-  --ring: #002152;
+  --ring: #2563eb;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -341,12 +341,12 @@
   --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: #ffffff;
   --sidebar-foreground: #1e2025;
-  --sidebar-primary: #002152;
+  --sidebar-primary: #2563eb;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #f1f3f5;
   --sidebar-accent-foreground: #1e2025;
   --sidebar-border: rgba(0, 0, 0, 0.1);
-  --sidebar-ring: #002152;
+  --sidebar-ring: #2563eb;
 
   /* seen-amber */
   --color-seen-amber-200: #fee685;
@@ -483,12 +483,12 @@
   --color-seen-white-900: #eef2f6;
 
   /* Custom semantic colors */
-  --success: #002152;
+  --success: #16a34a;
   --warning: #ffcc00;
   --info: #17c1e8;
 
   /* Icon Colors */
-  --icon-color: #002152;
+  --icon-color: #2563eb;
 }
 
 /* RTL Font Setup */
@@ -510,7 +510,7 @@ html[lang='ar'] ::placeholder {
   --card-foreground: #1e2025;
   --popover: #ffffff;
   --popover-foreground: #1e2025;
-  --primary: #002152;
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
   --secondary: #f1f3f5;
   --secondary-foreground: #1e2025;
@@ -521,16 +521,16 @@ html[lang='ar'] ::placeholder {
   --destructive: #ea0606;
   --border: rgba(0, 0, 0, 0.15);
   --input: rgba(0, 0, 0, 0.2);
-  --ring: #002152;
+  --ring: #2563eb;
   --sidebar: #ffffff;
   --sidebar-foreground: #1e2025;
-  --sidebar-primary: #002152;
+  --sidebar-primary: #2563eb;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #f1f3f5;
   --sidebar-accent-foreground: #1e2025;
   --sidebar-border: rgba(0, 0, 0, 0.1);
-  --sidebar-ring: #002152;
-  --success: #002152;
+  --sidebar-ring: #2563eb;
+  --success: #16a34a;
   --warning: #ffcc00;
   --info: #17c1e8;
 }
@@ -543,7 +543,7 @@ html[lang='ar'] ::placeholder {
   --card-foreground: #ffffff;
   --popover: #0d1a2e;
   --popover-foreground: #ffffff;
-  --primary: #002152;
+  --primary: #3b82f6;
   --primary-foreground: #ffffff;
   --secondary: #152540;
   --secondary-foreground: #a7b4c8;
@@ -554,7 +554,7 @@ html[lang='ar'] ::placeholder {
   --destructive: #ea0606;
   --border: rgba(200, 220, 255, 0.1);
   --input: rgba(200, 220, 255, 0.15);
-  --ring: #002152;
+  --ring: #3b82f6;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -562,15 +562,15 @@ html[lang='ar'] ::placeholder {
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: #0d1a2e;
   --sidebar-foreground: #ffffff;
-  --sidebar-primary: #002152;
+  --sidebar-primary: #3b82f6;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #0a162855;
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: rgba(200, 220, 255, 0.1);
-  --sidebar-ring: #002152;
+  --sidebar-ring: #3b82f6;
 
   /* Custom semantic colors */
-  --success: #002152;
+  --success: #22c55e;
   --warning: #ffcc00;
   --info: #17c1e8;
 

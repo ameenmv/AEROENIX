@@ -22,6 +22,7 @@ const isTranslateableText = (text) => {
   if (trimmed.startsWith('http')) return false
   if (trimmed.includes('/') && !trimmed.includes(' ')) return false
   if (/^[A-Za-z0-9_-]+$/.test(trimmed) && !trimmed.includes(' ') && trimmed.length < 5) return false
+  if (/[=><|&{}$()`]/.test(trimmed)) return false
   
   // Skip if it contains Vue bindings, template literals, or i18n calls
   if (trimmed.includes('{{') || trimmed.includes('}}')) return false

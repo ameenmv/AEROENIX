@@ -5,7 +5,9 @@
     "name": "اسم الدور",
     "description": "الوصف",
     "permission": "الصلاحية",
-    "permissions": "الصلاحيات"
+    "permissions": "الصلاحيات",
+    "scope": "النطاق",
+    "permissions_count": "عدد الصلاحيات"
   },
   "placeholders": {
     "name": "أدخل اسم الدور",

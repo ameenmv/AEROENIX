@@ -5,7 +5,9 @@
     "name": "Role Name",
     "description": "Description",
     "permission": "Permission",
-    "permissions": "Permissions"
+    "permissions": "Permissions",
+    "scope": "Scope",
+    "permissions_count": "Permissions Count"
   },
   "placeholders": {
     "name": "Enter role name",

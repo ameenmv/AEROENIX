@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 onMounted(() => {
-  document.title = 'Privacy Policy | AZUL HOSPITALITY'
+  document.title = `${t('privacy.title')} | AZUL HOSPITALITY`
 })
 </script>
 
 <template>
-  <div class="min-h-screen bg-background text-foreground flex flex-col">
+  <div class="min-h-screen bg-background text-foreground flex flex-col" :dir="$i18n.locale === 'ar' ? 'rtl' : 'ltr'">
     <!-- Header -->
     <header class="sticky top-0 z-10 border-b border-border bg-card/80 backdrop-blur-md">
       <div class="container mx-auto px-4 h-16 flex items-center">
@@ -23,132 +26,106 @@ onMounted(() => {
 
     <!-- Main Content -->
     <main class="flex-grow container mx-auto px-4 py-12 max-w-3xl">
-      <article class="prose prose-slate dark:prose-invert max-w-none">
-        <h1 class="text-3xl font-bold tracking-tight mb-2">Privacy Policy</h1>
-        <p class="text-muted-foreground mb-8">Last Updated: <span class="font-semibold">September 11, 2026</span></p>
+      <article class="prose prose-slate dark:prose-invert max-w-none" :class="$i18n.locale === 'ar' ? 'text-right' : 'text-left'">
+        <h1 class="text-3xl font-bold tracking-tight mb-2">{{ t('privacy.title') }}</h1>
+        <p class="text-muted-foreground mb-8">{{ t('privacy.last_updated') }} <span class="font-semibold">{{ t('privacy.date') }}</span></p>
 
         <div class="space-y-8 text-base/relaxed">
           <p>
-            <strong>AZUL HOSPITALITY</strong> ("we", "our", or "us") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and protect information when you use the AZUL HOSPITALITY application and its communication services.
+            {{ t('privacy.intro', { brand: 'AZUL HOSPITALITY' }) }}
           </p>
 
           <section>
-            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">1. Information We Collect</h2>
-            <p class="mb-3">Depending on how you use the application, we may collect:</p>
-            <ul class="list-disc pl-6 space-y-2 mb-4">
-              <li>Name and basic profile information.</li>
-              <li>Email address and contact information.</li>
-              <li>Account and authentication information.</li>
-              <li>Messages and communication data exchanged through supported communication channels.</li>
-              <li>Information provided through WhatsApp, Instagram, Messenger, or other supported Meta services.</li>
-              <li>Technical information such as IP address, browser/device information, and application usage data.</li>
+            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">{{ t('privacy.sections.1.title') }}</h2>
+            <p class="mb-3">{{ t('privacy.sections.1.intro') }}</p>
+            <ul class="list-disc ltr:pl-6 rtl:pr-6 space-y-2 mb-4">
+              <li>{{ t('privacy.sections.1.list.1') }}</li>
+              <li>{{ t('privacy.sections.1.list.2') }}</li>
+              <li>{{ t('privacy.sections.1.list.3') }}</li>
+              <li>{{ t('privacy.sections.1.list.4') }}</li>
+              <li>{{ t('privacy.sections.1.list.5') }}</li>
+              <li>{{ t('privacy.sections.1.list.6') }}</li>
             </ul>
-            <p>We only collect information that is necessary to provide and improve our services.</p>
+            <p>{{ t('privacy.sections.1.outro') }}</p>
           </section>
 
           <section>
-            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">2. How We Use Your Information</h2>
-            <p class="mb-3">We may use collected information to:</p>
-            <ul class="list-disc pl-6 space-y-2 mb-4">
-              <li>Provide and operate AZUL HOSPITALITY services.</li>
-              <li>Manage user accounts and authentication.</li>
-              <li>Respond to customer inquiries and requests.</li>
-              <li>Manage customer communications through supported channels.</li>
-              <li>Improve application functionality and user experience.</li>
-              <li>Maintain security and prevent unauthorized access or abuse.</li>
-              <li>Comply with applicable laws and legal requirements.</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">3. Meta Platforms and Third-Party Services</h2>
-            <p class="mb-4">
-              AZUL HOSPITALITY may integrate with Meta services, including WhatsApp, Instagram, and Messenger, to enable communication between customers and the business.
-            </p>
-            <p class="mb-4">
-              When you interact with AZUL HOSPITALITY through these services, information may be processed through the relevant Meta platform according to its own privacy policies and terms.
-            </p>
-            <p>
-              We only request and use the permissions and information necessary for the functionality provided by our application.
-            </p>
-          </section>
-
-          <section>
-            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">4. Sharing of Information</h2>
-            <p class="mb-4">We do not sell or rent users' personal information.</p>
-            <p>
-              Information may be shared with trusted service providers or third-party services when necessary to operate the application, provide requested functionality, maintain security, or comply with legal obligations.
-            </p>
-          </section>
-
-          <section>
-            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">5. Data Security</h2>
-            <p class="mb-4">
-              We take reasonable technical and organizational measures to protect personal information against unauthorized access, disclosure, alteration, or destruction.
-            </p>
-            <p>
-              However, no online service can guarantee complete security of information.
-            </p>
-          </section>
-
-          <section>
-            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">6. Data Retention</h2>
-            <p class="mb-4">
-              We retain personal information only for as long as necessary to provide our services, fulfill legitimate business purposes, resolve disputes, maintain security, or comply with legal obligations.
-            </p>
-            <p>
-              When information is no longer required, it may be deleted or anonymized where appropriate.
-            </p>
-          </section>
-
-          <section>
-            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">7. Your Rights</h2>
-            <p class="mb-3">Depending on applicable laws, you may have the right to:</p>
-            <ul class="list-disc pl-6 space-y-2 mb-4">
-              <li>Request access to your personal information.</li>
-              <li>Request correction of inaccurate information.</li>
-              <li>Request deletion of your personal information.</li>
-              <li>Withdraw consent where applicable.</li>
-              <li>Ask questions about how your information is processed.</li>
+            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">{{ t('privacy.sections.2.title') }}</h2>
+            <p class="mb-3">{{ t('privacy.sections.2.intro') }}</p>
+            <ul class="list-disc ltr:pl-6 rtl:pr-6 space-y-2 mb-4">
+              <li>{{ t('privacy.sections.2.list.1', { brand: 'AZUL' }) }}</li>
+              <li>{{ t('privacy.sections.2.list.2') }}</li>
+              <li>{{ t('privacy.sections.2.list.3') }}</li>
+              <li>{{ t('privacy.sections.2.list.4') }}</li>
+              <li>{{ t('privacy.sections.2.list.5') }}</li>
+              <li>{{ t('privacy.sections.2.list.6') }}</li>
+              <li>{{ t('privacy.sections.2.list.7') }}</li>
             </ul>
           </section>
 
           <section>
-            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">8. Data Deletion</h2>
-            <p class="mb-4">
-              Users may request deletion of their personal information by contacting us through the contact information provided below.
-            </p>
-            <p class="mb-4">
-              Upon receiving a valid request, we will review and process the request in accordance with applicable laws and our data retention requirements.
-            </p>
+            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">{{ t('privacy.sections.3.title') }}</h2>
+            <p class="mb-4">{{ t('privacy.sections.3.p1', { brand: 'AZUL HOSPITALITY' }) }}</p>
+            <p class="mb-4">{{ t('privacy.sections.3.p2', { brand: 'AZUL HOSPITALITY' }) }}</p>
+            <p>{{ t('privacy.sections.3.p3') }}</p>
+          </section>
+
+          <section>
+            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">{{ t('privacy.sections.4.title') }}</h2>
+            <p class="mb-4">{{ t('privacy.sections.4.p1') }}</p>
+            <p>{{ t('privacy.sections.4.p2') }}</p>
+          </section>
+
+          <section>
+            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">{{ t('privacy.sections.5.title') }}</h2>
+            <p class="mb-4">{{ t('privacy.sections.5.p1') }}</p>
+            <p>{{ t('privacy.sections.5.p2') }}</p>
+          </section>
+
+          <section>
+            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">{{ t('privacy.sections.6.title') }}</h2>
+            <p class="mb-4">{{ t('privacy.sections.6.p1') }}</p>
+            <p>{{ t('privacy.sections.6.p2') }}</p>
+          </section>
+
+          <section>
+            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">{{ t('privacy.sections.7.title') }}</h2>
+            <p class="mb-3">{{ t('privacy.sections.7.intro') }}</p>
+            <ul class="list-disc ltr:pl-6 rtl:pr-6 space-y-2 mb-4">
+              <li>{{ t('privacy.sections.7.list.1') }}</li>
+              <li>{{ t('privacy.sections.7.list.2') }}</li>
+              <li>{{ t('privacy.sections.7.list.3') }}</li>
+              <li>{{ t('privacy.sections.7.list.4') }}</li>
+              <li>{{ t('privacy.sections.7.list.5') }}</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">{{ t('privacy.sections.8.title') }}</h2>
+            <p class="mb-4">{{ t('privacy.sections.8.p1') }}</p>
+            <p class="mb-4">{{ t('privacy.sections.8.p2') }}</p>
             <p>
-              <strong>Data Deletion Request:</strong> <a href="mailto:aeroenix10@gmail.com" class="text-primary hover:underline">aeroenix10@gmail.com</a>
+              <strong>{{ t('privacy.sections.8.request') }}</strong> <a href="mailto:aeroenix10@gmail.com" class="text-primary hover:underline">aeroenix10@gmail.com</a>
             </p>
           </section>
 
           <section>
-            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">9. Children's Privacy</h2>
-            <p>
-              AZUL HOSPITALITY is not intended to knowingly collect personal information from children where such collection is prohibited by applicable law.
-            </p>
+            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">{{ t('privacy.sections.9.title') }}</h2>
+            <p>{{ t('privacy.sections.9.p1', { brand: 'AZUL HOSPITALITY' }) }}</p>
           </section>
 
           <section>
-            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">10. Changes to This Privacy Policy</h2>
-            <p>
-              We may update this Privacy Policy from time to time. Any changes will be published on this page with an updated "Last Updated" date.
-            </p>
+            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">{{ t('privacy.sections.10.title') }}</h2>
+            <p>{{ t('privacy.sections.10.p1') }}</p>
           </section>
 
           <section>
-            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">11. Contact Us</h2>
-            <p class="mb-4">
-              If you have questions, concerns, or requests regarding this Privacy Policy or your personal information, please contact us:
-            </p>
+            <h2 class="text-xl font-semibold mt-8 mb-4 border-b pb-2">{{ t('privacy.sections.11.title') }}</h2>
+            <p class="mb-4">{{ t('privacy.sections.11.p1') }}</p>
             <div class="bg-muted p-4 rounded-md">
               <p class="font-semibold mb-2">AZUL HOSPITALITY</p>
-              <p class="mb-1"><strong>Email:</strong> <a href="mailto:aeroenix10@gmail.com" class="text-primary hover:underline">aeroenix10@gmail.com</a></p>
-              <p><strong>Website:</strong> <a href="https://aeroenix.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">aeroenix.vercel.app</a></p>
+              <p class="mb-1"><strong>{{ t('privacy.contact.email_label') }}</strong> <a href="mailto:aeroenix10@gmail.com" class="text-primary hover:underline">aeroenix10@gmail.com</a></p>
+              <p><strong>{{ t('privacy.contact.website_label') }}</strong> <a href="https://aeroenix.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">aeroenix.vercel.app</a></p>
             </div>
           </section>
         </div>
@@ -159,10 +136,10 @@ onMounted(() => {
     <footer class="border-t border-border mt-auto bg-card">
       <div class="container mx-auto px-4 py-8">
         <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <p>&copy; {{ new Date().getFullYear() }} AZUL HOSPITALITY. All rights reserved.</p>
+          <p>{{ t('privacy.footer.copyright', { year: new Date().getFullYear(), brand: 'AZUL HOSPITALITY' }) }}</p>
           <div class="flex gap-4">
-            <a href="https://aeroenix.vercel.app/" class="hover:text-foreground transition-colors">Home</a>
-            <router-link to="/privacy-policy" class="hover:text-foreground transition-colors">Privacy Policy</router-link>
+            <a href="https://aeroenix.vercel.app/" class="hover:text-foreground transition-colors">{{ t('privacy.footer.home') }}</a>
+            <router-link to="/privacy-policy" class="hover:text-foreground transition-colors">{{ t('privacy.footer.privacy') }}</router-link>
           </div>
         </div>
       </div>
