@@ -64,6 +64,22 @@ export const searchablePagesConfig: SearchablePageConfig[] = [
     keywords: ['ai', 'knowledge', 'qa', 'staff', 'ذكاء اصطناعي'],
   },
   {
+    id: 'admin-knowledge',
+    titleKey: 'menu.knowledge',
+    descriptionKey: 'command.desc_knowledge',
+    path: '/admin/knowledge',
+    categoryKey: 'menu.organization_group',
+    keywords: ['knowledge', 'faq', 'ai', 'chatbot', 'قاعدة المعرفة', 'أسئلة'],
+  },
+  {
+    id: 'admin-knowledge-create',
+    titleKey: 'knowledge.create_title',
+    descriptionKey: 'command.desc_knowledge_create',
+    path: '/admin/knowledge/create',
+    categoryKey: 'menu.organization_group',
+    keywords: ['create', 'knowledge', 'faq', 'add', 'إضافة', 'معرفة'],
+  },
+  {
     id: 'admin-roles',
     titleKey: 'menu.roles',
     descriptionKey: 'command.desc_roles',

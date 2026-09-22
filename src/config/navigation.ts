@@ -1,4 +1,5 @@
 import {
+  BookOpen01Icon,
   Building04Icon,
   Calendar01Icon,
   Comment01Icon,
@@ -50,6 +51,13 @@ export const navigationConfig: NavItem[] = [
     label: 'menu.bookings',
     icon: Calendar01Icon,
     to: '/admin/bookings',
+  },
+  {
+    name: 'knowledge',
+    label: 'menu.knowledge',
+    icon: BookOpen01Icon,
+    to: '/admin/knowledge',
+    createRoute: '/admin/knowledge/create',
   },
   // {
   //   name: 'staff-qna',

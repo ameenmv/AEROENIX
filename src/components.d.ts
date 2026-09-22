@@ -291,6 +291,7 @@ declare module 'vue' {
     K9HandlerGuardWithConvoyIcon: typeof import('./components/icons/K9HandlerGuardWithConvoyIcon.vue')['default']
     Kbd: typeof import('./components/uic/kbd/Kbd.vue')['default']
     KbdGroup: typeof import('./components/uic/kbd/KbdGroup.vue')['default']
+    KnowledgeStatusBadge: typeof import('./components/admin/knowledge/KnowledgeStatusBadge.vue')['default']
     KpiGrid: typeof import('./components/uic/kpi-grid/KpiGrid.vue')['default']
     KvItem: typeof import('./components/uic/kv-list/KvItem.vue')['default']
     KvList: typeof import('./components/uic/kv-list/KvList.vue')['default']
