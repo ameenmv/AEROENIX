@@ -308,16 +308,12 @@ onMounted(() => {
       </template>
     </ScrollArea>
 
-    <!-- Footer -->
+    <!-- Footer — See all -->
     <div class="np-footer">
-      <Button
-        variant="none"
-        size="none"
-        class="w-full text-center text-xs font-semibold text-primary hover:text-primary/80 py-2.5 transition-colors"
-        @click="handleViewAll"
-      >
-        {{ t('common.view_all_notifications', 'View All Notifications') }}
-      </Button>
+      <button class="np-footer__btn" @click="handleViewAll">
+        <span>{{ t('common.see_all_notifications', 'See all Notifications') }}</span>
+        <ChevronRight :size="14" />
+      </button>
     </div>
   </div>
 </template>
@@ -328,7 +324,6 @@ onMounted(() => {
   flex-direction: column;
   width: 100%;
   max-height: 520px;
-  overflow: hidden;
 }
 
 .np-header {
@@ -406,7 +401,8 @@ onMounted(() => {
 
 .np-list {
   flex: 1;
-  max-height: 360px;
+  max-height: 320px;
+  overflow-y: auto;
 }
 
 .np-loading {
@@ -578,7 +574,28 @@ onMounted(() => {
 
 .np-footer {
   border-top: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  flex-shrink: 0;
 }
+.np-footer__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+  transition: all 0.15s;
+  cursor: pointer;
+  letter-spacing: 0.1px;
+}
+.np-footer__btn:hover {
+  color: hsl(var(--foreground));
+  background: hsl(var(--muted) / 0.25);
+}
+
 
 /* Reuse shimmer from DataTable */
 .skeleton-shimmer {

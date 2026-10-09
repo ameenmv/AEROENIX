@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PlatformNotification, NotificationCategory } from '@/types/entities/platformNotification'
+import ConfirmModal from '@/components/ui/modals/ConfirmModal.vue'
 import {
   AlertTriangle,
   Bell,
@@ -9,6 +10,7 @@ import {
   ChevronDown,
   CreditCard,
   ExternalLink,
+  Eye,
   MessageSquare,
   Share2,
   Sparkles,
@@ -29,6 +31,10 @@ const router = useRouter()
 const store = useNotificationStore()
 
 const showUnreadOnly = ref(false)
+
+// Dismiss confirmation
+const showDismissConfirm = ref(false)
+const dismissTarget = ref<PlatformNotification | null>(null)
 
 // Category tabs
 const categories: Array<{ key: string | null; label: string; icon: any; color: string }> = [
@@ -79,8 +85,21 @@ function handleNotificationClick(notification: PlatformNotification) {
   }
 }
 
-function handleDismiss(notification: PlatformNotification) {
-  store.dismissNotification(notification.id)
+function openDismissConfirm(notification: PlatformNotification) {
+  dismissTarget.value = notification
+  showDismissConfirm.value = true
+}
+
+async function confirmDismiss() {
+  if (!dismissTarget.value) return
+  await store.dismissNotification(dismissTarget.value.id)
+  showDismissConfirm.value = false
+  dismissTarget.value = null
+}
+
+function cancelDismiss() {
+  showDismissConfirm.value = false
+  dismissTarget.value = null
 }
 
 function handleMarkAsRead(notification: PlatformNotification) {
@@ -262,18 +281,28 @@ onMounted(() => {
                 <div class="nc-card__actions">
                   <button
                     v-if="!notification.is_read"
-                    class="nc-card__action-btn"
+                    class="nc-action-btn nc-action-btn--read"
                     :title="t('common.mark_as_read', 'Mark as read')"
                     @click.stop="handleMarkAsRead(notification)"
                   >
-                    <Check :size="14" />
+                    <Check :size="13" />
+                    <span class="nc-action-btn__label">{{ t('common.read', 'Read') }}</span>
                   </button>
                   <button
-                    class="nc-card__action-btn nc-card__action-btn--danger"
-                    :title="t('common.dismiss', 'Dismiss')"
-                    @click.stop="handleDismiss(notification)"
+                    v-if="notification.action_url"
+                    class="nc-action-btn nc-action-btn--view"
+                    :title="t('common.view_details', 'View details')"
+                    @click.stop="handleNotificationClick(notification)"
                   >
-                    <Trash2 :size="14" />
+                    <Eye :size="13" />
+                    <span class="nc-action-btn__label">{{ t('common.view', 'View') }}</span>
+                  </button>
+                  <button
+                    class="nc-action-btn nc-action-btn--delete"
+                    :title="t('common.delete', 'Delete')"
+                    @click.stop="openDismissConfirm(notification)"
+                  >
+                    <Trash2 :size="13" />
                   </button>
                 </div>
               </div>
@@ -314,6 +343,18 @@ onMounted(() => {
         </template>
       </div>
     </div>
+
+    <!-- Confirm Delete Modal -->
+    <ConfirmModal
+      :show="showDismissConfirm"
+      :title="t('common.delete_notification', 'Delete Notification')"
+      :message="t('common.delete_notification_confirm', 'Are you sure you want to delete this notification? This action cannot be undone.')"
+      :confirm-label="t('common.yes_delete', 'Yes, Delete')"
+      :cancel-label="t('common.cancel', 'Cancel')"
+      variant="destructive"
+      @confirm="confirmDismiss"
+      @cancel="cancelDismiss"
+    />
   </ModularView>
 </template>
 
@@ -495,8 +536,8 @@ onMounted(() => {
   position: relative;
 }
 .nc-card:hover {
-  border-color: hsl(var(--border) / 0.8);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  border-color: hsl(var(--foreground) / 0.12);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
 }
 .nc-card--unread {
   background: hsl(var(--primary) / 0.02);
@@ -504,6 +545,7 @@ onMounted(() => {
 }
 .nc-card--unread:hover {
   background: hsl(var(--primary) / 0.04);
+  border-color: hsl(var(--primary) / 0.2);
 }
 .nc-card--urgent {
   border-left: 3px solid hsl(0, 72%, 51%);
@@ -569,10 +611,12 @@ onMounted(() => {
   opacity: 0.8;
 }
 
+/* Action Buttons */
 .nc-card__actions {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
+  flex-shrink: 0;
   opacity: 0;
   transition: opacity 0.15s;
 }
@@ -580,23 +624,55 @@ onMounted(() => {
   opacity: 1;
 }
 
-.nc-card__action-btn {
-  width: 28px;
-  height: 28px;
-  display: flex;
+.nc-action-btn {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 4px;
+  padding: 4px 8px;
   border-radius: 8px;
-  color: hsl(var(--muted-foreground));
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
   transition: all 0.15s;
+  white-space: nowrap;
 }
-.nc-card__action-btn:hover {
-  background: hsl(var(--muted));
+.nc-action-btn__label {
+  display: none;
+}
+@media (min-width: 768px) {
+  .nc-card:hover .nc-action-btn__label {
+    display: inline;
+  }
+}
+
+/* Read button */
+.nc-action-btn--read {
+  color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.08);
+}
+.nc-action-btn--read:hover {
+  background: hsl(var(--primary) / 0.15);
+}
+
+/* View button */
+.nc-action-btn--view {
+  color: hsl(var(--muted-foreground));
+  background: hsl(var(--muted) / 0.5);
+}
+.nc-action-btn--view:hover {
   color: hsl(var(--foreground));
+  background: hsl(var(--muted));
 }
-.nc-card__action-btn--danger:hover {
-  background: hsl(0, 72%, 51%, 0.1);
+
+/* Delete button */
+.nc-action-btn--delete {
+  color: hsl(var(--muted-foreground));
+  background: transparent;
+  padding: 4px 6px;
+}
+.nc-action-btn--delete:hover {
   color: hsl(0, 72%, 51%);
+  background: hsl(0, 72%, 51%, 0.1);
 }
 
 .nc-card__unread-dot {
