@@ -1,8 +1,10 @@
 import type { PlatformNotification } from '@/types/entities/platformNotification'
 import { onUnmounted, ref } from 'vue'
+import { toast } from 'vue-sonner'
 import { getEcho } from '@/services/echo'
 import { useAuthStore } from '@/stores/authStore'
 import { useNotificationStore } from '@/stores/shared/notification'
+import router from '@/router'
 
 /**
  * Composable that listens for real-time notifications via Laravel Reverb.
@@ -23,6 +25,10 @@ export function useNotificationListener() {
 
   // Track subscribed channel names for cleanup
   const subscribedChannels: string[] = []
+
+  // Deduplication: track recently seen notification IDs to prevent
+  // duplicate toasts when the same event arrives on multiple channels
+  const recentlySeenIds = new Set<string | number>()
 
   /**
    * Subscribe to notification channels.
@@ -89,53 +95,107 @@ export function useNotificationListener() {
 
   /**
    * Handle incoming real-time notification.
+   * Deduplicates across multiple channels.
    */
   function handleIncoming(event: { notification: PlatformNotification }) {
-    console.log('[NotificationListener] 📨 handleIncoming called with:', JSON.stringify(event, null, 2))
-
     if (!event?.notification) {
       console.warn('[NotificationListener] ⚠️ Event has no notification payload:', event)
       return
     }
 
-    console.log('[NotificationListener] ✅ Adding notification to store:', event.notification.title)
+    const notificationId = event.notification.id
+    // Deduplicate: skip if we already processed this notification
+    if (recentlySeenIds.has(notificationId)) {
+      console.log('[NotificationListener] ⏭️ Duplicate skipped:', notificationId)
+      return
+    }
 
-    // Add to store (deduplication is handled inside the store)
+    // Mark as seen (auto-clean after 10 seconds)
+    recentlySeenIds.add(notificationId)
+    setTimeout(() => recentlySeenIds.delete(notificationId), 10_000)
+
+    console.log('[NotificationListener] ✅ Processing notification:', event.notification.title)
+
+    // Add to store
     notifStore.addRealtimeNotification(event.notification)
+
+    // Show toast notification
+    showNotificationToast(event.notification)
 
     // Play sound if enabled
     if (notifStore.settings?.sound_enabled !== false) {
-      console.log('[NotificationListener] 🔊 Playing notification sound')
       playNotificationSound()
     }
   }
 
   /**
-   * Play notification sound (respects browser autoplay policy).
+   * Show a toast notification using vue-sonner.
+   */
+  function showNotificationToast(notification: PlatformNotification) {
+    try {
+      toast(notification.title, {
+        description: notification.message,
+        duration: notification.priority === 'urgent' ? 10000 : 5000,
+        action: notification.action_url
+          ? {
+              label: 'View',
+              onClick: () => {
+                router.push(notification.action_url!)
+              },
+            }
+          : undefined,
+      })
+    }
+    catch {
+      // Toast unavailable
+    }
+  }
+
+  /**
+   * Play notification sound using Web Audio API.
+   * Generates a pleasant two-tone chime programmatically.
    */
   function playNotificationSound() {
     try {
-      // Use a subtle default sound — can be replaced with custom asset
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-      const oscillator = audioContext.createOscillator()
-      const gainNode = audioContext.createGain()
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
 
-      oscillator.connect(gainNode)
-      gainNode.connect(audioContext.destination)
+      // Resume context if suspended (browser autoplay policy)
+      if (ctx.state === 'suspended') {
+        ctx.resume()
+      }
 
-      // Soft bell-like tone
-      oscillator.type = 'sine'
-      oscillator.frequency.setValueAtTime(880, audioContext.currentTime)
-      oscillator.frequency.setValueAtTime(660, audioContext.currentTime + 0.1)
+      const now = ctx.currentTime
 
-      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime)
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
+      // First tone — higher pitch (C6 = 1047 Hz)
+      const osc1 = ctx.createOscillator()
+      const gain1 = ctx.createGain()
+      osc1.type = 'sine'
+      osc1.frequency.value = 1047
+      gain1.gain.setValueAtTime(0.15, now)
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.3)
+      osc1.connect(gain1)
+      gain1.connect(ctx.destination)
+      osc1.start(now)
+      osc1.stop(now + 0.3)
 
-      oscillator.start(audioContext.currentTime)
-      oscillator.stop(audioContext.currentTime + 0.3)
+      // Second tone — slightly lower (E6 = 1319 Hz), delayed
+      const osc2 = ctx.createOscillator()
+      const gain2 = ctx.createGain()
+      osc2.type = 'sine'
+      osc2.frequency.value = 1319
+      gain2.gain.setValueAtTime(0.001, now)
+      gain2.gain.setValueAtTime(0.12, now + 0.15)
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.5)
+      osc2.connect(gain2)
+      gain2.connect(ctx.destination)
+      osc2.start(now + 0.15)
+      osc2.stop(now + 0.5)
+
+      // Close context after sound finishes
+      setTimeout(() => ctx.close(), 600)
     }
     catch {
-      // Silently ignore — browser may block autoplay
+      // Audio unavailable — silently ignore
     }
   }
 
