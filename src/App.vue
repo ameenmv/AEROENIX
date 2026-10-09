@@ -29,7 +29,7 @@ onMounted(() => {
   }
 })
 </script>
-
+ 
 <template>
   <component :is="layout">
     <RouterView v-slot="{ Component }">
