@@ -1,149 +1,267 @@
+import type { PlatformNotification, UserNotificationSettings } from '@/types/entities/platformNotification'
+import type { PlatformNotificationListParams } from '@/services/platformNotificationsService'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { notificationsService } from '@/services/notificationsService'
-
-export interface NotificationItem {
-  id: string | number
-  title: Record<string, string> | string
-  body?: Record<string, string> | string
-  content?: Record<string, string> | string
-  type?: string | number
-  read_at?: string | null
-  created_at?: string
-  time?: string
-  avatar?: string
-  route?: string
-  meta?: Record<string, any> | null
-  read?: boolean
-}
+import { platformNotificationsService } from '@/services/platformNotificationsService'
 
 export const useNotificationStore = defineStore('notification', () => {
-  const notifications = ref<NotificationItem[]>([])
+  // ── State ──────────────────────────────────────────────────────────────────
+  const notifications = ref<PlatformNotification[]>([])
   const isLoading = ref(false)
-  const pagination = ref({ current_page: 1, last_page: 1, total: 0 })
-
-  const serverUnreadCount = ref(0)
-
-  const unreadNotificationCount = computed(() => {
-    // If we have fetched server count, use it, otherwise fallback to local calculation
-    if (serverUnreadCount.value > 0)
-      return serverUnreadCount.value
-    return notifications.value.filter((n) => {
-      if (typeof n.read === 'boolean')
-        return !n.read
-      return !n.read_at
-    }).length
+  const pagination = ref({
+    current_page: 1,
+    total_pages: 1,
+    total: 0,
+    per_page: 20,
   })
 
-  const totalUnread = computed(() => unreadNotificationCount.value)
+  const unreadCount = ref(0)
+  const settings = ref<UserNotificationSettings | null>(null)
+  const activeCategory = ref<string | null>(null)
 
+  // ── Getters ────────────────────────────────────────────────────────────────
+  const hasMore = computed(() => pagination.value.current_page < pagination.value.total_pages)
+  const isEmpty = computed(() => notifications.value.length === 0 && !isLoading.value)
+
+  // ── Actions ────────────────────────────────────────────────────────────────
+
+  /**
+   * Fetch unread count for the badge.
+   */
   async function fetchUnreadCount() {
     try {
-      const response = await notificationsService.unreadCount()
-      serverUnreadCount.value = response.unread_count
+      unreadCount.value = await platformNotificationsService.unreadCount()
     }
     catch (error) {
-      console.error('Failed to fetch unread count', error)
+      console.error('[NotificationStore] Failed to fetch unread count:', error)
     }
   }
 
-  async function fetchNotifications(
-    page = 1,
-    filters?: any,
-    sortBy = 'created_at',
-    sortDesc = true,
-  ) {
+  /**
+   * Fetch paginated notifications from the platform API.
+   */
+  async function fetchNotifications(page = 1, append = false) {
     isLoading.value = true
     try {
-      const response = await notificationsService.list({
+      const params: PlatformNotificationListParams = {
         page,
-        filters,
-        sort_by: sortBy,
-        sort_dir: sortDesc ? 'desc' : 'asc',
-      })
-      const data = response.data || []
+        per_page: pagination.value.per_page,
+      }
 
-      if (page === 1) {
-        notifications.value = Array.isArray(data) ? data : []
+      if (activeCategory.value) {
+        params.category = activeCategory.value
+      }
+
+      const response = await platformNotificationsService.list(params)
+
+      if (append && page > 1) {
+        notifications.value = [...notifications.value, ...response.notifications]
       }
       else {
-        notifications.value = [...notifications.value, ...(Array.isArray(data) ? data : [])]
+        notifications.value = response.notifications
       }
 
-      if (response.meta) {
-        pagination.value = {
-          current_page: response.meta.current_page || 1,
-          last_page: response.meta.last_page || 1,
-          total: response.meta.total || 0,
-        }
+      pagination.value = {
+        current_page: response.pagination.current_page,
+        total_pages: response.pagination.total_pages,
+        total: response.pagination.total,
+        per_page: response.pagination.per_page,
       }
 
-      // Also fetch total unread count from server
+      // Also refresh unread count
       await fetchUnreadCount()
     }
     catch (error) {
-      console.error('Failed to fetch notifications', error)
+      console.error('[NotificationStore] Failed to fetch notifications:', error)
     }
     finally {
       isLoading.value = false
     }
   }
 
-  async function markNotificationRead(id: string | number) {
-    const item = notifications.value.find(n => n.id === id)
-    if (item && !item.read && !item.read_at) {
-      item.read = true
+  /**
+   * Load more (next page) appending to existing list.
+   */
+  async function loadMore() {
+    if (!hasMore.value || isLoading.value) return
+    await fetchNotifications(pagination.value.current_page + 1, true)
+  }
+
+  /**
+   * Filter by category and refetch.
+   */
+  async function filterByCategory(category: string | null) {
+    activeCategory.value = category
+    await fetchNotifications(1)
+  }
+
+  /**
+   * Mark a single notification as read.
+   */
+  async function markAsRead(id: string | number) {
+    const item = notifications.value.find(n => n.id === String(id))
+    if (item && !item.is_read) {
+      // Optimistic update
+      item.is_read = true
       item.read_at = new Date().toISOString()
+      if (unreadCount.value > 0) unreadCount.value--
+
       try {
-        await notificationsService.markAsRead(id)
-        if (serverUnreadCount.value > 0)
-          serverUnreadCount.value--
+        await platformNotificationsService.markAsRead(id)
       }
       catch {
-        item.read = false
+        // Rollback
+        item.is_read = false
         item.read_at = null
+        unreadCount.value++
       }
     }
   }
 
-  async function markAllNotificationsRead() {
+  /**
+   * Mark all notifications as read.
+   */
+  async function markAllAsRead() {
+    // Optimistic update
+    const previousUnread = unreadCount.value
     notifications.value.forEach((n) => {
-      n.read = true
+      n.is_read = true
       n.read_at = n.read_at || new Date().toISOString()
     })
-    serverUnreadCount.value = 0
+    unreadCount.value = 0
+
     try {
-      await notificationsService.markAllAsRead()
+      await platformNotificationsService.markAllAsRead()
     }
-    catch (e) {
-      console.error('Failed to mark all as read', e)
+    catch (error) {
+      console.error('[NotificationStore] Failed to mark all as read:', error)
+      unreadCount.value = previousUnread
     }
   }
 
-  function removeNotification(id: string | number) {
-    notifications.value = notifications.value.filter(n => n.id !== id)
+  /**
+   * Dismiss / delete a notification.
+   */
+  async function dismissNotification(id: string | number) {
+    const idx = notifications.value.findIndex(n => n.id === String(id))
+    if (idx === -1) return
+
+    const removed = notifications.value[idx]!
+    notifications.value.splice(idx, 1)
+
+    if (!removed.is_read && unreadCount.value > 0) {
+      unreadCount.value--
+    }
+
+    try {
+      await platformNotificationsService.dismiss(id)
+    }
+    catch {
+      // Rollback
+      notifications.value.splice(idx, 0, removed)
+      if (!removed.is_read) unreadCount.value++
+    }
   }
 
-  function clearNotifications() {
+
+  /**
+   * Add a notification received via real-time WebSocket.
+   * Prepends to the list and increments unread count.
+   */
+  function addRealtimeNotification(notification: PlatformNotification) {
+    // Avoid duplicates
+    const exists = notifications.value.some(n => n.id === notification.id)
+    if (!exists) {
+      notifications.value.unshift(notification)
+      if (!notification.is_read) {
+        unreadCount.value++
+      }
+      pagination.value.total++
+    }
+  }
+
+  // ── Settings ───────────────────────────────────────────────────────────────
+
+  /**
+   * Fetch user notification preferences.
+   */
+  async function fetchSettings() {
+    try {
+      const response = await platformNotificationsService.getSettings()
+      settings.value = response.notifications
+    }
+    catch (error) {
+      console.error('[NotificationStore] Failed to fetch settings:', error)
+    }
+  }
+
+  /**
+   * Update user notification preferences.
+   */
+  async function updateSettings(data: Partial<UserNotificationSettings>) {
+    try {
+      const response = await platformNotificationsService.updateSettings(data)
+      settings.value = response.notifications
+    }
+    catch (error) {
+      console.error('[NotificationStore] Failed to update settings:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Generate demo notifications (dev/testing only).
+   */
+  async function generateDemo(clear = false) {
+    try {
+      const result = await platformNotificationsService.generateDemo(clear)
+      // Refresh the list after generating
+      await fetchNotifications(1)
+      return result
+    }
+    catch (error) {
+      console.error('[NotificationStore] Failed to generate demo:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Reset store state (e.g. on logout).
+   */
+  function $reset() {
     notifications.value = []
-  }
-
-  function addNotification(item: NotificationItem) {
-    notifications.value.unshift(item)
+    unreadCount.value = 0
+    isLoading.value = false
+    settings.value = null
+    activeCategory.value = null
+    pagination.value = { current_page: 1, total_pages: 1, total: 0, per_page: 20 }
   }
 
   return {
+    // State
     notifications,
     isLoading,
     pagination,
-    unreadNotificationCount,
-    totalUnread,
-    fetchNotifications,
+    unreadCount,
+    settings,
+    activeCategory,
+
+    // Getters
+    hasMore,
+    isEmpty,
+
+    // Actions
     fetchUnreadCount,
-    markNotificationRead,
-    markAllNotificationsRead,
-    removeNotification,
-    clearNotifications,
-    addNotification,
+    fetchNotifications,
+    loadMore,
+    filterByCategory,
+    markAsRead,
+    markAllAsRead,
+    dismissNotification,
+    addRealtimeNotification,
+    fetchSettings,
+    updateSettings,
+    generateDemo,
+    $reset,
   }
 })

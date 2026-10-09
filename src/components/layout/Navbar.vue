@@ -10,8 +10,10 @@ import {
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { Accessibility } from 'lucide-vue-next'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
+import NotificationPanel from '@/components/layout/NotificationPanel.vue'
 import Logo from '@/components/layout/Logo.vue'
 import {
   Breadcrumb,
@@ -33,13 +35,29 @@ import {
 import { Separator } from '@/components/uic/separator'
 import { SidebarTrigger } from '@/components/uic/sidebar'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/uic/tooltip'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/uic/popover'
 import { useAccessibility } from '@/composables/useAccessibility'
 import { useBreadcrumb } from '@/composables/useBreadcrumb'
 import { useContextMenu } from '@/composables/useContextMenu'
 import { useDarkMode } from '@/composables/useDarkMode'
 import { useAuthStore } from '@/stores/authStore'
+import { useNotificationStore } from '@/stores/shared/notification'
 
 const { locale, t } = useI18n()
+const notificationStore = useNotificationStore()
+const notifOpen = ref(false)
+
+// Fetch unread count on mount and poll every 60s as fallback
+let unreadPollTimer: ReturnType<typeof setInterval> | null = null
+onMounted(() => {
+  notificationStore.fetchUnreadCount()
+  unreadPollTimer = setInterval(() => {
+    notificationStore.fetchUnreadCount()
+  }, 60_000)
+})
+onUnmounted(() => {
+  if (unreadPollTimer) clearInterval(unreadPollTimer)
+})
 const authStore = useAuthStore()
 const router = useRouter()
 const route = useRoute()
@@ -228,22 +246,31 @@ function openProfileCtx(event: MouseEvent) {
           </TooltipContent>
         </Tooltip>
         <!-- Notifications -->
-        <Tooltip>
-          <TooltipTrigger as-child>
+        <Popover v-model:open="notifOpen">
+          <PopoverTrigger as-child>
             <Btn
               variant="ghost"
               size="icon"
               class="h-8 w-8 text-muted-foreground hover:text-foreground relative"
+              :aria-label="t('common.notifications', 'Notifications')"
             >
               <HugeiconsIcon :icon="Notification03Icon" :size="15" />
+              <span
+                v-if="notificationStore.unreadCount > 0"
+                class="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold leading-none ring-2 ring-background"
+              >
+                {{ notificationStore.unreadCount > 99 ? '99+' : notificationStore.unreadCount }}
+              </span>
             </Btn>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" :side-offset="4">
-            <p class="text-xs">
-              {{ t('common.notifications', 'Notifications') }}
-            </p>
-          </TooltipContent>
-        </Tooltip>
+          </PopoverTrigger>
+          <PopoverContent
+            align="end"
+            :side-offset="8"
+            class="w-[400px] !p-0 !rounded-[20px] border border-border bg-card shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] overflow-hidden"
+          >
+            <NotificationPanel @close="notifOpen = false" />
+          </PopoverContent>
+        </Popover>
       </TooltipProvider>
       <Separator orientation="vertical" class="mx-1 data-[orientation=vertical]:h-4" />
       <!-- Profile dropdown -->

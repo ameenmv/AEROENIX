@@ -9,7 +9,7 @@ import { Button as Btn } from '@/components/uic/button'
 import DataTableHeader from './DataTableHeader.vue'
 import DataTableRow from './DataTableRow.vue'
 import FilterSheet from './FilterSheet.vue'
-import { Skeleton } from '@/components/uic/skeleton'
+import TablePagination from './TablePagination.vue'
 
 const props = defineProps<{
   columns?: {
@@ -110,6 +110,33 @@ const filterStore = useFilterStore()
 const localSearchQuery = ref('')
 const localPerPage = ref(props.perPage || 10)
 const localPage = ref(props.page || 1)
+
+// ── Skeleton timeout: stop showing skeletons after 15s to avoid infinite loading ──
+const loadingTimedOut = ref(false)
+let loadingTimer: ReturnType<typeof setTimeout> | null = null
+watch(
+  () => props.loading,
+  (isLoading) => {
+    if (isLoading) {
+      loadingTimedOut.value = false
+      loadingTimer = setTimeout(() => {
+        loadingTimedOut.value = true
+      }, 15_000)
+    }
+    else {
+      loadingTimedOut.value = false
+      if (loadingTimer) {
+        clearTimeout(loadingTimer)
+        loadingTimer = null
+      }
+    }
+  },
+  { immediate: true },
+)
+onUnmounted(() => {
+  if (loadingTimer) clearTimeout(loadingTimer)
+})
+const showSkeleton = computed(() => props.loading && !loadingTimedOut.value)
 watch(
   () => props.page,
   (val) => {
@@ -349,12 +376,6 @@ const filteredData = computed(() => {
   }
   return result
 })
-const totalPages = computed(() => {
-  if (props.serverSide) {
-    return Math.ceil((props.totalItems || 0) / localPerPage.value)
-  }
-  return Math.ceil(filteredData.value.length / localPerPage.value)
-})
 const paginatedData = computed(() => {
   if (props.serverSide)
     return props.data as Record<string, unknown>[]
@@ -368,18 +389,7 @@ const perPageOptions = [
   { value: 25, label: '25' },
   { value: 50, label: '50' },
 ]
-const showingStart = computed(() => {
-  if (props.serverSide) {
-    return (localPage.value - 1) * localPerPage.value + 1
-  }
-  return (localPage.value - 1) * localPerPage.value + 1
-})
-const showingEnd = computed(() => {
-  if (props.serverSide) {
-    return Math.min(localPage.value * localPerPage.value, props.totalItems || 0)
-  }
-  return Math.min(localPage.value * localPerPage.value, filteredData.value.length)
-})
+
 const totalEntries = computed(() => {
   if (props.serverSide)
     return props.totalItems || 0
@@ -1128,7 +1138,7 @@ function handleTableContextMenu(event: MouseEvent) {
                   @contextmenu="handleTableContextMenu"
                   :class="{ 'separated-records-body': props.separatedRecords }"
                 >
-                  <template v-if="loading">
+                  <template v-if="showSkeleton">
                     <TableRow
                       v-for="i in localPerPage || 5"
                       :key="`skeleton-${i}`"
@@ -1141,13 +1151,17 @@ function handleTableContextMenu(event: MouseEvent) {
                       :style="{ animationDelay: `${(i - 1) * 75}ms` }"
                     >
                       <TableCell v-if="props.dragAndDrop?.enabled" class="px-2 py-3 w-10">
-                        <Skeleton class="h-5 w-5 rounded-md mx-auto" />
+                        <div
+                          class="h-5 w-5 bg-muted/70 dark:bg-slate-700/60 rounded-[4px] skeleton-shimmer mx-auto"
+                        />
                       </TableCell>
                       <TableCell
                         v-if="props.tableEnhancements?.rowSelection"
                         class="px-2 py-3 text-center w-12"
                       >
-                        <Skeleton class="h-4 w-4 rounded-md mx-auto" />
+                        <div
+                          class="h-4 w-4 bg-muted/70 dark:bg-slate-700/60 rounded-[4px] skeleton-shimmer mx-auto"
+                        />
                       </TableCell>
                       <template v-if="actualColumns.length > 0">
                         <TableCell
@@ -1155,25 +1169,29 @@ function handleTableContextMenu(event: MouseEvent) {
                           :key="`sk-col-${col.key}`"
                           class="px-3 py-3"
                         >
-                          <Skeleton
-                          class="h-4 mx-auto rounded-full"
-                          :class="[
-                            colIdx === 0
-                              ? 'w-1/2'
-                              : colIdx === actualColumns.length - 1
-                                ? 'w-8 h-8 rounded-full'
-                                : 'w-3/4',
-                          ]"
-                        />
+                          <div
+                            class="h-3.5 bg-muted/70 dark:bg-slate-700/60 rounded-full mx-auto skeleton-shimmer"
+                            :class="[
+                              colIdx === 0
+                                ? 'w-1/2'
+                                : colIdx === actualColumns.length - 1
+                                  ? 'w-8 h-8 rounded-full'
+                                  : 'w-3/4',
+                            ]"
+                          />
                         </TableCell>
                       </template>
                       <template v-else>
                         <TableCell v-for="j in 3" :key="`sk-gen-${j}`" class="px-3 py-3">
-                          <Skeleton class="h-4 w-3/4 rounded-full mx-auto" />
+                          <div
+                            class="h-3.5 bg-muted/70 dark:bg-slate-700/60 rounded-full w-3/4 mx-auto skeleton-shimmer"
+                          />
                         </TableCell>
                       </template>
                       <TableCell v-if="$slots.actions" class="px-3 py-3">
-                        <Skeleton class="h-8 w-8 rounded-full mx-auto" />
+                        <div
+                          class="h-8 w-8 bg-muted/70 dark:bg-slate-700/60 rounded-full mx-auto skeleton-shimmer"
+                        />
                       </TableCell>
                     </TableRow>
                   </template>
@@ -1341,83 +1359,15 @@ function handleTableContextMenu(event: MouseEvent) {
             </div>
           </div>
           <!-- Pagination inside the card -->
-          <div
-            v-if="totalEntries > 0"
-            class="flex flex-col md:flex-row items-center justify-between gap-4 px-4 md:px-6 py-[16px] bg-card mt-auto border-t border-border"
-          >
-            <span
-              class="text-[11.6px] font-bold text-muted-foreground tracking-[1.16px] text-center md:text-start w-full md:w-auto"
-            >
-              {{
-                t('common.showing_info', {
-                  start: showingStart,
-                  end: showingEnd,
-                  total: totalEntries,
-                })
-              }}
-            </span>
-            <div
-              class="flex flex-col sm:flex-row items-center justify-center md:justify-end gap-4 sm:gap-6 w-full md:w-auto"
-            >
-              <div class="flex items-center gap-2">
-                <SelectField
-                  :model-value="localPerPage"
-                  :options="perPageOptions"
-                  variant="default"
-                  size="sm"
-                  class="w-[60px]"
-                  @update:model-value="handlePerPageChange(Number($event))"
-                />
-                <span class="text-[12px] text-muted-foreground whitespace-nowrap font-medium">{{
-                  t('common.entries_per_page')
-                }}</span>
-              </div>
-              <div v-if="totalPages > 1" class="flex flex-wrap items-center justify-center gap-2">
-                <Button
-                  variant="none"
-                  size="none"
-                  class="flex items-center justify-center px-[12.6px] py-[6.3px] border border-border rounded-[8.4px] text-foreground/70 transition-colors hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed text-[14.7px] font-bold gap-1"
-                  :disabled="localPage === 1"
-                  @click="handlePageChange(localPage - 1)"
-                >
-                  {{ t('common.previous', 'Previous') }}
-                </Button>
-                <div class="flex items-center gap-1 mx-0 sm:mx-2 flex-wrap justify-center">
-                  <template v-for="p in totalPages" :key="p">
-                    <Button
-                      v-if="
-                        p === 1 || p === totalPages || (p >= localPage - 1 && p <= localPage + 1)
-                      "
-                      variant="none"
-                      size="none"
-                      class="w-8 h-8 flex items-center justify-center rounded-md text-[14px] transition-colors"
-                      :class="
-                        localPage === p
-                          ? 'bg-seen-blue-3050 text-white font-bold shadow-sm'
-                          : 'text-muted-foreground hover:bg-muted font-semibold'
-                      "
-                      @click="handlePageChange(p)"
-                    >
-                      {{ p }}
-                    </Button>
-                    <span
-                      v-else-if="p === localPage - 2 || p === localPage + 2"
-                      class="text-muted-foreground leading-none"
-                    >...</span>
-                  </template>
-                </div>
-                <Button
-                  variant="none"
-                  size="none"
-                  class="flex items-center justify-center px-[12.6px] py-[6.3px] border border-border rounded-[8.4px] text-foreground/70 transition-colors hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed text-[14.7px] font-bold gap-1"
-                  :disabled="localPage === totalPages"
-                  @click="handlePageChange(localPage + 1)"
-                >
-                  {{ t('common.next', 'Next') }}
-                </Button>
-              </div>
-            </div>
-          </div>
+          <TablePagination
+            :page="localPage"
+            :per-page="localPerPage"
+            :total-items="totalEntries"
+            :per-page-options="perPageOptions"
+            class="bg-card mt-auto border-t border-border"
+            @update:page="handlePageChange"
+            @update:per-page="handlePerPageChange"
+          />
         </div>
       </template>
       <!-- Default variant: original structure -->
@@ -1521,7 +1471,7 @@ function handleTableContextMenu(event: MouseEvent) {
                 @contextmenu="handleTableContextMenu"
                 :class="{ 'separated-records-body': props.separatedRecords }"
               >
-                <template v-if="loading">
+                <template v-if="showSkeleton">
                   <TableRow
                     v-for="i in localPerPage || 5"
                     :key="`skeleton-${i}`"
@@ -1534,13 +1484,17 @@ function handleTableContextMenu(event: MouseEvent) {
                     :style="{ animationDelay: `${(i - 1) * 75}ms` }"
                   >
                     <TableCell v-if="props.dragAndDrop?.enabled" class="px-2 py-3 w-10">
-                      <Skeleton class="h-5 w-5 rounded-md mx-auto" />
+                      <div
+                        class="h-5 w-5 bg-muted/70 dark:bg-slate-700/60 rounded-[4px] skeleton-shimmer mx-auto"
+                      />
                     </TableCell>
                     <TableCell
                       v-if="props.tableEnhancements?.rowSelection"
                       class="px-2 py-3 text-center w-12"
                     >
-                      <Skeleton class="h-4 w-4 rounded-md mx-auto" />
+                      <div
+                        class="h-4 w-4 bg-muted/70 dark:bg-slate-700/60 rounded-[4px] skeleton-shimmer mx-auto"
+                      />
                     </TableCell>
                     <template v-if="actualColumns.length > 0">
                       <TableCell
@@ -1548,8 +1502,8 @@ function handleTableContextMenu(event: MouseEvent) {
                         :key="`sk-col-${col.key}`"
                         class="px-3 py-3"
                       >
-                        <Skeleton
-                          class="h-4 mx-auto rounded-full"
+                        <div
+                          class="h-3.5 bg-muted/70 dark:bg-slate-700/60 rounded-full mx-auto skeleton-shimmer"
                           :class="[
                             colIdx === 0
                               ? 'w-1/2'
@@ -1562,11 +1516,15 @@ function handleTableContextMenu(event: MouseEvent) {
                     </template>
                     <template v-else>
                       <TableCell v-for="j in 3" :key="`sk-gen-${j}`" class="px-3 py-3">
-                        <Skeleton class="h-4 w-3/4 rounded-full mx-auto" />
+                        <div
+                          class="h-3.5 bg-muted/70 dark:bg-slate-700/60 rounded-full w-3/4 mx-auto skeleton-shimmer"
+                        />
                       </TableCell>
                     </template>
                     <TableCell v-if="$slots.actions" class="px-3 py-3">
-                      <Skeleton class="h-8 w-8 rounded-full mx-auto" />
+                      <div
+                        class="h-8 w-8 bg-muted/70 dark:bg-slate-700/60 rounded-full mx-auto skeleton-shimmer"
+                      />
                     </TableCell>
                   </TableRow>
                 </template>
@@ -1745,81 +1703,15 @@ function handleTableContextMenu(event: MouseEvent) {
           </div>
         </div>
         <!-- Footer Pagination -->
-        <div
-          v-if="totalEntries > 0"
-          class="flex flex-col md:flex-row items-center justify-between gap-4 px-4 md:px-6 py-[16px] bg-card mt-auto border-t-0"
-        >
-          <span
-            class="text-[11.6px] font-bold text-muted-foreground tracking-[1.16px] text-center md:text-start w-full md:w-auto"
-          >
-            {{
-              t('common.showing_info', {
-                start: showingStart,
-                end: showingEnd,
-                total: totalEntries,
-              })
-            }}
-          </span>
-          <div
-            class="flex flex-col sm:flex-row items-center justify-center md:justify-end gap-4 sm:gap-6 w-full md:w-auto"
-          >
-            <div class="flex items-center gap-2">
-              <SelectField
-                :model-value="localPerPage"
-                :options="perPageOptions"
-                variant="default"
-                size="sm"
-                class="w-[60px]"
-                @update:model-value="handlePerPageChange(Number($event))"
-              />
-              <span class="text-[12px] text-muted-foreground whitespace-nowrap font-medium">{{
-                t('common.entries_per_page')
-              }}</span>
-            </div>
-            <div v-if="totalPages > 1" class="flex flex-wrap items-center justify-center gap-2">
-              <Button
-                variant="none"
-                size="none"
-                class="flex items-center justify-center px-[12.6px] py-[6.3px] border border-border rounded-[8.4px] text-foreground/70 transition-colors hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed text-[14.7px] font-bold gap-1"
-                :disabled="localPage === 1"
-                @click="handlePageChange(localPage - 1)"
-              >
-                {{ t('common.previous', 'Previous') }}
-              </Button>
-              <div class="flex items-center gap-1 mx-0 sm:mx-2 flex-wrap justify-center">
-                <template v-for="p in totalPages" :key="p">
-                  <Button
-                    v-if="p === 1 || p === totalPages || (p >= localPage - 1 && p <= localPage + 1)"
-                    variant="none"
-                    size="none"
-                    class="w-8 h-8 flex items-center justify-center rounded-md text-[14px] transition-colors"
-                    :class="
-                      localPage === p
-                        ? 'bg-seen-blue-3050 text-white font-bold shadow-sm'
-                        : 'text-muted-foreground hover:bg-muted font-semibold'
-                    "
-                    @click="handlePageChange(p)"
-                  >
-                    {{ p }}
-                  </Button>
-                  <span
-                    v-else-if="p === localPage - 2 || p === localPage + 2"
-                    class="text-muted-foreground leading-none"
-                  >...</span>
-                </template>
-              </div>
-              <Button
-                variant="none"
-                size="none"
-                class="flex items-center justify-center px-[12.6px] py-[6.3px] border border-border rounded-[8.4px] text-foreground/70 transition-colors hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed text-[14.7px] font-bold gap-1"
-                :disabled="localPage === totalPages"
-                @click="handlePageChange(localPage + 1)"
-              >
-                {{ t('common.next', 'Next') }}
-              </Button>
-            </div>
-          </div>
-        </div>
+        <TablePagination
+          :page="localPage"
+          :per-page="localPerPage"
+          :total-items="totalEntries"
+          :per-page-options="perPageOptions"
+          class="bg-card mt-auto border-t-0"
+          @update:page="handlePageChange"
+          @update:per-page="handlePerPageChange"
+        />
       </template>
     </div>
   </div>
@@ -2007,39 +1899,6 @@ function handleTableContextMenu(event: MouseEvent) {
   margin: 0 !important;
   background: transparent !important;
 }
-/* Skeleton shimmer animation */
-.skeleton-shimmer {
-  position: relative;
-  overflow: hidden;
-}
-.skeleton-shimmer::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.25) 50%,
-    transparent 100%
-  );
-  animation: shimmer 1.8s ease-in-out infinite;
-}
-.dark .skeleton-shimmer::after {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.06) 50%,
-    transparent 100%
-  );
-}
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
 /* ===== Empty State ===== */
 /* In separated-records mode, tbody is display:flex — we need the empty row to span full width */
 .separated-records-wrapper :deep(.dt-empty-row) {
@@ -2149,6 +2008,39 @@ function handleTableContextMenu(event: MouseEvent) {
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+/* Skeleton shimmer animation */
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.skeleton-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    transparent 100%
+  );
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+:global(.dark) .skeleton-shimmer::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 100%
+  );
+}
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
   }
 }
 </style>

@@ -1,10 +1,19 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import Navbar from '@/components/layout/Navbar.vue'
 import ContextMenuPortal from '@/components/ui/ContextMenuPortal.vue'
 import { AccessibilityBar } from '@/components/uic/accessibility-bar'
 import { SidebarInset, SidebarProvider } from '@/components/uic/sidebar'
+import { useNotificationListener } from '@/composables/notifications/useNotificationListener'
+
+// Initialize real-time notification listener
+const { subscribe } = useNotificationListener()
+onMounted(() => {
+  subscribe()
+})
 </script>
+
 
 <template>
   <SidebarProvider>

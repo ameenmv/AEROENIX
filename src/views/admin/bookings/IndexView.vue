@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useQuery } from '@tanstack/vue-query'
 import {
   Calendar01Icon,
-  Search01Icon,
   EyeIcon,
   MoreVerticalIcon,
   NoteIcon,
@@ -14,20 +12,16 @@ import { HugeiconsIcon } from '@hugeicons/vue'
 
 import { bookingsService } from '@/services/bookingsService'
 
+import { useTable } from '@/composables/shared/useTable'
 
 import { Button } from '@/components/uic/button'
 import { DataTable } from '@/components/ui/tables'
-import { Input } from '@/components/uic/input'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/uic/dropdown-menu'
-
-
-
-import { refDebounced } from '@vueuse/core'
 
 const { t } = useI18n()
   
@@ -41,17 +35,31 @@ const columns = [
 ]
 const router = useRouter()
 
-const search = ref('')
-const debouncedSearch = refDebounced(search, 500)
-const filters = ref<Record<string, unknown>>({ status: null })
+const statusFilter = ref<string | null>(null)
 
-const { data, isLoading } = useQuery({
-  queryKey: ['bookings', debouncedSearch, filters],
-  queryFn: () => bookingsService.list({ 
-    search: debouncedSearch.value, 
-    status: filters.value.status as string,
-    limit: 50 
-  }),
+const table = useTable({
+  resourceName: 'bookings',
+  fetchFn: async (params: any) => {
+    try {
+      const result = await bookingsService.list({
+        page: params.page,
+        limit: params.limit || params.perPage,
+        search: params.search,
+        status: statusFilter.value || undefined,
+      })
+      return { data: result.data, total: result.pagination.total }
+    }
+    catch {
+      return { data: [], total: 0 }
+    }
+  },
+  defaultPerPage: 10,
+  watchKeys: [statusFilter],
+})
+
+// Reset page to 1 when status filter changes
+watch(statusFilter, () => {
+  table.goToPage(1)
 })
 
 const getStatusColor = (status: string) => {
@@ -72,32 +80,40 @@ const getStatusColor = (status: string) => {
       </div>
     </div>
 
-    <!-- Filters and Search -->
-    <div class="flex flex-col sm:flex-row gap-4 justify-between items-center bg-card p-4 rounded-xl border border-border/50">
-      <div class="relative w-full sm:max-w-xs">
-        <HugeiconsIcon :icon="Search01Icon" :size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-        <Input v-model="search" :placeholder="t('bookings.search', 'Search bookings...')" class="pl-9 w-full bg-background" />
-      </div>
-      
-      <div class="flex items-center gap-2 w-full sm:w-auto">
-        <!-- Simple Status Filter -->
-        <select v-model="filters.status" class="h-10 px-3 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring">
-          <option :value="null">{{ t('bookings.all_statuses', 'All Statuses') }}</option>
-          <option value="pending">{{ t('bookings.pending', 'Pending') }}</option>
-          <option value="confirmed">{{ t('bookings.confirmed', 'Confirmed') }}</option>
-          <option value="rejected">{{ t('bookings.rejected', 'Rejected') }}</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Data Table -->
+    <!-- Data Table with built-in search + pagination -->
     <div class="mt-4">
       <DataTable
-        :data="(data?.data || []) as any[]"
+        :data="table.items.value as any[]"
         :columns="columns"
-        :loading="isLoading"
+        :loading="table.loading.value"
+        :total-items="table.totalItems.value"
+        :page="table.page.value"
+        :per-page="table.perPage.value"
+        server-side
+        searchable
+        modern-search
         transparent-container
         separated-records
+        :filter-config="{
+          resource: 'bookings',
+          fields: [
+            {
+              key: 'status',
+              label: 'bookings.status',
+              type: 'select',
+              options: [
+                { value: 'pending', label: 'bookings.pending' },
+                { value: 'confirmed', label: 'bookings.confirmed' },
+                { value: 'rejected', label: 'bookings.rejected' },
+              ],
+            },
+          ],
+        }"
+        @update:page="table.goToPage"
+        @update:per-page="table.setPerPage"
+        @update:search="table.setSearchQuery"
+        @update:filters="(f: any) => { statusFilter = f.status || null }"
+        @sort="table.setSorting"
       >
         <template #booking_reference="{ row, value }">
           <div class="cursor-pointer" @click="router.push({ name: 'admin-bookings-show', params: { id: (row as any).id } })">

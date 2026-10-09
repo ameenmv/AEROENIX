@@ -38,6 +38,7 @@ export interface UseTableReturn<T> {
   rawItems: ComputedRef<T[]>
   totalItems: ComputedRef<number>
   loading: ComputedRef<boolean>
+  isFetching: ComputedRef<boolean>
   error: ComputedRef<Error | null>
   forbidden: ComputedRef<boolean>
   // Pagination

@@ -97,6 +97,8 @@ function confirmDelete() {
         :data="roles as any[]"
         :columns="columns"
         :loading="isLoading || isFetching"
+        :total-items="roles.length"
+        :per-page="10"
         searchable
         modern-search
         transparent-container

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useQuery } from '@tanstack/vue-query'
 import {
@@ -12,13 +12,23 @@ import { HugeiconsIcon } from '@hugeicons/vue'
 
 import { staffQnaService } from '@/services/staffQnaService'
 import { Input } from '@/components/uic/input'
+import { Button } from '@/components/uic/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/uic/select'
 
 const { t } = useI18n()
 const search = ref('')
+const currentPage = ref(1)
+const perPage = ref('10')
 
 const { data: qnaPairs, isLoading } = useQuery({
   queryKey: ['staff-qna'],
-  queryFn: () => staffQnaService.list({ limit: 100 }),
+  queryFn: () => staffQnaService.list({ limit: 500 }),
 })
 
 const filteredQnaPairs = computed(() => {
@@ -30,6 +40,24 @@ const filteredQnaPairs = computed(() => {
     pair.answer.toLowerCase().includes(query)
   )
 })
+
+// Reset page on search/filter change
+watch([search, perPage], () => {
+  currentPage.value = 1
+})
+
+const totalItems = computed(() => filteredQnaPairs.value.length)
+const totalPages = computed(() => Math.ceil(totalItems.value / Number(perPage.value)))
+const paginatedQnaPairs = computed(() => {
+  const start = (currentPage.value - 1) * Number(perPage.value)
+  const end = start + Number(perPage.value)
+  return filteredQnaPairs.value.slice(start, end)
+})
+
+function goToPage(page: number) {
+  if (page < 1 || page > totalPages.value) return
+  currentPage.value = page
+}
 
 </script>
 
@@ -62,8 +90,8 @@ const filteredQnaPairs = computed(() => {
     </div>
 
     <!-- QnA Grid -->
-    <div v-else-if="filteredQnaPairs.length > 0" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <template v-for="(pair, index) in filteredQnaPairs" :key="index">
+    <div v-else-if="paginatedQnaPairs.length > 0" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <template v-for="(pair, index) in paginatedQnaPairs" :key="index">
         <div class="bg-card rounded-xl border border-border overflow-hidden hover:border-primary/50 transition-colors shadow-sm">
           
           <!-- Question -->
@@ -98,6 +126,79 @@ const filteredQnaPairs = computed(() => {
 
         </div>
       </template>
+    </div>
+
+    <!-- Pagination -->
+    <div
+      v-if="!isLoading && totalItems > 0"
+      class="flex items-center justify-between mt-2 px-1 flex-wrap gap-4"
+    >
+      <div class="flex items-center gap-4">
+        <p class="text-xs text-muted-foreground/50">
+          {{ t('common.page_info', `Page ${currentPage} of ${totalPages}`) }}
+          <span class="hidden sm:inline">
+            · {{ totalItems }} {{ t('common.total_entries', 'total entries') }}
+          </span>
+        </p>
+        <div class="hidden sm:flex items-center gap-2">
+          <span class="text-xs text-muted-foreground/50">{{ t('common.per_page', 'Per page') }}</span>
+          <Select v-model="perPage">
+            <SelectTrigger class="w-[70px] h-8 text-xs bg-card border-border/30 rounded-lg">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="10">10</SelectItem>
+              <SelectItem value="20">20</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div v-if="totalPages > 1" class="flex items-center gap-1.5">
+        <Button
+          variant="outline"
+          size="sm"
+          class="h-9 px-3 rounded-xl text-xs border-border/30 hover:bg-white/[0.04]"
+          :disabled="currentPage <= 1"
+          @click="goToPage(currentPage - 1)"
+        >
+          {{ t('actions.previous', 'Previous') }}
+        </Button>
+
+        <template v-for="page in totalPages" :key="page">
+          <Button
+            v-if="page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1"
+            :variant="page === currentPage ? 'default' : 'outline'"
+            size="sm"
+            class="h-9 w-9 rounded-xl text-xs"
+            :class="page === currentPage
+              ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20'
+              : 'border-border/30 hover:bg-white/[0.04]'"
+            @click="goToPage(page)"
+          >
+            {{ page }}
+          </Button>
+          <span
+            v-else-if="page === 2 && currentPage > 3"
+            class="text-muted-foreground/40 text-xs px-1"
+          >…</span>
+          <span
+            v-else-if="page === totalPages - 1 && currentPage < totalPages - 2"
+            class="text-muted-foreground/40 text-xs px-1"
+          >…</span>
+        </template>
+
+        <Button
+          variant="outline"
+          size="sm"
+          class="h-9 px-3 rounded-xl text-xs border-border/30 hover:bg-white/[0.04]"
+          :disabled="currentPage >= totalPages"
+          @click="goToPage(currentPage + 1)"
+        >
+          {{ t('actions.next', 'Next') }}
+        </Button>
+      </div>
     </div>
 
     <!-- Empty Search State -->

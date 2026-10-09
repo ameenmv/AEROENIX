@@ -60,7 +60,14 @@ const routes = [
     component: () => import('../views/admin/DashboardView.vue'),
     meta: { breadcrumbKey: 'menu.home' },
   },
+  {
+    path: 'admin/notification-center',
+    name: 'admin-notification-center',
+    component: () => import('../views/admin/notifications/NotificationCenterView.vue'),
+    meta: { breadcrumbKey: 'common.notifications' },
+  },
 ]
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [

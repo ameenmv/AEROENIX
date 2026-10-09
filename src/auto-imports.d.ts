@@ -96,6 +96,7 @@ declare global {
   const useModel: typeof import('vue').useModel
   const useMouse: typeof import('@vueuse/core').useMouse
   const useMyFetch: typeof import('@vueuse/core').useFetch
+  const useNotificationListener: typeof import('./composables/notifications/useNotificationListener').useNotificationListener
   const useNotificationStore: typeof import('./stores/shared/notification').useNotificationStore
   const useNotifications: typeof import('./composables/notifications/useNotifications').useNotifications
   const usePageHeader: typeof import('./composables/shared/usePageHeader').usePageHeader
@@ -154,9 +155,6 @@ declare global {
   // @ts-ignore
   export type { DashboardPOV } from './stores/shared/dashboard'
   import('./stores/shared/dashboard')
-  // @ts-ignore
-  export type { NotificationItem } from './stores/shared/notification'
-  import('./stores/shared/notification')
   // @ts-ignore
   export type { SonarType, SonarMessage } from './stores/shared/sonar'
   import('./stores/shared/sonar')

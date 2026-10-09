@@ -157,7 +157,8 @@ export function useTable<T = unknown>(options: UseTableOptions<T>): UseTableRetu
   const totalItems = computed(
     () => (listQuery.data.value as any)?.meta?.total || (listQuery.data.value as any)?.total || 0,
   )
-  const loading = computed(() => listQuery.isLoading.value)
+  const loading = computed(() => listQuery.isLoading.value && !listQuery.error.value)
+  const isFetching = computed(() => listQuery.isFetching.value)
   const error = computed(() => listQuery.error.value)
   const forbidden = computed(() => {
     const err = listQuery.error.value as any
@@ -259,6 +260,7 @@ export function useTable<T = unknown>(options: UseTableOptions<T>): UseTableRetu
     rawItems,
     totalItems,
     loading,
+    isFetching,
     error,
     forbidden,
     // Pagination

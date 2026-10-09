@@ -20,12 +20,18 @@ let echoInstance: Echo<'reverb'> | null = null
  * Returns null if VITE_REVERB_APP_KEY is not configured.
  */
 export function getEcho(): Echo<'reverb'> | null {
+  // Gate: skip if explicitly disabled
+  const reverbEnabled = import.meta.env.VITE_REVERB_ENABLED
+  if (reverbEnabled === 'false' || reverbEnabled === '0') {
+    return null
+  }
+
   const appKey = import.meta.env.VITE_REVERB_APP_KEY
 
   if (!appKey) {
-    console.warn('[Echo] VITE_REVERB_APP_KEY is not set — real-time disabled.')
     return null
   }
+
 
   if (!echoInstance) {
     echoInstance = new Echo({
