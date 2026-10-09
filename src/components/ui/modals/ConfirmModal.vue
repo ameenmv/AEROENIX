@@ -48,8 +48,6 @@ async function handleConfirm() {
     emit('confirm')
   }
   finally {
-    // Loading state will be cleared when the parent calls cancel() which closes the modal
-    // We add a safety timeout in case the parent forgets
     setTimeout(() => {
       loading.value = false
     }, 10000)
@@ -67,16 +65,19 @@ watch(() => props.show, (newVal) => {
 
 <template>
   <AlertDialog :open="show" @update:open="handleOpenChange">
-    <AlertDialogContent class="rounded-[16px]">
+    <AlertDialogContent class="cm-content">
       <AlertDialogHeader>
-        <AlertDialogTitle>{{ title }}</AlertDialogTitle>
-        <AlertDialogDescription class="text-muted-foreground">
+        <AlertDialogTitle class="cm-title">
+          {{ title }}
+        </AlertDialogTitle>
+        <AlertDialogDescription class="cm-desc">
           {{ message }}
         </AlertDialogDescription>
       </AlertDialogHeader>
-      <AlertDialogFooter>
+      <AlertDialogFooter class="cm-footer">
         <Button
-          variant="outline"
+          variant="ghost"
+          class="cm-btn-cancel"
           :disabled="loading"
           @click="emit('cancel')"
         >
@@ -84,6 +85,7 @@ watch(() => props.show, (newVal) => {
         </Button>
         <Button
           :variant="props.variant === 'default' ? 'default' : 'destructive'"
+          class="cm-btn-confirm"
           :disabled="loading"
           :class="props.variant === 'default' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : ''"
           @click="handleConfirm"
@@ -95,3 +97,53 @@ watch(() => props.show, (newVal) => {
     </AlertDialogContent>
   </AlertDialog>
 </template>
+
+<style scoped>
+.cm-content {
+  border-radius: 16px !important;
+  padding: 20px 24px !important;
+  max-width: 420px;
+}
+
+.cm-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.cm-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+  margin-top: 4px;
+}
+
+.cm-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 0;
+}
+
+.cm-btn-cancel {
+  border-radius: 10px !important;
+  font-weight: 600;
+  font-size: 13px;
+  height: 36px;
+  padding: 0 16px;
+  color: hsl(var(--muted-foreground));
+}
+.cm-btn-cancel:hover {
+  color: hsl(var(--foreground));
+}
+
+.cm-btn-confirm {
+  border-radius: 10px !important;
+  font-weight: 600;
+  font-size: 13px;
+  height: 36px;
+  padding: 0 20px;
+}
+</style>
