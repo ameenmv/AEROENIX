@@ -55,25 +55,35 @@ export function useNotificationListener() {
         || (user as any).hotel_id
         || (user as any).hotels?.[0]?.id
 
+      console.log('[NotificationListener] 👤 User ID:', userId, '| Hotel ID:', hotelId)
+
       // 1. User-specific channel (always subscribe)
       const userChannel = `user.${userId}.notifications`
+      console.log('[NotificationListener] 📡 Subscribing to private channel:', userChannel)
       echo.private(userChannel)
-        .listen('.notification.received', handleIncoming)
+        .listen('.notification.received', (event: any) => {
+          console.log('[NotificationListener] 🔔 EVENT received on', userChannel, ':', event)
+          handleIncoming(event)
+        })
       subscribedChannels.push(userChannel)
 
       // 2. Hotel+user scoped channel (if hotel ID is available)
       if (hotelId) {
         const hotelUserChannel = `hotel.${hotelId}.user.${userId}.notifications`
+        console.log('[NotificationListener] 📡 Subscribing to private channel:', hotelUserChannel)
         echo.private(hotelUserChannel)
-          .listen('.notification.received', handleIncoming)
+          .listen('.notification.received', (event: any) => {
+            console.log('[NotificationListener] 🔔 EVENT received on', hotelUserChannel, ':', event)
+            handleIncoming(event)
+          })
         subscribedChannels.push(hotelUserChannel)
       }
 
       isListening.value = true
-      console.info(`[NotificationListener] Subscribed to ${subscribedChannels.length} channel(s).`)
+      console.log(`[NotificationListener] ✅ Subscribed to ${subscribedChannels.length} channel(s):`, subscribedChannels)
     }
     catch (err) {
-      console.info('[NotificationListener] WebSocket connection unavailable — falling back to polling.', err)
+      console.error('[NotificationListener] ❌ Subscription error:', err)
     }
   }
 
@@ -81,13 +91,21 @@ export function useNotificationListener() {
    * Handle incoming real-time notification.
    */
   function handleIncoming(event: { notification: PlatformNotification }) {
-    if (!event?.notification) return
+    console.log('[NotificationListener] 📨 handleIncoming called with:', JSON.stringify(event, null, 2))
+
+    if (!event?.notification) {
+      console.warn('[NotificationListener] ⚠️ Event has no notification payload:', event)
+      return
+    }
+
+    console.log('[NotificationListener] ✅ Adding notification to store:', event.notification.title)
 
     // Add to store (deduplication is handled inside the store)
     notifStore.addRealtimeNotification(event.notification)
 
     // Play sound if enabled
     if (notifStore.settings?.sound_enabled !== false) {
+      console.log('[NotificationListener] 🔊 Playing notification sound')
       playNotificationSound()
     }
   }
