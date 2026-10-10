@@ -313,11 +313,11 @@ function openProfileCtx(event: MouseEvent) {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem class="gap-2 cursor-pointer">
+          <DropdownMenuItem class="gap-2 cursor-pointer" @click="router.push(`/${locale}/admin/settings?tab=profile`)">
             <HugeiconsIcon :icon="UserCircleIcon" :size="14" />
             {{ t('menu.profile', 'Profile') }}
           </DropdownMenuItem>
-          <DropdownMenuItem class="gap-2 cursor-pointer">
+          <DropdownMenuItem class="gap-2 cursor-pointer" @click="router.push(`/${locale}/admin/settings`)">
             <HugeiconsIcon :icon="Settings01Icon" :size="14" />
             {{ t('menu.settings', 'Settings') }}
           </DropdownMenuItem>

@@ -1,21 +1,27 @@
 <script setup lang="ts">
 import type { NotificationCategory, UserNotificationSettings } from '@/types/entities/platformNotification'
-import { Bell, ChevronDown, ChevronUp, Mail, Volume2 } from 'lucide-vue-next'
+import { Bell, ChevronDown, Mail, Volume2 } from 'lucide-vue-next'
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   NOTIFICATION_CATEGORY_META,
   NOTIFICATION_TYPES,
 } from '@/types/entities/platformNotification'
+import { Separator } from '@/components/uic/separator'
+import { Skeleton } from '@/components/uic/skeleton'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/uic/collapsible'
+import { Button } from '@/components/uic/button'
+import SettingsToggle from '@/components/settings/SettingsToggle.vue'
 import { useNotificationStore } from '@/stores/shared/notification'
+import { useSonarStore } from '@/stores/sonar'
 
 const { t, locale } = useI18n()
 const store = useNotificationStore()
+const sonar = useSonarStore()
 
-const isSaving = ref(false)
-const expandedCategory = ref<string | null>(null)
+// Track which toggle is currently saving (by key)
+const savingKey = ref<string | null>(null)
 
-// Categories list for rendering
 const categoriesList = Object.entries(NOTIFICATION_CATEGORY_META).map(([key, meta]) => ({
   key: key as NotificationCategory,
   ...meta,
@@ -32,28 +38,43 @@ function getCategoryEnabled(key: NotificationCategory): boolean {
   return store.settings[settingKey] as boolean
 }
 
-async function toggleCategory(key: NotificationCategory) {
-  if (!store.settings) return
+async function handleCategoryToggle(key: NotificationCategory, val: boolean) {
+  if (!store.settings || savingKey.value) return
   const settingKey = `notify_${key}` as keyof UserNotificationSettings
-  const newValue = !store.settings[settingKey]
-  isSaving.value = true
+  savingKey.value = settingKey
   try {
-    await store.updateSettings({ [settingKey]: newValue })
+    await store.updateSettings({ [settingKey]: val })
+    const label = isArabic()
+      ? categoriesList.find(c => c.key === key)?.labelAr
+      : categoriesList.find(c => c.key === key)?.label
+    sonar.success(
+      val ? t('settings.enabled', 'Enabled') : t('settings.disabled', 'Disabled'),
+      `${label || key} ${val ? t('settings.turned_on', 'turned on') : t('settings.turned_off', 'turned off')}`,
+    )
+  }
+  catch {
+    sonar.error(t('common.error', 'Error'), t('settings.toggle_failed', 'Failed to update setting.'))
   }
   finally {
-    isSaving.value = false
+    savingKey.value = null
   }
 }
 
-async function toggleSetting(key: keyof UserNotificationSettings) {
-  if (!store.settings) return
-  const newValue = !store.settings[key]
-  isSaving.value = true
+async function handleSettingToggle(key: keyof UserNotificationSettings, val: boolean, label: string) {
+  if (!store.settings || savingKey.value) return
+  savingKey.value = key
   try {
-    await store.updateSettings({ [key]: newValue })
+    await store.updateSettings({ [key]: val })
+    sonar.success(
+      val ? t('settings.enabled', 'Enabled') : t('settings.disabled', 'Disabled'),
+      `${label} ${val ? t('settings.turned_on', 'turned on') : t('settings.turned_off', 'turned off')}`,
+    )
+  }
+  catch {
+    sonar.error(t('common.error', 'Error'), t('settings.toggle_failed', 'Failed to update setting.'))
   }
   finally {
-    isSaving.value = false
+    savingKey.value = null
   }
 }
 
@@ -61,27 +82,26 @@ function isTypeDisabled(type: string): boolean {
   return store.settings?.disabled_types?.includes(type) ?? false
 }
 
-async function toggleType(type: string) {
-  if (!store.settings) return
+async function handleTypeToggle(type: string, checked: boolean) {
+  if (!store.settings || savingKey.value) return
   const disabled = [...(store.settings.disabled_types || [])]
-  const idx = disabled.indexOf(type)
-  if (idx >= 0) {
-    disabled.splice(idx, 1)
+  if (checked) {
+    const idx = disabled.indexOf(type)
+    if (idx >= 0) disabled.splice(idx, 1)
   }
   else {
-    disabled.push(type)
+    if (!disabled.includes(type)) disabled.push(type)
   }
-  isSaving.value = true
+  savingKey.value = `type_${type}`
   try {
     await store.updateSettings({ disabled_types: disabled })
   }
-  finally {
-    isSaving.value = false
+  catch {
+    sonar.error(t('common.error', 'Error'), t('settings.toggle_failed', 'Failed to update setting.'))
   }
-}
-
-function toggleExpand(key: string) {
-  expandedCategory.value = expandedCategory.value === key ? null : key
+  finally {
+    savingKey.value = null
+  }
 }
 
 onMounted(() => {
@@ -92,410 +112,247 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="ns-container">
-    <h3 class="text-lg font-bold text-foreground mb-1">
-      {{ t('settings.notification_preferences', 'Notification Preferences') }}
-    </h3>
-    <p class="text-sm text-muted-foreground mb-6">
-      {{ t('settings.notification_preferences_desc', 'Choose which notifications you want to receive and how.') }}
-    </p>
+  <div class="space-y-6 max-w-[720px]">
 
-    <!-- Loading -->
-    <div v-if="!store.settings" class="ns-loading">
-      <div v-for="i in 4" :key="i" class="ns-skeleton-row">
-        <div class="ns-skeleton-icon skeleton-shimmer" />
-        <div class="flex-1 space-y-2">
-          <div class="h-3.5 w-1/3 rounded-full skeleton-shimmer" />
-          <div class="h-2.5 w-2/3 rounded-full skeleton-shimmer" />
-        </div>
-        <div class="h-5 w-10 rounded-full skeleton-shimmer" />
-      </div>
-    </div>
-
-    <template v-else>
-      <!-- Delivery Methods -->
-      <div class="ns-section">
-        <h4 class="ns-section__title">
-          {{ t('settings.delivery_methods', 'Delivery Methods') }}
-        </h4>
-        <div class="ns-delivery-grid">
-          <div class="ns-delivery-card" @click="toggleSetting('in_app_notifications')">
-            <div class="ns-delivery-card__icon" :class="{ 'ns-delivery-card__icon--active': store.settings?.in_app_notifications }">
-              <Bell :size="18" />
-            </div>
-            <div class="ns-delivery-card__text">
-              <span class="ns-delivery-card__label">{{ t('settings.in_app', 'In-App Notifications') }}</span>
-              <span class="ns-delivery-card__desc">{{ t('settings.in_app_desc', 'Show notifications in the bell menu') }}</span>
-            </div>
-            <div class="ns-toggle" :class="{ 'ns-toggle--on': store.settings?.in_app_notifications }" />
+    <!-- Loading Skeleton -->
+    <template v-if="!store.settings">
+      <div class="space-y-4">
+        <div v-for="i in 3" :key="i" class="flex items-center gap-3 p-3 rounded-lg border border-border/40">
+          <Skeleton class="w-9 h-9 rounded-lg" />
+          <div class="flex-1 space-y-1.5">
+            <Skeleton class="h-3.5 w-28" />
+            <Skeleton class="h-2.5 w-48" />
           </div>
-
-          <div class="ns-delivery-card" @click="toggleSetting('email_notifications')">
-            <div class="ns-delivery-card__icon" :class="{ 'ns-delivery-card__icon--active': store.settings?.email_notifications }">
-              <Mail :size="18" />
-            </div>
-            <div class="ns-delivery-card__text">
-              <span class="ns-delivery-card__label">{{ t('settings.email_notifications', 'Email Notifications') }}</span>
-              <span class="ns-delivery-card__desc">{{ t('settings.email_desc', 'Receive email alerts for important events') }}</span>
-            </div>
-            <div class="ns-toggle" :class="{ 'ns-toggle--on': store.settings?.email_notifications }" />
-          </div>
-
-          <div class="ns-delivery-card" @click="toggleSetting('sound_enabled')">
-            <div class="ns-delivery-card__icon" :class="{ 'ns-delivery-card__icon--active': store.settings?.sound_enabled }">
-              <Volume2 :size="18" />
-            </div>
-            <div class="ns-delivery-card__text">
-              <span class="ns-delivery-card__label">{{ t('settings.sound', 'Sound Alerts') }}</span>
-              <span class="ns-delivery-card__desc">{{ t('settings.sound_desc', 'Play a sound when new notifications arrive') }}</span>
-            </div>
-            <div class="ns-toggle" :class="{ 'ns-toggle--on': store.settings?.sound_enabled }" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Category Toggles -->
-      <div class="ns-section">
-        <h4 class="ns-section__title">
-          {{ t('settings.notification_categories', 'Notification Categories') }}
-        </h4>
-        <div class="ns-categories">
-          <div
-            v-for="cat in categoriesList"
-            :key="cat.key"
-            class="ns-cat-card"
-          >
-            <!-- Category header row -->
-            <div class="ns-cat-card__header" @click="toggleCategory(cat.key)">
-              <div
-                class="ns-cat-card__icon"
-                :style="{ backgroundColor: cat.color + '12', color: cat.color }"
-              >
-                <span class="ns-cat-dot" :style="{ background: cat.color }" />
-              </div>
-              <div class="ns-cat-card__text">
-                <span class="ns-cat-card__label">
-                  {{ isArabic() ? cat.labelAr : cat.label }}
-                </span>
-                <span class="ns-cat-card__desc">
-                  {{ cat.description }}
-                </span>
-              </div>
-              <div class="ns-toggle" :class="{ 'ns-toggle--on': getCategoryEnabled(cat.key) }" />
-            </div>
-
-            <!-- Expand/collapse for individual types -->
-            <button
-              v-if="NOTIFICATION_TYPES[cat.key]?.length > 1"
-              class="ns-cat-card__expand"
-              @click="toggleExpand(cat.key)"
-            >
-              <component :is="expandedCategory === cat.key ? ChevronUp : ChevronDown" :size="13" />
-              <span class="text-[11px]">
-                {{ expandedCategory === cat.key
-                  ? t('common.hide_types', 'Hide types')
-                  : t('common.show_types', `Show ${NOTIFICATION_TYPES[cat.key].length} types`)
-                }}
-              </span>
-            </button>
-
-            <!-- Fine-grained type toggles -->
-            <div
-              v-if="expandedCategory === cat.key && NOTIFICATION_TYPES[cat.key]"
-              class="ns-types"
-            >
-              <div
-                v-for="typeItem in NOTIFICATION_TYPES[cat.key]"
-                :key="typeItem.type"
-                class="ns-type-row"
-                @click="toggleType(typeItem.type)"
-              >
-                <div class="ns-type-row__text">
-                  <span class="ns-type-row__name">
-                    {{ isArabic() ? typeItem.nameAr : typeItem.name }}
-                  </span>
-                  <span class="ns-type-row__desc">{{ typeItem.description }}</span>
-                </div>
-                <div
-                  class="ns-toggle ns-toggle--sm"
-                  :class="{ 'ns-toggle--on': !isTypeDisabled(typeItem.type) && getCategoryEnabled(cat.key) }"
-                />
-              </div>
-            </div>
-          </div>
+          <Skeleton class="w-8 h-[18px] rounded-full" />
         </div>
       </div>
     </template>
+
+    <template v-else>
+
+      <!-- Delivery Methods -->
+      <div>
+        <h3 class="text-sm font-semibold text-foreground mb-1">
+          {{ t('settings.delivery_methods', 'Delivery Methods') }}
+        </h3>
+        <p class="text-xs text-muted-foreground mb-4">
+          {{ t('settings.notification_preferences_desc', 'Choose which notifications you want to receive and how.') }}
+        </p>
+
+        <div class="space-y-3">
+          <!-- In-App -->
+          <div
+            class="flex items-center gap-3 p-3.5 rounded-lg border border-border/40 hover:border-border/70 transition-colors"
+            :class="{ 'opacity-60 pointer-events-none': savingKey === 'in_app_notifications' }"
+          >
+            <div
+              class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors"
+              :class="store.settings?.in_app_notifications ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'"
+            >
+              <Bell :size="16" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-foreground">
+                {{ t('settings.in_app', 'In-App Notifications') }}
+              </p>
+              <p class="text-xs text-muted-foreground mt-0.5">
+                {{ t('settings.in_app_desc', 'Show notifications in the bell menu') }}
+              </p>
+            </div>
+            <!-- Loading spinner when saving -->
+            <svg
+              v-if="savingKey === 'in_app_notifications'"
+              class="w-4 h-4 text-primary animate-spin shrink-0"
+              viewBox="0 0 24 24" fill="none"
+            >
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.2" />
+              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+            </svg>
+            <SettingsToggle
+              v-else
+              :checked="store.settings?.in_app_notifications ?? false"
+              @update:checked="(val) => handleSettingToggle('in_app_notifications', val, t('settings.in_app', 'In-App Notifications'))"
+            />
+          </div>
+
+          <!-- Email -->
+          <div
+            class="flex items-center gap-3 p-3.5 rounded-lg border border-border/40 hover:border-border/70 transition-colors"
+            :class="{ 'opacity-60 pointer-events-none': savingKey === 'email_notifications' }"
+          >
+            <div
+              class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors"
+              :class="store.settings?.email_notifications ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'"
+            >
+              <Mail :size="16" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-foreground">
+                {{ t('settings.email_notifications', 'Email Notifications') }}
+              </p>
+              <p class="text-xs text-muted-foreground mt-0.5">
+                {{ t('settings.email_desc', 'Receive email alerts for important events') }}
+              </p>
+            </div>
+            <svg
+              v-if="savingKey === 'email_notifications'"
+              class="w-4 h-4 text-primary animate-spin shrink-0"
+              viewBox="0 0 24 24" fill="none"
+            >
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.2" />
+              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+            </svg>
+            <SettingsToggle
+              v-else
+              :checked="store.settings?.email_notifications ?? false"
+              @update:checked="(val) => handleSettingToggle('email_notifications', val, t('settings.email_notifications', 'Email Notifications'))"
+            />
+          </div>
+
+          <!-- Sound -->
+          <div
+            class="flex items-center gap-3 p-3.5 rounded-lg border border-border/40 hover:border-border/70 transition-colors"
+            :class="{ 'opacity-60 pointer-events-none': savingKey === 'sound_enabled' }"
+          >
+            <div
+              class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors"
+              :class="store.settings?.sound_enabled ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'"
+            >
+              <Volume2 :size="16" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-foreground">
+                {{ t('settings.sound', 'Sound Alerts') }}
+              </p>
+              <p class="text-xs text-muted-foreground mt-0.5">
+                {{ t('settings.sound_desc', 'Play a sound when new notifications arrive') }}
+              </p>
+            </div>
+            <svg
+              v-if="savingKey === 'sound_enabled'"
+              class="w-4 h-4 text-primary animate-spin shrink-0"
+              viewBox="0 0 24 24" fill="none"
+            >
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.2" />
+              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+            </svg>
+            <SettingsToggle
+              v-else
+              :checked="store.settings?.sound_enabled ?? false"
+              @update:checked="(val) => handleSettingToggle('sound_enabled', val, t('settings.sound', 'Sound Alerts'))"
+            />
+          </div>
+        </div>
+      </div>
+
+      <Separator />
+
+      <!-- Notification Categories -->
+      <div>
+        <h3 class="text-sm font-semibold text-foreground mb-1">
+          {{ t('settings.notification_categories', 'Notification Categories') }}
+        </h3>
+        <p class="text-xs text-muted-foreground mb-4">
+          {{ t('settings.categories_desc', 'Toggle entire categories or fine-tune individual notification types.') }}
+        </p>
+
+        <div class="space-y-3">
+          <div
+            v-for="cat in categoriesList"
+            :key="cat.key"
+            class="rounded-lg border border-border/40 overflow-hidden hover:border-border/70 transition-colors"
+          >
+            <!-- Category header -->
+            <div
+              class="flex items-center gap-3 p-3.5"
+              :class="{ 'opacity-60 pointer-events-none': savingKey === cat.settingKey }"
+            >
+              <div
+                class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                :style="{ backgroundColor: cat.color + '18' }"
+              >
+                <span
+                  class="w-2.5 h-2.5 rounded-full"
+                  :style="{ background: cat.color }"
+                />
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-foreground">
+                  {{ isArabic() ? cat.labelAr : cat.label }}
+                </p>
+                <p class="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+                  {{ cat.description }}
+                </p>
+              </div>
+
+              <svg
+                v-if="savingKey === cat.settingKey"
+                class="w-4 h-4 text-primary animate-spin shrink-0"
+                viewBox="0 0 24 24" fill="none"
+              >
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.2" />
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+              </svg>
+              <SettingsToggle
+                v-else
+                :checked="getCategoryEnabled(cat.key)"
+                @update:checked="(val) => handleCategoryToggle(cat.key, val)"
+              />
+            </div>
+
+            <!-- Fine-grained types (collapsible) -->
+            <Collapsible v-if="NOTIFICATION_TYPES[cat.key]?.length > 1">
+              <CollapsibleTrigger as-child>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  class="w-full justify-start gap-1.5 h-7 px-3.5 text-[11px] font-semibold text-primary rounded-none border-t border-border/30 hover:bg-muted/30"
+                >
+                  <ChevronDown :size="12" class="transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
+                  {{ t('common.show_types', `Show ${NOTIFICATION_TYPES[cat.key].length} types`) }}
+                </Button>
+              </CollapsibleTrigger>
+
+              <CollapsibleContent>
+                <div class="border-t border-border/30">
+                  <div
+                    v-for="typeItem in NOTIFICATION_TYPES[cat.key]"
+                    :key="typeItem.type"
+                    class="flex items-center gap-3 px-4 py-2.5 ps-12 hover:bg-muted/20 transition-colors"
+                    :class="{ 'opacity-60 pointer-events-none': savingKey === `type_${typeItem.type}` }"
+                  >
+                    <div class="flex-1 min-w-0">
+                      <p class="text-xs font-medium text-foreground">
+                        {{ isArabic() ? typeItem.nameAr : typeItem.name }}
+                      </p>
+                      <p class="text-[10px] text-muted-foreground mt-0.5">
+                        {{ typeItem.description }}
+                      </p>
+                    </div>
+                    <svg
+                      v-if="savingKey === `type_${typeItem.type}`"
+                      class="w-3.5 h-3.5 text-primary animate-spin shrink-0"
+                      viewBox="0 0 24 24" fill="none"
+                    >
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.2" />
+                      <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                    </svg>
+                    <SettingsToggle
+                      v-else
+                      class="scale-[0.85]"
+                      :checked="!isTypeDisabled(typeItem.type) && getCategoryEnabled(cat.key)"
+                      @update:checked="(val) => handleTypeToggle(typeItem.type, val)"
+                    />
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
+        </div>
+      </div>
+
+    </template>
   </div>
 </template>
-
-<style scoped>
-.ns-container {
-  max-width: 680px;
-}
-
-.ns-loading {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.ns-skeleton-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px;
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: 12px;
-}
-
-.ns-skeleton-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  flex-shrink: 0;
-}
-
-.ns-section {
-  margin-bottom: 28px;
-}
-
-.ns-section__title {
-  font-size: 13px;
-  font-weight: 700;
-  color: hsl(var(--foreground));
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 12px;
-}
-
-/* Delivery cards */
-.ns-delivery-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ns-delivery-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.ns-delivery-card:hover {
-  border-color: hsl(var(--primary) / 0.3);
-}
-
-.ns-delivery-card__icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: hsl(var(--muted) / 0.5);
-  color: hsl(var(--muted-foreground));
-  transition: all 0.2s;
-}
-.ns-delivery-card__icon--active {
-  background: hsl(var(--primary) / 0.1);
-  color: hsl(var(--primary));
-}
-
-.ns-delivery-card__text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.ns-delivery-card__label {
-  font-size: 13px;
-  font-weight: 600;
-  color: hsl(var(--foreground));
-}
-
-.ns-delivery-card__desc {
-  font-size: 11.5px;
-  color: hsl(var(--muted-foreground));
-  margin-top: 1px;
-}
-
-/* Toggle switch */
-.ns-toggle {
-  width: 36px;
-  height: 20px;
-  border-radius: 9999px;
-  background: hsl(var(--muted));
-  position: relative;
-  flex-shrink: 0;
-  transition: background 0.2s;
-  cursor: pointer;
-}
-.ns-toggle::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: white;
-  transition: transform 0.2s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-}
-.ns-toggle--on {
-  background: hsl(var(--primary));
-}
-.ns-toggle--on::after {
-  transform: translateX(16px);
-}
-.ns-toggle--sm {
-  width: 30px;
-  height: 16px;
-}
-.ns-toggle--sm::after {
-  width: 12px;
-  height: 12px;
-}
-.ns-toggle--sm.ns-toggle--on::after {
-  transform: translateX(14px);
-}
-
-/* Category cards */
-.ns-categories {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ns-cat-card {
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.ns-cat-card__header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.ns-cat-card__header:hover {
-  background: hsl(var(--muted) / 0.2);
-}
-
-.ns-cat-card__icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.ns-cat-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
-.ns-cat-card__text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.ns-cat-card__label {
-  font-size: 13px;
-  font-weight: 600;
-  color: hsl(var(--foreground));
-}
-
-.ns-cat-card__desc {
-  font-size: 11px;
-  color: hsl(var(--muted-foreground));
-  margin-top: 2px;
-  line-height: 1.4;
-}
-
-.ns-cat-card__expand {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 16px 8px;
-  color: hsl(var(--primary));
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.15s;
-}
-.ns-cat-card__expand:hover {
-  opacity: 0.7;
-}
-
-/* Fine-grained types */
-.ns-types {
-  border-top: 1px solid hsl(var(--border) / 0.5);
-  padding: 4px 0;
-}
-
-.ns-type-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 16px 10px 52px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.ns-type-row:hover {
-  background: hsl(var(--muted) / 0.2);
-}
-
-.ns-type-row__text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.ns-type-row__name {
-  font-size: 12px;
-  font-weight: 600;
-  color: hsl(var(--foreground));
-}
-
-.ns-type-row__desc {
-  font-size: 10.5px;
-  color: hsl(var(--muted-foreground));
-  margin-top: 1px;
-}
-
-/* Shimmer */
-.skeleton-shimmer {
-  position: relative;
-  overflow: hidden;
-  background: hsl(var(--muted) / 0.7);
-}
-.skeleton-shimmer::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.25) 50%, transparent 100%);
-  animation: shimmer 1.8s ease-in-out infinite;
-}
-:global(.dark) .skeleton-shimmer::after {
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.06) 50%, transparent 100%);
-}
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-</style>

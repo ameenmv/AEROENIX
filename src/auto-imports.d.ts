@@ -108,6 +108,7 @@ declare global {
   const useRoute: typeof import('vue-router').useRoute
   const useRouter: typeof import('vue-router').useRouter
   const useSearchablePages: typeof import('./composables/shared/useSearchablePages').useSearchablePages
+  const useSettingsStore: typeof import('./stores/shared/settingsStore').useSettingsStore
   const useSlots: typeof import('vue').useSlots
   const useSonarStore: typeof import('./stores/shared/sonar').useSonarStore
   const useTable: typeof import('./composables/shared/useTable').useTable
