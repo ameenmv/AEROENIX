@@ -8,9 +8,9 @@ import AuthLayout from '@/components/layout/AuthLayout.vue'
 import { Button as Btn } from '@/components/uic/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/uic/card'
 import InputField from '@/components/uic/inputs/InputField.vue'
-import { useForm } from '@/composables/useForm'
+import { useForm } from '@/composables/shared/useForm'
 import { resetPasswordSchema } from '@/modules/auth/schema'
-import { useAuthStore } from '@/stores'
+import { useAuthStore } from '@/stores/shared/authStore'
 
 const showPassword = ref(false)
 const showPasswordConfirm = ref(false)

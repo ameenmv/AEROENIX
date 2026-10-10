@@ -1,5 +1,5 @@
 import type { DirectiveBinding } from 'vue'
-import { usePermissionStore } from '@/stores/permissions'
+import { usePermissionStore } from '@/stores/shared/permissions'
 
 export const vCan = {
   mounted(el: HTMLElement, binding: DirectiveBinding<string | string[]>) {

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { useModal } from '@/composables/useModal'
+import { useModal } from '@/composables/shared/useModal'
 
 describe('useModal', () => {
   beforeEach(() => {

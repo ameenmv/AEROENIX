@@ -139,6 +139,16 @@ export default defineConfig(({ mode }) => {
       setupFiles: ['./tests/setup.ts'],
       include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     },
+    // ─── Production optimizations ──────────────────────────────────
+    esbuild: {
+      drop: mode === 'production' ? ['console', 'debugger'] : [],
+    },
+    define: {
+      __MOCK_ENABLED__: JSON.stringify(mode !== 'production'),
+    },
+    build: {
+      chunkSizeWarningLimit: 800,
+    },
     server: {
       host: '0.0.0.0',
       port: 5173,

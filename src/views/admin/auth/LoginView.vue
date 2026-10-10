@@ -10,9 +10,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/uic/checkbox'
 import InputField from '@/components/uic/inputs/InputField.vue'
 import { Label } from '@/components/uic/label'
-import { useForm } from '@/composables/useForm'
+import { useForm } from '@/composables/shared/useForm'
 import { loginSchema } from '@/modules/auth/schema'
-import { useAuthStore } from '@/stores'
+import { useAuthStore } from '@/stores/shared/authStore'
 
 const showPassword = ref(false)
 const { locale, t } = useI18n()

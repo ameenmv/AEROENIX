@@ -7,7 +7,7 @@ import { useRouter } from 'vue-router'
 import ConfirmModal from '@/components/ui/modals/ConfirmModal.vue'
 import { DataTable, DataTableFilters } from '@/components/ui/tables'
 
-import { useNotifications } from '@/composables'
+import { useNotifications } from '@/composables/notifications/useNotifications'
 import { NotificationStatusColor, NotificationStatusLabel } from '@/enums'
 
 const { t } = useI18n()

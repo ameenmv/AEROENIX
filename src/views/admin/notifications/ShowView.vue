@@ -2,7 +2,7 @@
 import type { ManualNotification } from '@/types/entities/notification'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { useDetails } from '@/composables'
+import { useDetails } from '@/composables/shared/useDetails'
 import { NotificationStatusColor, NotificationStatusLabel } from '@/enums'
 import { notificationsService } from '@/services/notificationsService'
 

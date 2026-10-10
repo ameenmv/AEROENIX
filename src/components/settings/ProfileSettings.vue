@@ -17,7 +17,7 @@ import { Separator } from '@/components/uic/separator'
 import { Skeleton } from '@/components/uic/skeleton'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/uic/collapsible'
 import { useSettingsStore } from '@/stores/shared/settingsStore'
-import { useSonarStore } from '@/stores/sonar'
+import { useSonarStore } from '@/stores/shared/sonar'
 
 const { t } = useI18n()
 const store = useSettingsStore()

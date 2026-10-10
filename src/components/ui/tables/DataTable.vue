@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ContextMenuAction } from '@/composables/useContextMenu'
-import { useContextMenu } from '@/composables/useContextMenu'
+import type { ContextMenuAction } from '@/composables/shared/useContextMenu'
+import { useContextMenu } from '@/composables/shared/useContextMenu'
 import type { FilterConfig } from '@/types'
 import { FilterIcon, Search01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'

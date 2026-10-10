@@ -16,7 +16,7 @@ import {
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { useDetails } from '@/composables/useDetails'
+import { useDetails } from '@/composables/shared/useDetails'
 import { hotelsService } from '@/services/hotelsService'
 import { Button } from '@/components/uic/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/uic/tabs'

@@ -1,6 +1,6 @@
 import type { ApexOptions } from 'apexcharts'
 import { computed } from 'vue'
-import { useDarkMode } from '@/composables/useDarkMode'
+import { useDarkMode } from '@/composables/shared/useDarkMode'
 
 /**
  * Reads a CSS variable value from :root / document.

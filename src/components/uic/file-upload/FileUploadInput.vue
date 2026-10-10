@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FileWithStatus } from '@/composables/useFileUpload'
+import type { FileWithStatus } from '@/composables/shared/useFileUpload'
 import {
   CancelCircleIcon,
   EyeIcon,
@@ -13,8 +13,8 @@ import { cva } from 'class-variance-authority'
 import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Button as Btn } from '@/components/uic/button'
-import { useFileUpload } from '@/composables/useFileUpload'
-import { useSonarStore } from '@/stores/sonar'
+import { useFileUpload } from '@/composables/shared/useFileUpload'
+import { useSonarStore } from '@/stores/shared/sonar'
 import { cn } from '@/utils/cn'
 
 interface Props {

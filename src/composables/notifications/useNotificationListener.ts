@@ -2,7 +2,7 @@ import type { PlatformNotification } from '@/types/entities/platformNotification
 import { onUnmounted, ref } from 'vue'
 import { toast } from 'vue-sonner'
 import { getEcho } from '@/services/echo'
-import { useAuthStore } from '@/stores/authStore'
+import { useAuthStore } from '@/stores/shared/authStore'
 import { useNotificationStore } from '@/stores/shared/notification'
 import router from '@/router'
 

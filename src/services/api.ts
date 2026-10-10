@@ -113,7 +113,7 @@ api.interceptors.response.use(
       description: string,
     ) => {
       try {
-        const { useSonarStore } = await import('@/stores/sonar')
+        const { useSonarStore } = await import('@/stores/shared/sonar')
         const sonar = useSonarStore()
         sonar[type](title, description)
       }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCan } from '@/composables/useCan'
+import { useCan } from '@/composables/shared/useCan'
 
 const props = defineProps<{
   permKey: string

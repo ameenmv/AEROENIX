@@ -13,7 +13,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Button } from '@/components/uic/button'
 import SettingsToggle from '@/components/settings/SettingsToggle.vue'
 import { useNotificationStore } from '@/stores/shared/notification'
-import { useSonarStore } from '@/stores/sonar'
+import { useSonarStore } from '@/stores/shared/sonar'
 
 const { t, locale } = useI18n()
 const store = useNotificationStore()

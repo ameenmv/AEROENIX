@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { useContextMenuPortal } from '@/composables/useContextMenu'
+import { useContextMenuPortal } from '@/composables/shared/useContextMenu'
 
 const { ctxMenuState, closeContextMenu } = useContextMenuPortal()
 </script>

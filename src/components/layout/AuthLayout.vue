@@ -4,7 +4,7 @@ import { HugeiconsIcon } from '@hugeicons/vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { Button as Btn } from '@/components/uic/button'
-import { useDarkMode } from '@/composables/useDarkMode'
+import { useDarkMode } from '@/composables/shared/useDarkMode'
 import Logo from './Logo.vue'
 
 const { locale, t } = useI18n()

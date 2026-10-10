@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { AUTH_SESSION_TTL } from '@/config/auth'
-import { useAuthStore } from '@/stores'
+import { useAuthStore } from '@/stores/shared/authStore'
 import i18n, { DEFAULT_LOCALE, setLocale, SUPPORTED_LOCALES } from '../i18n'
 import { getModuleRoutes } from './modules'
 

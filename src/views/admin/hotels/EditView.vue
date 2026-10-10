@@ -4,7 +4,7 @@ import { watch } from 'vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
-import { useForm } from '@/composables'
+import { useForm } from '@/composables/shared/useForm'
 import { hotelUpdateSchema } from '@/modules/hotels/schema'
 import { hotelsService } from '@/services/hotelsService'
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { useForm } from '@/composables'
+import { useForm } from '@/composables/shared/useForm'
 import { AudienceType, NotificationChannel, NotificationType, SendTo } from '@/enums'
 import { notificationFormSchema } from '@/modules/notifications/schema'
 import { notificationsService } from '@/services/notificationsService'

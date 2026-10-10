@@ -12,7 +12,7 @@ import {
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { useDetails } from '@/composables/useDetails'
+import { useDetails } from '@/composables/shared/useDetails'
 import { usersService } from '@/services/usersService'
 import { Button } from '@/components/uic/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/uic/tabs'

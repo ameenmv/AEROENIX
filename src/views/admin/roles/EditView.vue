@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useRoles } from '@/composables'
+import { useRoles } from '@/composables/roles/useRoles'
 import { rolesService } from '@/services/rolesService'
 import type { Role } from '@/types/entities/role'
 import { Button } from '@/components/uic/button'
@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/uic/skeleton'
 import { Badge } from '@/components/uic/badge'
 import { ArrowLeft01Icon, FloppyDiskIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { useSonarStore } from '@/stores/sonar'
+import { useSonarStore } from '@/stores/shared/sonar'
 
 const route = useRoute()
 const router = useRouter()

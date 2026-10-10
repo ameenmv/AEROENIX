@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useRoles } from '@/composables'
+import { useRoles } from '@/composables/roles/useRoles'
 import type { Role } from '@/types/entities/role'
 import { Button } from '@/components/uic/button'
 import { Skeleton } from '@/components/uic/skeleton'

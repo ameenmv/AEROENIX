@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { useForm } from '@/composables'
+import { useForm } from '@/composables/shared/useForm'
 import { useQuery } from '@tanstack/vue-query'
 import { roleFormSchema } from '@/modules/roles/schema'
 import { rolesService } from '@/services/rolesService'

@@ -29,11 +29,11 @@ import {
   SidebarRail,
   useSidebar,
 } from '@/components/uic/sidebar'
-import { useContextMenu } from '@/composables/useContextMenu'
+import { useContextMenu } from '@/composables/shared/useContextMenu'
 import { navigationConfig } from '@/lib/navigation'
 import { cmsPageService } from '@/services/cmsService'
-import { useAuthStore } from '@/stores/authStore'
-import { usePermissionStore } from '@/stores/permissions'
+import { useAuthStore } from '@/stores/shared/authStore'
+import { usePermissionStore } from '@/stores/shared/permissions'
 
 const { t, locale } = useI18n()
 const authStore = useAuthStore()

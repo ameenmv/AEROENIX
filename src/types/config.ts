@@ -1,4 +1,4 @@
-import type { Formatter } from '@/composables/useFormatter'
+import type { Formatter } from '@/composables/shared/useFormatter'
 
 export interface FormField {
   key: string

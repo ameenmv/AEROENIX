@@ -5,7 +5,7 @@ import { Toaster } from '@/components/uic/sonner'
 import AdminLayout from './components/layout/AdminLayout.vue'
 import AuthLayout from './components/layout/AuthLayout.vue'
 import BlankLayout from './components/layout/BlankLayout.vue'
-import { useAuthStore } from '@/stores'
+import { useAuthStore } from '@/stores/shared/authStore'
 
 const route = useRoute()
 const layout = computed(() => {
