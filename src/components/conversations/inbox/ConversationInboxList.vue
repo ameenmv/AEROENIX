@@ -88,12 +88,20 @@ function getProviderColorClass(channelBadgeName: string | null | undefined) {
 
       <!-- Text content -->
       <div class="flex flex-col flex-1 min-w-0 relative">
-        <!-- Row 1: Name + Time -->
-        <div class="flex items-center justify-between w-full mb-[2px]">
-          <div class="overflow-hidden flex-1">
+        <!-- Row 1: Name + Channel Badge + Time -->
+        <div class="flex items-center justify-between w-full mb-[2px] gap-1">
+          <div class="overflow-hidden flex items-center gap-1.5 flex-1 min-w-0">
             <p class="text-[14px] font-semibold text-foreground truncate leading-normal">
               {{ conv.contact_name || t('conversations.unknown_contact', 'Unknown') }}
             </p>
+            <!-- Channel Badge Pill -->
+            <span
+              v-if="conv.channel_badge_name"
+              class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-muted text-muted-foreground border border-border/50 max-w-[90px] truncate shrink-0"
+              :title="conv.channel_badge_name"
+            >
+              {{ conv.channel_badge_name }}
+            </span>
           </div>
           <span class="text-[12px] font-normal text-muted-foreground flex-shrink-0 ml-1">
             {{ formatTime(conv.time) }}

@@ -28,5 +28,13 @@
   "confirm_resume": "Yes, Resume AI",
   "staff_mode_toast": "AI paused — conversation taken over by staff.",
   "ai_resumed_toast": "AI bot auto-reply resumed.",
-  "handoff_error": "Failed to update AI handoff status."
+  "handoff_error": "Failed to update AI handoff status.",
+  "no_channels_connected": "No Channels Connected",
+  "no_channels_desc": "You have no active channels integrated yet. Connect a WhatsApp, Instagram, or Messenger channel to start receiving and replying to guest conversations.",
+  "go_to_channels": "Integrate Channels",
+  "all_channels": "All",
+  "copied": "Copied to clipboard",
+  "collapse_sidebar": "Collapse sidebar",
+  "expand_sidebar": "Expand sidebar",
+  "guest_details": "Guest Details"
 }

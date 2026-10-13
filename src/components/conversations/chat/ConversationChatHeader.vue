@@ -63,10 +63,19 @@ function getProviderColorClass(channelBadgeName: string | null | undefined) {
         </div>
 
         <div class="flex flex-col min-w-0 justify-center">
-          <h3 class="text-[15px] font-bold text-foreground truncate leading-none mb-1.5">
-            {{ conversation.contact_name || t('conversations.unknown_contact', 'Unknown') }}
-          </h3>
           <div class="flex items-center gap-2">
+            <h3 class="text-[15px] font-bold text-foreground truncate leading-none">
+              {{ conversation.contact_name || t('conversations.unknown_contact', 'Unknown') }}
+            </h3>
+            <!-- Channel pill badge -->
+            <span
+              v-if="conversation.channel_badge_name"
+              class="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-muted text-muted-foreground border border-border/50 shrink-0"
+            >
+              {{ conversation.channel_badge_name }}
+            </span>
+          </div>
+          <div class="flex items-center gap-2 mt-1">
             <!-- Dynamic Status Badge (In Progress) -->
             <div class="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold text-amber-500 flex-shrink-0">
               In Progress

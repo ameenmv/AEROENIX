@@ -94,8 +94,16 @@ onUnmounted(() => {
 })
 
 // ── Hover Actions ────────────────────────────────────────────────────────────
-function copyToClipboard(text: string) {
-  navigator.clipboard.writeText(text).catch(err => console.error('Copy failed', err))
+const copiedMsgId = ref<number | null>(null)
+function copyToClipboard(id: number, text: string) {
+  navigator.clipboard.writeText(text).then(() => {
+    copiedMsgId.value = id
+    setTimeout(() => {
+      if (copiedMsgId.value === id) {
+        copiedMsgId.value = null
+      }
+    }, 1500)
+  }).catch(err => console.error('Copy failed', err))
 }
 </script>
 
@@ -172,11 +180,12 @@ function copyToClipboard(text: string) {
 
             <!-- Hover Action: Copy -->
             <button 
-              class="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full hover:bg-muted/50 text-muted-foreground hover:text-foreground shrink-0"
-              @click="copyToClipboard(msg.text)"
-              title="Copy message"
+              class="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full hover:bg-muted/50 text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
+              :class="{ '!opacity-100 text-emerald-500': copiedMsgId === msg.id }"
+              @click="copyToClipboard(msg.id, msg.text)"
+              :title="copiedMsgId === msg.id ? 'Copied' : 'Copy message'"
             >
-              <HugeiconsIcon :icon="Copy01Icon" :size="16" />
+              <HugeiconsIcon :icon="copiedMsgId === msg.id ? Tick02Icon : Copy01Icon" :size="16" />
             </button>
           </div>
         </div>

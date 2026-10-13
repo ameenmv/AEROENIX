@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import { SparklesIcon, UserGroupIcon, BubbleChatIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import { Radio } from 'lucide-vue-next'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/uic/button'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/uic/sheet'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -78,6 +85,7 @@ function stopDrag() {
 // ── UI Toggles & Zoom ────────────────────────────────────────────────────────
 const isChatExpanded = ref(false)
 const isPropertiesVisible = ref(true)
+const showMobileProperties = ref(false)
 const chatTextScale = ref(1)
 
 function toggleFullscreen() {
@@ -100,7 +108,12 @@ if (typeof window !== 'undefined') {
 }
 
 function toggleProperties() {
-  isPropertiesVisible.value = !isPropertiesVisible.value
+  // On desktop (xl+), toggle inline column; on smaller devices, open sheet
+  if (typeof window !== 'undefined' && window.innerWidth < 1280) {
+    showMobileProperties.value = !showMobileProperties.value
+  } else {
+    isPropertiesVisible.value = !isPropertiesVisible.value
+  }
 }
 
 function zoomIn() {
@@ -117,8 +130,11 @@ function resetZoom() {
 
 // ── Composables ──────────────────────────────────────────────────────────────
 const {
+  conversations,
   filteredConversations,
   isLoading: isInboxLoading,
+  isChannelsLoaded,
+  channels,
   selectedConversationId,
   searchQuery,
   activeChannelId,
@@ -255,7 +271,31 @@ onUnmounted(() => {
 
 <template>
   <div class="flex flex-col h-[calc(100vh-(--spacing(16)))] bg-muted/10 p-2 sm:p-4 min-h-[600px]">
+    <!-- No Connected Channels Zero-State Screen -->
     <div
+      v-if="isChannelsLoaded && (!channels || channels.length === 0) && conversations.length === 0"
+      class="flex flex-col items-center justify-center flex-1 w-full bg-card rounded-2xl border border-border/50 p-8 text-center shadow-xs"
+    >
+      <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+        <Radio class="w-8 h-8 text-primary" />
+      </div>
+      <h2 class="text-xl font-bold text-foreground mb-2">
+        {{ t('conversations.no_channels_connected', 'No Channels Connected') }}
+      </h2>
+      <p class="text-sm text-muted-foreground max-w-[440px] mb-6 leading-relaxed">
+        {{ t('conversations.no_channels_desc', 'You have no active channels integrated yet. Connect a WhatsApp, Instagram, or Messenger channel to start receiving and replying to guest conversations.') }}
+      </p>
+      <Button
+        class="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2.5 rounded-full font-medium"
+        @click="$router.push({ name: 'admin-channels' })"
+      >
+        {{ t('conversations.go_to_channels', 'Integrate Channels') }}
+      </Button>
+    </div>
+
+    <!-- Main 3-Column Layout Container -->
+    <div
+      v-else
       id="chat-container"
       ref="containerRef"
       class="flex w-full h-full overflow-hidden relative bg-card rounded-2xl shadow-sm border border-border/40"
@@ -328,12 +368,12 @@ onUnmounted(() => {
       <div
         v-if="selectedConversationId"
         v-show="isPropertiesVisible"
-        class="hidden lg:block w-[4px] h-full cursor-col-resize transition-colors z-10 flex-shrink-0 bg-transparent hover:bg-primary/20"
+        class="hidden xl:block w-[4px] h-full cursor-col-resize transition-colors z-10 flex-shrink-0 bg-transparent hover:bg-primary/20"
         @mousedown.prevent="startDragRight"
         @dblclick.prevent="rightWidth = 320"
       />
 
-      <!-- Right: Properties Sidebar -->
+      <!-- Right: Properties Sidebar (Desktop xl+) -->
       <div 
         v-if="selectedConversationId" 
         v-show="isPropertiesVisible" 
@@ -347,6 +387,24 @@ onUnmounted(() => {
         />
       </div>
     </div>
+
+    <!-- Responsive Sheet Drawer for Guest Details (Mobile / Tablet < xl) -->
+    <Sheet :open="showMobileProperties" @update:open="showMobileProperties = $event">
+      <SheetContent side="right" class="w-[85vw] sm:w-[380px] p-0 flex flex-col h-full bg-background">
+        <SheetHeader class="px-5 py-4 border-b border-border/50">
+          <SheetTitle class="text-base font-bold text-foreground">
+            {{ t('conversations.guest_details', 'Guest Details') }}
+          </SheetTitle>
+        </SheetHeader>
+        <div class="flex-1 overflow-y-auto">
+          <ConversationPropertiesSidebar
+            v-if="activeConversation"
+            :conversation="activeConversation"
+            :is-loading="isPropsLoading"
+          />
+        </div>
+      </SheetContent>
+    </Sheet>
 
     <!-- AI Handoff Dialog -->
     <AlertDialog :open="showHandoffDialog" @update:open="showHandoffDialog = $event">

@@ -27,6 +27,7 @@ export function useConversationInbox() {
 
   // ── Channels (Tabs) ───────────────────────────────────────────────────────
   const channels = ref<Channel[]>([])
+  const isChannelsLoaded = ref(false)
   const activeChannelId = ref<number | null>(null) // null = All
 
   onMounted(async () => {
@@ -34,11 +35,15 @@ export function useConversationInbox() {
       channels.value = await channelsService.getAll()
     } catch {
       // ignore
+    } finally {
+      isChannelsLoaded.value = true
     }
   })
 
   const providerTabs = computed(() => {
-    const tabs: Array<{ id: number | null, label: string, icon?: string | null }> = [{ id: null, label: 'All', icon: null }]
+    const tabs: Array<{ id: number | null, label: string, icon?: string | null }> = [
+      { id: null, label: 'All', icon: null },
+    ]
     channels.value.forEach(channel => {
       tabs.push({
         id: channel.id,
@@ -117,6 +122,8 @@ export function useConversationInbox() {
   return {
     conversations,
     isLoading,
+    isChannelsLoaded,
+    channels,
     selectedConversationId,
     searchQuery,
     showFilters,
