@@ -125,7 +125,7 @@ function copyToClipboard(id: number, text: string) {
         <div
           v-for="msg in group.messages"
           :key="msg.id"
-          class="flex flex-col group relative"
+          class="flex flex-col group relative msg-enter-anim"
           :class="msg.sender_type === 'customer' ? 'items-start' : 'items-end'"
         >
           <!-- Sender Info & Time -->
@@ -211,3 +211,20 @@ function copyToClipboard(id: number, text: string) {
     </transition>
   </div>
 </template>
+
+<style scoped>
+@keyframes msgEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.msg-enter-anim {
+  animation: msgEnter 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+</style>

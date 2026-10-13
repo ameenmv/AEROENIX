@@ -8,10 +8,13 @@ import type { InboxConversationItem } from '@/types/entities/conversation'
 defineProps<{
   conversations: InboxConversationItem[]
   selectedConversationId: number | null
+  hasMore?: boolean
+  isFetchingMore?: boolean
 }>()
 
 const emit = defineEmits<{
   selectConversation: [id: number]
+  loadMore: []
 }>()
 
 const { t } = useI18n()
@@ -136,6 +139,17 @@ function getProviderColorClass(channelBadgeName: string | null | undefined) {
       <p class="text-[12px] text-muted-foreground">
         {{ t('conversations.no_conversations', 'No conversations found') }}
       </p>
+    </div>
+
+    <!-- Infinite scroll / Load more trigger -->
+    <div v-if="hasMore" class="p-3 flex justify-center">
+      <button
+        class="text-xs text-primary hover:underline font-medium py-1 px-3 rounded-full hover:bg-primary/10 transition-colors disabled:opacity-50"
+        :disabled="isFetchingMore"
+        @click="emit('loadMore')"
+      >
+        {{ isFetchingMore ? t('common.loading', 'Loading...') : t('common.load_more', 'Load more') }}
+      </button>
     </div>
   </div>
 </template>

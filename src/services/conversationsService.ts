@@ -28,15 +28,34 @@ const BASE = '/user/workspace/conversations'
 
 export const conversationsService = {
   /**
-   * Get list of conversations for the inbox sidebar.
+   * Get list of conversations for the inbox sidebar with optional pagination support.
    */
   async getConversations(params?: {
     channel?: string
     search?: string
     hotel_id?: number
-  }): Promise<InboxConversationItem[]> {
-    const res = await api.get<ApiSuccessResponse<{ conversations: InboxConversationItem[] }>>(BASE, { params })
-    return res.data.data?.conversations || (res.data as any).conversations || []
+    page?: number
+    limit?: number
+  }): Promise<{ data: InboxConversationItem[]; total?: number; hasMore?: boolean } | InboxConversationItem[]> {
+    const res = await api.get<any>(BASE, { params })
+    const body = res.data?.data || res.data
+    // If backend returns Laravel paginated response { data: [...], current_page, last_page, total }
+    if (body?.data && Array.isArray(body.data)) {
+      return {
+        data: body.data,
+        total: body.total,
+        hasMore: body.current_page < body.last_page,
+      }
+    }
+    // If backend returns { conversations: [...] }
+    if (Array.isArray(body?.conversations)) {
+      return body.conversations
+    }
+    // If backend returns direct array
+    if (Array.isArray(body)) {
+      return body
+    }
+    return []
   },
 
   /**

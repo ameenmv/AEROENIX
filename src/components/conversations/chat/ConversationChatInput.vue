@@ -37,10 +37,19 @@ function handleEmojiSelect(emoji: any) {
   <div class="px-4 py-3 border-t border-border/50 bg-background/95 backdrop-blur-md flex flex-col gap-2 shrink-0 relative rounded-b-2xl">
     
     <!-- AI Locked Indicator -->
-    <div v-if="isLocked" class="flex items-center gap-2 text-xs text-amber-500 font-medium px-3 py-1.5 bg-amber-500/10 rounded-lg mx-auto w-fit mb-1">
-      <HugeiconsIcon :icon="LockKeyIcon" :size="14" />
-      <span>{{ t('conversations.input_locked', 'Input is locked while AI is active.') }}</span>
-    </div>
+    <transition
+      enter-active-class="transition duration-200 ease-out transform"
+      enter-from-class="opacity-0 -translate-y-2 scale-95"
+      enter-to-class="opacity-100 translate-y-0 scale-100"
+      leave-active-class="transition duration-150 ease-in transform"
+      leave-from-class="opacity-100 translate-y-0 scale-100"
+      leave-to-class="opacity-0 -translate-y-2 scale-95"
+    >
+      <div v-if="isLocked" class="flex items-center gap-2 text-xs text-amber-500 font-medium px-3 py-1.5 bg-amber-500/10 rounded-lg mx-auto w-fit mb-1 border border-amber-500/20">
+        <HugeiconsIcon :icon="LockKeyIcon" :size="14" />
+        <span>{{ t('conversations.input_locked', 'Input is locked while AI is active.') }}</span>
+      </div>
+    </transition>
 
     <div class="flex items-center gap-2">
       <!-- Attachment Button -->

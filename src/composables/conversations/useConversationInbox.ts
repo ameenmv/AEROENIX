@@ -86,14 +86,47 @@ export function useConversationInbox() {
     () => statusFilter.value !== null || activeChannelId.value !== null
   )
 
+  // ── Pagination State ───────────────────────────────────────────────────────
+  const currentPage = ref(1)
+  const hasMore = ref(false)
+  const isFetchingMore = ref(false)
+
   // ── Actions ───────────────────────────────────────────────────────────────
-  async function fetchConversations() {
-    isLoading.value = true
+  async function fetchConversations(page = 1) {
+    if (page === 1) {
+      isLoading.value = true
+      currentPage.value = 1
+    } else {
+      isFetchingMore.value = true
+    }
+
     try {
-      conversations.value = await conversationsService.getConversations()
+      const res = await conversationsService.getConversations({
+        page,
+        channel: activeChannelId.value ? String(activeChannelId.value) : undefined,
+      })
+
+      if (Array.isArray(res)) {
+        conversations.value = res
+        hasMore.value = false
+      } else {
+        if (page === 1) {
+          conversations.value = res.data || []
+        } else {
+          conversations.value = [...conversations.value, ...(res.data || [])]
+        }
+        hasMore.value = !!res.hasMore
+        currentPage.value = page
+      }
     } finally {
       isLoading.value = false
+      isFetchingMore.value = false
     }
+  }
+
+  async function loadMore() {
+    if (isFetchingMore.value || !hasMore.value) return
+    await fetchConversations(currentPage.value + 1)
   }
 
   function selectConversation(id: number | null) {
@@ -102,7 +135,7 @@ export function useConversationInbox() {
 
   function setChannelTab(channelId: number | null) {
     activeChannelId.value = channelId
-    fetchConversations()
+    fetchConversations(1)
   }
 
   function toggleFilterPanel() {
@@ -112,7 +145,7 @@ export function useConversationInbox() {
   function resetFilters() {
     statusFilter.value = null
     activeChannelId.value = null
-    fetchConversations()
+    fetchConversations(1)
   }
 
   onMounted(() => {
@@ -130,12 +163,18 @@ export function useConversationInbox() {
     statusFilter,
     activeChannelId,
 
+    // Pagination
+    hasMore,
+    isFetchingMore,
+    currentPage,
+
     filteredConversations,
     selectedConversation,
     providerTabs,
     hasActiveFilters,
 
     fetchConversations,
+    loadMore,
     selectConversation,
     setChannelTab,
     toggleFilterPanel,

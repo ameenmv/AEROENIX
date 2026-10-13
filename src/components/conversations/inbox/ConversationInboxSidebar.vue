@@ -13,12 +13,15 @@ const props = defineProps<{
   isLoading: boolean
   activeChannelId: number | null
   providerTabs: { id: number | null, label: string, icon?: string | null }[]
+  hasMore?: boolean
+  isFetchingMore?: boolean
 }>()
 
 const emit = defineEmits<{
   selectConversation: [id: number]
   'update:searchQuery': [value: string]
   setChannelTab: [id: number | null]
+  loadMore: []
 }>()
 
 const { t } = useI18n()
@@ -104,7 +107,10 @@ function selectProvider(id: number | null) {
       <ConversationInboxList
         :conversations="conversations"
         :selected-conversation-id="selectedConversationId"
+        :has-more="hasMore"
+        :is-fetching-more="isFetchingMore"
         @select-conversation="emit('selectConversation', $event)"
+        @load-more="emit('loadMore')"
       />
     </template>
   </div>

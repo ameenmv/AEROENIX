@@ -139,9 +139,12 @@ const {
   searchQuery,
   activeChannelId,
   providerTabs,
+  hasMore,
+  isFetchingMore,
   selectConversation,
   setChannelTab,
-  fetchConversations
+  fetchConversations,
+  loadMore,
 } = useConversationInbox()
 
 function clearSelectedConversation() {
@@ -313,9 +316,12 @@ onUnmounted(() => {
           :is-loading="isInboxLoading"
           :active-channel-id="activeChannelId"
           :provider-tabs="providerTabs"
+          :has-more="hasMore"
+          :is-fetching-more="isFetchingMore"
           @update:search-query="searchQuery = $event"
           @select-conversation="selectConversation"
           @set-channel-tab="setChannelTab"
+          @load-more="loadMore"
         />
       </div>
 
