@@ -26,6 +26,8 @@
   "field_category": "الفئة",
   "field_title": "العنوان / السؤال",
   "field_content": "المحتوى / الإجابة",
+  "label_title": "العنوان",
+  "label_content": "المحتوى",
   "field_priority": "الأولوية",
   "field_status": "الحالة",
   "select_category": "اختر فئة",

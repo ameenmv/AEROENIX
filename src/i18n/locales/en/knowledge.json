@@ -26,6 +26,8 @@
   "field_category": "Category",
   "field_title": "Title / Question",
   "field_content": "Content / Answer",
+  "label_title": "Title",
+  "label_content": "Content",
   "field_priority": "Priority",
   "field_status": "Status",
   "select_category": "Select a category",

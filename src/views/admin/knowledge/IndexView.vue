@@ -390,18 +390,31 @@ function goToPage(page: number) {
                 </span>
               </div>
 
-              <!-- Title -->
-              <h3
-                class="text-[15px] font-semibold text-foreground leading-snug mb-1.5 cursor-pointer hover:text-primary transition-colors"
-                @click="router.push({ name: 'admin-knowledge-edit', params: { id: entry.id } })"
-              >
-                {{ entry.title }}
-              </h3>
+              <!-- Title & Content with clear labels -->
+              <div class="space-y-2 mt-1">
+                <!-- Title Row -->
+                <div class="flex items-baseline gap-2">
+                  <span class="text-[11px] font-semibold text-primary/80 uppercase tracking-wider shrink-0 bg-primary/10 px-1.5 py-0.5 rounded text-primary">
+                    {{ t('knowledge.label_title', 'Title') }}:
+                  </span>
+                  <h3
+                    class="text-[15px] font-semibold text-foreground leading-snug cursor-pointer hover:text-primary transition-colors flex-1"
+                    @click="router.push({ name: 'admin-knowledge-edit', params: { id: entry.id } })"
+                  >
+                    {{ entry.title }}
+                  </h3>
+                </div>
 
-              <!-- Content preview -->
-              <p class="text-sm text-muted-foreground leading-relaxed">
-                {{ truncate(entry.content, 120) }}
-              </p>
+                <!-- Content Row -->
+                <div class="flex items-start gap-2">
+                  <span class="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider shrink-0 bg-muted/60 px-1.5 py-0.5 rounded mt-0.5">
+                    {{ t('knowledge.label_content', 'Content') }}:
+                  </span>
+                  <p class="text-sm text-muted-foreground leading-relaxed flex-1">
+                    {{ truncate(entry.content, 140) }}
+                  </p>
+                </div>
+              </div>
 
               <!-- Meta -->
               <div class="flex items-center gap-4 mt-3 text-xs text-muted-foreground/70">
