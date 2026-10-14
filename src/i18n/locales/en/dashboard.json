@@ -15,6 +15,17 @@
   "recent_activity": "Recent Activity",
   "view_all": "View All",
   "no_recent_activity": "No recent activity.",
-  "from_last_month": "from last month",
-  "mins_ago": "{count} mins ago"
+  "from_last_month": "vs last month",
+  "mins_ago": "{count} mins ago",
+  "overview_title": "Dashboard Overview",
+  "overview_subtitle": "Real-time performance metrics and guest interaction analytics.",
+  "channel_breakdown": "Channel Breakdown",
+  "channel_desc": "Traffic distribution across messaging platforms",
+  "quick_actions": "Quick Shortcuts",
+  "open_inbox": "Go to Inbox",
+  "invite_user": "Invite Team",
+  "new_knowledge": "Add Knowledge",
+  "view_bookings": "Manage Bookings",
+  "live_overview": "Live System",
+  "no_recent_desc": "System events and staff actions will appear here."
 }

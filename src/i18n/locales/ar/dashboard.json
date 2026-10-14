@@ -15,6 +15,17 @@
   "recent_activity": "النشاط الأخير",
   "view_all": "عرض الكل",
   "no_recent_activity": "لا توجد أنشطة أخيرة.",
-  "from_last_month": "من الشهر الماضي",
-  "mins_ago": "منذ {count} دقيقة"
+  "from_last_month": "مقارنة بالشهر الماضي",
+  "mins_ago": "منذ {count} دقيقة",
+  "overview_title": "نظرة عامة على لوحة التحكم",
+  "overview_subtitle": "مؤشرات الأداء المباشرة وتحليلات تفاعل النزلاء والضيوف.",
+  "channel_breakdown": "تفصيل القنوات",
+  "channel_desc": "توزيع المحادثات عبر منصات المراسلة",
+  "quick_actions": "اختصارات سريعة",
+  "open_inbox": "الانتقال إلى المحادثات",
+  "invite_user": "دعوة مستخدم",
+  "new_knowledge": "إضافة معرفة",
+  "view_bookings": "إدارة الحجوزات",
+  "live_overview": "تحديث مباشر",
+  "no_recent_desc": "ستظهر أحداث النظام وإجراءات الفريق وسجلات الدخول هنا."
 }
