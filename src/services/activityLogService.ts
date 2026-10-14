@@ -53,16 +53,24 @@ export interface ActivityLogListParams {
   page?: number
 }
 
+export interface ActivityLogStats {
+  total: number
+  auth_events: number
+  settings_events: number
+  active_operators: number
+}
+
 export interface ActivityLogResponse {
   items: ActivityLogItem[]
   pagination: ActivityLogPagination
+  stats?: ActivityLogStats
 }
 
 /* ── Service ───────────────────────────────────────────────────────────────── */
 
 export const activityLogService = {
   /**
-   * GET /platform/activity-logs — paginated activity logs.
+   * GET /platform/activity-logs — paginated activity logs with stats.
    */
   async getActivityLogs(params?: ActivityLogListParams): Promise<ActivityLogResponse> {
     const response = await api.get<ApiSuccessResponse<ActivityLogResponse>>(ENDPOINT, {
@@ -70,5 +78,16 @@ export const activityLogService = {
     })
 
     return response.data.data as ActivityLogResponse
+  },
+
+  /**
+   * GET /platform/activity-logs/stats — aggregate KPI statistics.
+   */
+  async getActivityStats(hotelId?: number | string): Promise<ActivityLogStats> {
+    const response = await api.get<ApiSuccessResponse<ActivityLogStats>>(`${ENDPOINT}/stats`, {
+      params: hotelId ? { hotel_id: hotelId } : {},
+    })
+
+    return response.data.data as ActivityLogStats
   },
 }

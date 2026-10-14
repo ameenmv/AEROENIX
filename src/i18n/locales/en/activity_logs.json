@@ -17,6 +17,9 @@
   "stat_auth_events": "Auth & Logins",
   "stat_settings_events": "Settings & Updates",
   "stat_active_actors": "Active Operators",
+  "auth_events_label": "Auth events",
+  "settings_events_label": "Settings changes",
+  "active_operators_label": "Unique users",
   "filters": {
     "all": "All Activities",
     "auth": "Auth & Security",

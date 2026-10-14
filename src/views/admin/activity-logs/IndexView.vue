@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ActivityLogItem, ActivityLogPagination, ActivityLogListParams } from '@/services/activityLogService'
+import type { ActivityLogItem, ActivityLogPagination, ActivityLogListParams, ActivityLogStats } from '@/services/activityLogService'
 import type { Hotel } from '@/types/hotel'
 import {
   Activity,
@@ -38,6 +38,7 @@ import { hotelsService } from '@/services/hotelsService'
 const { t, locale } = useI18n()
 const logs = ref<ActivityLogItem[]>([])
 const pagination = ref<ActivityLogPagination | null>(null)
+const serverStats = ref<ActivityLogStats | null>(null)
 const isLoading = ref(false)
 const isRefreshing = ref(false)
 const searchQuery = ref('')
@@ -99,6 +100,9 @@ async function fetchLogs(page = 1, showRefreshAnim = false) {
     const result = await activityLogService.getActivityLogs(params)
     logs.value = result.items || []
     pagination.value = result.pagination || null
+    if (result.stats) {
+      serverStats.value = result.stats
+    }
     currentPage.value = page
   }
   catch (err: any) {
@@ -139,8 +143,17 @@ function refreshNow() {
   fetchLogs(currentPage.value, true)
 }
 
-// ── Smart Stats Calculations ─────────────────────────────────────────────────
+// ── Smart Stats Calculations (Server-driven with local fallback) ────────────
 const stats = computed(() => {
+  if (serverStats.value) {
+    return {
+      total: serverStats.value.total,
+      authEvents: serverStats.value.auth_events,
+      settingsEvents: serverStats.value.settings_events,
+      activeActors: serverStats.value.active_operators,
+    }
+  }
+
   const allLogs = logs.value
   const authEvents = allLogs.filter(l => {
     const act = (l.action || '').toLowerCase()
@@ -438,7 +451,7 @@ onMounted(() => {
         </div>
         <div class="mt-3 flex items-baseline gap-2">
           <span class="text-2xl sm:text-3xl font-black tracking-tight text-emerald-400">{{ stats.authEvents }}</span>
-          <span class="text-xs text-muted-foreground/60 font-medium">{{ t('activity_logs.today', 'Today') }}</span>
+          <span class="text-xs text-muted-foreground/60 font-medium">{{ t('activity_logs.auth_events_label', 'Auth events') }}</span>
         </div>
       </Card>
 
@@ -455,7 +468,7 @@ onMounted(() => {
         </div>
         <div class="mt-3 flex items-baseline gap-2">
           <span class="text-2xl sm:text-3xl font-black tracking-tight text-violet-400">{{ stats.settingsEvents }}</span>
-          <span class="text-xs text-muted-foreground/60 font-medium">{{ t('activity_logs.filters.settings', 'Settings') }}</span>
+          <span class="text-xs text-muted-foreground/60 font-medium">{{ t('activity_logs.settings_events_label', 'Settings changes') }}</span>
         </div>
       </Card>
 
@@ -472,7 +485,7 @@ onMounted(() => {
         </div>
         <div class="mt-3 flex items-baseline gap-2">
           <span class="text-2xl sm:text-3xl font-black tracking-tight text-amber-400">{{ stats.activeActors }}</span>
-          <span class="text-xs text-muted-foreground/60 font-medium">{{ t('activity_logs.filters.users', 'Users') }}</span>
+          <span class="text-xs text-muted-foreground/60 font-medium">{{ t('activity_logs.active_operators_label', 'Unique users') }}</span>
         </div>
       </Card>
     </div>

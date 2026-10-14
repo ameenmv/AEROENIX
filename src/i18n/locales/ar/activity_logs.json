@@ -17,6 +17,9 @@
   "stat_auth_events": "تسجيلات الدخول",
   "stat_settings_events": "إعدادات وتحديثات",
   "stat_active_actors": "المستخدمين النشطين",
+  "auth_events_label": "عملية تسجيل",
+  "settings_events_label": "تعديل إعدادات",
+  "active_operators_label": "مستخدمين فريدين",
   "filters": {
     "all": "كل النشاطات",
     "auth": "الأمان والدخول",
