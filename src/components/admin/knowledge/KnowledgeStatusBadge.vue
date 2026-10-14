@@ -1,35 +1,32 @@
 <script setup lang="ts">
 import type { KnowledgeStatus } from '@/types/entities/knowledge'
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-defineProps<{
+const props = defineProps<{
   status: KnowledgeStatus
 }>()
 
-const statusConfig: Record<KnowledgeStatus, { label: string; class: string }> = {
-  active: {
-    label: 'Active',
-    class: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
-  },
-  inactive: {
-    label: 'Inactive',
-    class: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20',
-  },
-}
+const { t } = useI18n()
+
+const label = computed(() => {
+  return props.status === 'active'
+    ? t('knowledge.active', 'Active')
+    : t('knowledge.inactive', 'Inactive')
+})
 </script>
 
 <template>
   <span
-    :class="[
-      'inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider border transition-colors',
-      statusConfig[status]?.class || statusConfig.inactive.class,
-    ]"
+    class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider border transition-colors select-none"
+    :class="status === 'active'
+      ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-400'
+      : 'border-border/50 bg-muted/30 text-muted-foreground'"
   >
     <span
-      :class="[
-        'w-1.5 h-1.5 rounded-full mr-1.5',
-        status === 'active' ? 'bg-emerald-500' : 'bg-slate-400',
-      ]"
+      class="h-1.5 w-1.5 rounded-full me-1.5 shrink-0"
+      :class="status === 'active' ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]' : 'bg-muted-foreground/60'"
     />
-    {{ statusConfig[status]?.label || status }}
+    {{ label }}
   </span>
 </template>

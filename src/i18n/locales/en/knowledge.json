@@ -65,5 +65,24 @@
     "title_required": "Title is required.",
     "content_required": "Content is required.",
     "category_required": "Please select a category."
-  }
+  },
+  "preview_title": "AI Guest Chat Preview",
+  "preview_subtitle": "Live simulation of how the chatbot uses this entry",
+  "preview_sample_q": "What time is check-in?",
+  "preview_sample_a": "Type your answer to see how the AI delivers it to guests in the live chat.",
+  "preview_guest": "Guest",
+  "just_now": "Just now",
+  "preview_tip": "Priority score influences AI retrieval weighting",
+  "copy_answer": "Copy Answer",
+  "copied": "Copied successfully",
+  "ai_synced": "Ready for AI",
+  "ai_not_synced": "Pending AI Sync",
+  "vector_id": "Vector ID",
+  "live_preview": "Live Preview",
+  "edit_entry": "Edit Entry",
+  "total_entries": "total entries",
+  "stat_total_sub": "Indexed knowledge entries",
+  "stat_active_sub": "Actively used in live chatbot",
+  "stat_inactive_sub": "Hidden / skipped by AI",
+  "stat_categories_sub": "Organized topics"
 }
