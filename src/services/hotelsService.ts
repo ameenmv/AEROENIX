@@ -1,4 +1,4 @@
-import type { Hotel, HotelCreatePayload, HotelUpdatePayload } from '@/types/hotel'
+import type { Hotel, HotelCreatePayload, HotelStats, HotelUpdatePayload } from '@/types/hotel'
 import type { ApiSuccessResponse } from '@/types/services/api'
 import api from './api'
 
@@ -39,6 +39,7 @@ export interface HotelPagination {
 export interface HotelListResult {
   data: Hotel[]
   pagination: HotelPagination
+  stats?: HotelStats
 }
 
 export const hotelsService = {
@@ -77,6 +78,7 @@ export const hotelsService = {
         first_page_url: null,
         last_page_url: null,
       },
+      stats: data.stats,
     }
   },
 

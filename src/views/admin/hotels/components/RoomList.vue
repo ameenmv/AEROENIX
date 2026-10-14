@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import {
-  BedDoubleIcon,
+  BedIcon,
   Edit02Icon,
   PlusSignIcon,
   Delete02Icon,
@@ -89,26 +89,26 @@ const { mutate: deleteRoom, isPending: isDeleting } = useMutation({
 })
 
 const getStatusColor = (status: string) => {
-  if (status === 'available') return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-  if (status === 'maintenance') return 'bg-amber-500/10 text-amber-500 border-amber-500/20'
-  return 'bg-red-500/10 text-red-500 border-red-500/20'
+  if (status === 'available') return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25'
+  if (status === 'maintenance') return 'bg-amber-500/10 text-amber-400 border-amber-500/25'
+  return 'bg-rose-500/10 text-rose-400 border-rose-500/25'
 }
 </script>
 
 <template>
-  <div class="space-y-4 mt-6">
+  <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <h2 class="text-lg font-bold flex items-center gap-2">
-        <HugeiconsIcon :icon="BedDoubleIcon" :size="20" class="text-primary" />
+      <h2 class="text-base font-bold flex items-center gap-2 text-foreground">
+        <HugeiconsIcon :icon="BedIcon" :size="18" class="text-primary" />
         {{ t('rooms.title', 'Hotel Rooms') }}
       </h2>
-      <Button @click="openCreateForm" class="gap-2">
-        <HugeiconsIcon :icon="PlusSignIcon" :size="16" />
+      <Button size="sm" @click="openCreateForm" class="gap-1.5 rounded-xl text-xs bg-primary text-primary-foreground shadow-md shadow-primary/20">
+        <HugeiconsIcon :icon="PlusSignIcon" :size="15" />
         {{ t('rooms.add_room', 'Add Room') }}
       </Button>
     </div>
 
-    <div class="rounded-xl border border-border bg-card overflow-hidden">
+    <div class="rounded-2xl border border-border/60 bg-card/80 backdrop-blur-xl overflow-hidden shadow-sm">
       <Table>
         <TableHeader>
           <TableRow class="hover:bg-transparent bg-muted/30">
@@ -168,7 +168,7 @@ const getStatusColor = (status: string) => {
           <TableRow v-else>
             <TableCell colspan="5" class="h-32 text-center text-muted-foreground">
               <div class="flex flex-col items-center justify-center gap-2">
-                <HugeiconsIcon :icon="BedDoubleIcon" :size="32" class="opacity-20" />
+                <HugeiconsIcon :icon="BedIcon" :size="32" class="opacity-20 text-muted-foreground" />
                 <p>{{ t('rooms.no_rooms', 'No rooms found for this hotel.') }}</p>
                 <Button variant="link" @click="openCreateForm">{{ t('rooms.create_first', 'Create the first room') }}</Button>
               </div>

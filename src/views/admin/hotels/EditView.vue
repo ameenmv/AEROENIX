@@ -2,6 +2,9 @@
 import type { Hotel } from '@/types/hotel'
 import { watch } from 'vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { ArrowLeft01Icon, Building04Icon, Location01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
+import { Button } from '@/components/uic/button'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useForm } from '@/composables/shared/useForm'
@@ -87,31 +90,61 @@ watch(
 </script>
 
 <template>
-  <div class="space-y-6">
-    <h1 class="text-2xl font-bold">
-      {{ t('actions.edit', 'Edit') }} {{ t('hotels.title', 'Hotel') }}
-    </h1>
+  <div class="space-y-6 max-w-4xl mx-auto">
+    <!-- Top Bar -->
+    <div class="flex items-center justify-between pb-2 border-b border-border/50">
+      <div class="flex items-center gap-3">
+        <Button
+          variant="outline"
+          size="icon"
+          class="h-9 w-9 rounded-xl border-border/60 hover:bg-muted/80 transition-colors"
+          @click="router.push({ name: 'admin-hotels' })"
+        >
+          <HugeiconsIcon :icon="ArrowLeft01Icon" :size="16" class="rtl:rotate-180" />
+        </Button>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+            {{ t('actions.edit', 'Edit') }} {{ t('hotels.title', 'Hotel') }}
+          </h1>
+          <p class="text-xs text-muted-foreground mt-0.5">
+            {{ item?.name || t('hotels.subtitle', 'Update hotel information and operational settings') }}
+          </p>
+        </div>
+      </div>
+
+      <span
+        v-if="item"
+        class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider border select-none"
+        :class="item.status === 'active'
+          ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-400'
+          : 'border-amber-500/25 bg-amber-500/10 text-amber-400'"
+      >
+        <span
+          class="h-1.5 w-1.5 rounded-full me-1.5 shrink-0"
+          :class="item.status === 'active' ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]' : 'bg-amber-400'"
+        />
+        {{ item.status }}
+      </span>
+    </div>
 
     <div v-if="isLoading" class="py-12 flex justify-center">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div class="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent" />
     </div>
 
     <template v-else-if="item">
-      <!-- Hotel info header -->
-      <div class="rounded-lg border p-4 bg-muted/30">
-        <div class="flex items-center gap-3">
-          <div>
-            <span class="font-semibold">{{ item.name }}</span>
-            <span v-if="item.address" class="text-sm text-muted-foreground ml-2">{{ item.address }}</span>
+      <!-- Hotel Quick Banner -->
+      <div class="rounded-2xl border border-border/60 bg-gradient-to-r from-primary/10 via-card to-card p-5 backdrop-blur-xl flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <div class="h-12 w-12 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center text-primary font-bold text-base shadow-sm">
+            <HugeiconsIcon :icon="Building04Icon" :size="22" />
           </div>
-          <span
-            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize"
-            :class="item.status === 'active'
-              ? 'bg-emerald-500/10 text-emerald-500'
-              : 'bg-amber-500/10 text-amber-500'"
-          >
-            {{ item.status }}
-          </span>
+          <div>
+            <h2 class="text-base font-bold text-foreground">{{ item.name }}</h2>
+            <p v-if="item.address" class="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+              <HugeiconsIcon :icon="Location01Icon" :size="12" />
+              <span>{{ item.address }}</span>
+            </p>
+          </div>
         </div>
       </div>
 

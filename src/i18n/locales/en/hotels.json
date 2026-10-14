@@ -52,5 +52,23 @@
       "heading": "Admin Invitation",
       "subheading": "We will send an invitation email to set up the admin account."
     }
-  }
+  },
+  "kpi_total": "Total Properties",
+  "kpi_total_desc": "Registered hotel locations",
+  "kpi_active": "Active Hotels",
+  "kpi_active_desc": "Operational & accepting guests",
+  "kpi_inactive": "Inactive",
+  "kpi_inactive_desc": "Pending or under maintenance",
+  "kpi_rooms": "Total Rooms",
+  "kpi_rooms_desc": "Across all registered hotels",
+  "status_all": "All Hotels",
+  "status_active": "Active",
+  "status_inactive": "Inactive",
+  "no_hotels": "No hotels found",
+  "no_hotels_desc": "Get started by registering your first hotel property.",
+  "manage_rooms": "Manage Rooms",
+  "hotel_info": "Property Overview",
+  "operations": "Operations & Hours",
+  "location_contact": "Location & Contact",
+  "staff_team": "Team & Access"
 }

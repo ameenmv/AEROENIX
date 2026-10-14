@@ -20,9 +20,10 @@ export interface Hotel {
   /** Always returned in list and detail */
   address?: string | null
   staff_count?: number
+  rooms_count?: number
   conversations_count?: number | null
 
-  /** Detail-only fields (mergeWhen !isList) */
+  /** Detail and List fields */
   country?: string | null
   currency?: string | null
   phone?: string | null
@@ -33,6 +34,13 @@ export interface Hotel {
   description?: string | null
   created_at?: string | null
   updated_at?: string | null
+}
+
+export interface HotelStats {
+  total: number
+  active: number
+  inactive: number
+  total_rooms: number
 }
 
 // ── Create Hotel ────────────────────────────────────────────────────────────

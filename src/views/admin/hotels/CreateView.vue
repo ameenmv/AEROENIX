@@ -111,7 +111,7 @@ function prevStep() {
 
     <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
       <!-- Left Sidebar: Stepper -->
-      <div class="w-full md:w-64 lg:w-72 flex-shrink-0 bg-card rounded-2xl border shadow-sm p-6">
+      <div class="w-full md:w-64 lg:w-72 flex-shrink-0 bg-card/80 rounded-2xl border border-border/60 shadow-sm p-6 backdrop-blur-xl">
         <Stepper v-model="currentStep" class="flex flex-col gap-6">
           <StepperItem v-for="s in steps" :key="s.step" :step="s.step" class="relative flex w-full items-start gap-4">
             <StepperTrigger class="flex flex-row items-center justify-start gap-4 w-full text-left group">
@@ -129,7 +129,7 @@ function prevStep() {
       </div>
 
       <!-- Right Panel: Form Content -->
-      <div class="flex-1 w-full bg-card rounded-2xl border shadow-sm">
+      <div class="flex-1 w-full bg-card/80 rounded-2xl border border-border/60 shadow-sm backdrop-blur-xl">
         <form @submit.prevent="form.onSubmit">
           <div class="p-8">
             <!-- Step 1: Basic Info -->
