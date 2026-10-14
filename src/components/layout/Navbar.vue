@@ -268,7 +268,7 @@ function openProfileCtx(event: MouseEvent) {
             :side-offset="8"
             class="w-[400px] !p-0 !rounded-[20px] border border-border bg-card shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] overflow-hidden"
           >
-            <NotificationPanel @close="notifOpen = false" />
+            <NotificationPanel v-if="notifOpen" @close="notifOpen = false" />
           </PopoverContent>
         </Popover>
       </TooltipProvider>

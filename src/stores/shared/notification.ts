@@ -25,16 +25,41 @@ export const useNotificationStore = defineStore('notification', () => {
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
+  let inFlightUnreadCountPromise: Promise<number> | null = null
+  let lastUnreadFetchTime = 0
+  const UNREAD_CACHE_TTL = 10_000 // 10 seconds
+
   /**
    * Fetch unread count for the badge.
+   * Deduplicates concurrent in-flight calls and caches for 10 seconds.
    */
-  async function fetchUnreadCount() {
-    try {
-      unreadCount.value = await platformNotificationsService.unreadCount()
+  async function fetchUnreadCount(force = false): Promise<number> {
+    const now = Date.now()
+    if (!force && now - lastUnreadFetchTime < UNREAD_CACHE_TTL && !inFlightUnreadCountPromise) {
+      return unreadCount.value
     }
-    catch (error) {
-      console.error('[NotificationStore] Failed to fetch unread count:', error)
+
+    if (inFlightUnreadCountPromise) {
+      return inFlightUnreadCountPromise
     }
+
+    inFlightUnreadCountPromise = (async () => {
+      try {
+        const count = await platformNotificationsService.unreadCount()
+        unreadCount.value = count
+        lastUnreadFetchTime = Date.now()
+        return count
+      }
+      catch (error) {
+        console.error('[NotificationStore] Failed to fetch unread count:', error)
+        return unreadCount.value
+      }
+      finally {
+        inFlightUnreadCountPromise = null
+      }
+    })()
+
+    return inFlightUnreadCountPromise
   }
 
   /**

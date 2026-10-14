@@ -200,9 +200,9 @@ export const useAuthStore = defineStore('auth', () => {
   // ── Actions ─────────────────────────────────────────────────────────────────
 
   /** Helper to load profile & permissions after login */
-  async function resolveUserPermissions(): Promise<string[]> {
+  async function resolveUserPermissions(cachedMe?: AuthUser): Promise<string[]> {
     try {
-      const me = await authService.me()
+      const me = cachedMe || await authService.me()
       if (me) {
         user.value = { ...(user.value || {}), ...me }
       }
@@ -287,7 +287,7 @@ export const useAuthStore = defineStore('auth', () => {
     return withLoading(async () => {
       const me = await authService.me()
       user.value = me
-      const perms = await resolveUserPermissions()
+      const perms = await resolveUserPermissions(me)
       syncPermissions(perms)
       return me
     })
