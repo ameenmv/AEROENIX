@@ -397,6 +397,7 @@ declare module 'vue' {
     RestoreCircleIcon: typeof import('./components/icons/RestoreCircleIcon.vue')['default']
     RetangleIcon: typeof import('./components/icons/RetangleIcon.vue')['default']
     RichTextInputField: typeof import('./components/uic/inputs/RichTextInputField.vue')['default']
+    RolePermissionsBoard: typeof import('./components/roles/RolePermissionsBoard.vue')['default']
     RolesCircleIcon: typeof import('./components/icons/RolesCircleIcon.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
