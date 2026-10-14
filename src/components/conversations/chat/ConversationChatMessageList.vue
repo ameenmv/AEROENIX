@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import { SparklesIcon, UserGroupIcon, Copy01Icon, Tick02Icon } from '@hugeicons/core-free-icons'
+import {
+  Copy01Icon,
+  SparklesIcon,
+  Tick02Icon,
+  UserGroupIcon,
+} from '@hugeicons/core-free-icons'
 import { CheckCheck } from 'lucide-vue-next'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { ArrowDown } from 'lucide-vue-next'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { InboxMessageItem, ConversationStatusResponse } from '@/types/entities/conversation'
+import type { ConversationStatusResponse, InboxMessageItem } from '@/types/entities/conversation'
 
 const props = defineProps<{
   messages: InboxMessageItem[]
@@ -63,18 +69,15 @@ function handleScroll() {
   if (!listRef.value) return
   const { scrollTop, scrollHeight, clientHeight } = listRef.value
   const distanceToBottom = scrollHeight - scrollTop - clientHeight
-  // Show FAB if user scrolled up more than 150px
   showScrollFab.value = distanceToBottom > 150
 }
 
 watch(() => props.messages, (_, oldVal) => {
   nextTick(() => {
     if (!listRef.value) return
-    // If we were already at the bottom (or it's initial load), auto-scroll
     const { scrollTop, scrollHeight, clientHeight } = listRef.value
     const distanceToBottom = scrollHeight - scrollTop - clientHeight
     
-    // Auto-scroll if close to bottom OR if it's the first load (oldVal empty)
     if (distanceToBottom < 200 || !oldVal || oldVal.length === 0) {
       scrollToBottom('smooth')
     }
@@ -84,7 +87,6 @@ watch(() => props.messages, (_, oldVal) => {
 onMounted(() => {
   if (listRef.value) {
     listRef.value.addEventListener('scroll', handleScroll)
-    // Initial scroll
     setTimeout(() => scrollToBottom('auto'), 100)
   }
 })
@@ -95,7 +97,7 @@ onUnmounted(() => {
   }
 })
 
-// ── Hover Actions ────────────────────────────────────────────────────────────
+// ── Copy Message ─────────────────────────────────────────────────────────────
 const copiedMsgId = ref<number | null>(null)
 function copyToClipboard(id: number, text: string) {
   navigator.clipboard.writeText(text).then(() => {
@@ -113,13 +115,13 @@ function copyToClipboard(id: number, text: string) {
   <div class="relative flex-1 min-h-0 flex flex-col h-full" :style="{ zoom: props.chatTextScale || 1 }">
     <div 
       ref="listRef" 
-      class="flex-1 px-4 py-4 overflow-y-auto space-y-6 scroll-smooth"
+      class="flex-1 px-4 sm:px-6 py-6 overflow-y-auto space-y-6 scroll-smooth"
     >
       <template v-for="(group, groupIdx) in groupedMessages" :key="'group-' + groupIdx">
         
-        <!-- Date Separator -->
+        <!-- Date Separator Floating Badge -->
         <div class="flex justify-center my-4 sticky top-2 z-10">
-          <div class="px-3 py-1 rounded-full bg-background/80 backdrop-blur-sm border border-border/60 text-[11px] font-bold text-muted-foreground shadow-sm">
+          <div class="px-3.5 py-1 rounded-full bg-card/85 backdrop-blur-md border border-border/50 text-[11px] font-bold text-muted-foreground shadow-xs">
             {{ group.dateLabel }}
           </div>
         </div>
@@ -130,35 +132,29 @@ function copyToClipboard(id: number, text: string) {
           class="flex flex-col group relative msg-enter-anim"
           :class="msg.sender_type === 'customer' ? 'items-start' : 'items-end'"
         >
-          <!-- Sender Info & Time -->
-          <span class="text-[11px] text-muted-foreground mb-1.5 px-1 flex items-center gap-1.5 font-medium">
-            <span v-if="msg.sender_type === 'ai'" class="text-purple-500 dark:text-purple-400 font-bold flex items-center gap-1">
+          <!-- Sender Info Header -->
+          <span class="text-[11px] text-muted-foreground mb-1.5 px-1.5 flex items-center gap-1.5 font-medium">
+            <span v-if="msg.sender_type === 'ai'" class="text-purple-400 font-bold flex items-center gap-1">
               <HugeiconsIcon :icon="SparklesIcon" :size="12" /> {{ t('conversations.ai_assistant', 'AI Assistant') }}
             </span>
-            <span v-else-if="msg.sender_type === 'staff'" class="text-blue-600 dark:text-blue-400 font-bold flex items-center gap-1">
+            <span v-else-if="msg.sender_type === 'staff'" class="text-primary font-bold flex items-center gap-1">
               <HugeiconsIcon :icon="UserGroupIcon" :size="12" /> {{ t('conversations.staff_agent', 'Staff Agent') }}
             </span>
             <span v-else class="font-bold text-foreground/80">{{ t('conversations.customer', 'Customer') }}</span>
-            <span class="opacity-80">• {{ msg.time }}</span>
+            <span class="opacity-70 font-mono">• {{ msg.time }}</span>
 
-            <!-- Status Ticks (for Outbound) -->
+            <!-- Outbound Delivery Ticks -->
             <span v-if="msg.sender_type !== 'customer'" class="flex items-center ml-0.5">
               <CheckCheck 
                 v-if="msg.status === 'read' || msg.status === 'delivered'" 
-                class="w-[16px] h-[16px]" 
-                :class="msg.status === 'read' ? 'text-blue-500 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'" 
-              />
-              <HugeiconsIcon 
-                v-else-if="msg.status === 'sent'" 
-                :icon="Tick02Icon" 
-                :size="16" 
-                class="text-slate-500 dark:text-slate-400" 
+                class="w-3.5 h-3.5" 
+                :class="msg.status === 'read' ? 'text-primary' : 'text-muted-foreground/60'" 
               />
               <HugeiconsIcon 
                 v-else 
                 :icon="Tick02Icon" 
-                :size="16" 
-                class="text-slate-400/60 dark:text-slate-500/60" 
+                :size="14" 
+                class="text-muted-foreground/60" 
               />
             </span>
           </span>
@@ -168,13 +164,13 @@ function copyToClipboard(id: number, text: string) {
             
             <!-- Message Bubble -->
             <div
-              class="max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed shadow-sm relative whitespace-pre-wrap break-words"
+              class="max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm relative whitespace-pre-wrap break-words border"
               :class="[
                 msg.sender_type === 'customer'
-                  ? 'bg-card text-foreground rounded-tl-sm border border-border/50'
+                  ? 'bg-card/90 text-foreground rounded-tl-sm border-border/50 shadow-xs'
                   : msg.sender_type === 'ai'
-                    ? 'bg-purple-600/90 text-white rounded-tr-sm shadow-purple-600/20'
-                    : 'bg-primary text-primary-foreground rounded-tr-sm shadow-primary/20',
+                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-tr-sm border-purple-500/30 shadow-xs'
+                    : 'bg-primary text-primary-foreground rounded-tr-sm border-primary/40 shadow-xs shadow-primary/20',
               ]"
             >
               {{ msg.text }}
@@ -182,12 +178,12 @@ function copyToClipboard(id: number, text: string) {
 
             <!-- Hover Action: Copy -->
             <button 
-              class="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full hover:bg-muted/50 text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
-              :class="{ '!opacity-100 text-emerald-500': copiedMsgId === msg.id }"
+              class="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-xl hover:bg-muted/50 text-muted-foreground hover:text-foreground shrink-0 cursor-pointer border border-transparent hover:border-border/40"
+              :class="{ '!opacity-100 text-emerald-400': copiedMsgId === msg.id }"
               @click="copyToClipboard(msg.id, msg.text)"
               :title="copiedMsgId === msg.id ? t('conversations.copied', 'Copied') : t('conversations.copy_message', 'Copy message')"
             >
-              <HugeiconsIcon :icon="copiedMsgId === msg.id ? Tick02Icon : Copy01Icon" :size="16" />
+              <HugeiconsIcon :icon="copiedMsgId === msg.id ? Tick02Icon : Copy01Icon" :size="15" />
             </button>
           </div>
         </div>
@@ -205,10 +201,10 @@ function copyToClipboard(id: number, text: string) {
     >
       <button
         v-if="showScrollFab"
-        class="absolute bottom-4 right-4 w-10 h-10 bg-background/90 backdrop-blur-sm border border-border/50 rounded-full shadow-lg flex items-center justify-center text-foreground hover:bg-accent hover:text-accent-foreground z-20"
+        class="absolute bottom-4 right-4 w-9 h-9 bg-card/90 backdrop-blur-md border border-border/50 rounded-full shadow-lg flex items-center justify-center text-foreground hover:bg-muted transition-all z-20 cursor-pointer"
         @click="scrollToBottom('smooth')"
       >
-        <ArrowDown class="w-5 h-5" />
+        <ArrowDown class="w-4 h-4" />
       </button>
     </transition>
   </div>
@@ -218,15 +214,15 @@ function copyToClipboard(id: number, text: string) {
 @keyframes msgEnter {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.98);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
 .msg-enter-anim {
-  animation: msgEnter 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: msgEnter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 </style>

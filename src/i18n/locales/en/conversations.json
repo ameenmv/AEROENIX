@@ -43,5 +43,19 @@
   "ai_assistant": "AI Assistant",
   "staff_agent": "Staff Agent",
   "customer": "Customer",
-  "copy_message": "Copy message"
+  "copy_message": "Copy message",
+  "take_over_to_reply": "Take Over to Reply",
+  "take_over_tooltip": "Pause AI and start typing manually",
+  "resume_ai_tooltip": "Resume automatic AI bot responses",
+  "guest_dossier": "Guest Dossier",
+  "guest_profile": "Guest Profile",
+  "conversation_info": "Conversation Details",
+  "total_conversations": "Total Chats",
+  "first_contact": "First Contact",
+  "hot_lead": "Hot Lead",
+  "search_placeholder": "Search conversations...",
+  "active_now": "Online",
+  "copied_phone": "Phone number copied",
+  "copy_phone": "Copy Phone",
+  "call_guest": "Call Guest"
 }

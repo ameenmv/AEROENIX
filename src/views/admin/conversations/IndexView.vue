@@ -313,7 +313,7 @@ onUnmounted(() => {
       <!-- Left: Inbox Sidebar -->
       <div 
         :style="{ width: `${leftWidth}px` }" 
-        class="flex-shrink-0 h-full p-3 pr-0 bg-background/50 border-r border-border/50 transition-all duration-300 z-20"
+        class="flex-shrink-0 h-full p-3 bg-card/30 border-e border-border/50 transition-all duration-300 z-20"
         :class="selectedConversationId ? 'hidden lg:block' : 'w-full lg:w-auto flex-1 lg:flex-none'"
       >
         <ConversationInboxSidebar
@@ -342,15 +342,15 @@ onUnmounted(() => {
 
       <!-- Center: Chat Panel -->
       <div 
-        class="flex-1 min-w-0 h-full p-2 transition-all duration-300"
+        class="flex-1 min-w-0 h-full transition-all duration-300 overflow-hidden"
         :class="!selectedConversationId ? 'hidden lg:block' : 'block'"
       >
-        <div v-if="!selectedConversationId" class="w-full h-full flex flex-col items-center justify-center bg-background rounded-xl border border-border/40 text-center px-4">
-          <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-            <HugeiconsIcon :icon="BubbleChatIcon" :size="40" class="text-primary" />
+        <div v-if="!selectedConversationId" class="w-full h-full flex flex-col items-center justify-center bg-card/20 text-center px-4">
+          <div class="w-18 h-18 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5 text-primary shadow-xs">
+            <HugeiconsIcon :icon="BubbleChatIcon" :size="36" />
           </div>
-          <h2 class="text-2xl font-bold text-foreground mb-2">{{ t('conversations.welcome_title', 'Inbox & Conversations') }}</h2>
-          <p class="text-muted-foreground max-w-sm mx-auto">
+          <h2 class="text-xl font-bold tracking-tight text-foreground mb-2">{{ t('conversations.welcome_title', 'Inbox & Conversations') }}</h2>
+          <p class="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
             {{ t('conversations.welcome_subtitle', 'Select a conversation from the left to start replying, or let AI handle it automatically.') }}
           </p>
         </div>
@@ -391,7 +391,7 @@ onUnmounted(() => {
         v-if="selectedConversationId" 
         v-show="isPropertiesVisible" 
         :style="{ width: `${rightWidth}px` }" 
-        class="hidden 2xl:block flex-shrink-0 h-full border-l border-border/50 transition-all duration-300"
+        class="hidden 2xl:block flex-shrink-0 h-full border-s border-border/50 transition-all duration-300"
       >
         <ConversationPropertiesSidebar
           v-if="activeConversation"

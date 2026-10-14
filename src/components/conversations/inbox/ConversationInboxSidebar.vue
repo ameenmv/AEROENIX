@@ -1,12 +1,19 @@
 <script setup lang="ts">
-import { Search } from 'lucide-vue-next'
-import { WhatsappIcon, InstagramIcon, FacebookIcon, BubbleChatIcon } from '@hugeicons/core-free-icons'
+import {
+  BubbleChatIcon,
+  Cancel01Icon,
+  FacebookIcon,
+  FilterIcon,
+  InstagramIcon,
+  Search01Icon,
+  WhatsappIcon,
+} from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useI18n } from 'vue-i18n'
 import ConversationInboxList from './ConversationInboxList.vue'
 import type { InboxConversationItem } from '@/types/entities/conversation'
 
-const props = defineProps<{
+defineProps<{
   conversations: InboxConversationItem[]
   selectedConversationId: number | null
   searchQuery: string
@@ -26,8 +33,6 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-// We will display all tabs in a scrollable horizontal list
-
 function getProviderIcon(channelBadgeName: string | null | undefined) {
   const name = (channelBadgeName || '').toLowerCase()
   if (name.includes('whatsapp')) return WhatsappIcon
@@ -42,82 +47,83 @@ function selectProvider(id: number | null) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-3 w-full h-full min-h-0 relative">
-    <!-- ── Row 1: Title + Count Badge ──────────────────────────────── -->
-    <div class="flex items-center justify-between w-full flex-shrink-0">
-      <h2 class="text-[15px] font-bold text-foreground">
-        {{ t('conversations.inbox', 'Inbox') }}
-      </h2>
-      <div class="flex items-center px-2 py-0.5 rounded-2xl bg-primary/10">
-        <span class="text-[11px] font-bold text-primary">{{ conversations.length }}</span>
+  <div class="flex flex-col gap-3 w-full h-full min-h-0 relative select-none">
+    <!-- ── Row 1: Header + Count Badge ──────────────────────────────── -->
+    <div class="flex items-center justify-between w-full px-1 flex-shrink-0">
+      <div class="flex items-center gap-2">
+        <h2 class="text-base font-bold tracking-tight text-foreground">
+          {{ t('conversations.inbox', 'Inbox') }}
+        </h2>
+        <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-primary/10 text-primary border border-primary/20">
+          {{ conversations.length }}
+        </span>
       </div>
     </div>
 
-    <!-- ── Row 2: Search Input ─────────────────────────────────────── -->
-    <div class="flex items-center gap-2 flex-shrink-0 min-w-0">
-      <div class="flex items-center gap-2 flex-1 min-w-0 px-3 py-2 rounded-full bg-background border border-border">
-        <Search class="w-[14px] h-[14px] text-muted-foreground flex-shrink-0" />
+    <!-- ── Row 2: Search Input with glassmorphic look ───────────────── -->
+    <div class="flex items-center gap-2 flex-shrink-0 min-w-0 px-1">
+      <div class="flex items-center gap-2.5 flex-1 min-w-0 px-3.5 py-2 rounded-xl bg-muted/30 border border-border/50 focus-within:border-primary/50 focus-within:bg-card transition-all">
+        <HugeiconsIcon :icon="Search01Icon" :size="15" class="text-muted-foreground shrink-0" />
         <input
           :value="searchQuery"
-          :placeholder="t('common.search', 'Search')"
-          class="flex-1 bg-transparent text-[12px] font-normal text-foreground placeholder-muted-foreground outline-none"
+          :placeholder="t('conversations.search_placeholder', 'Search conversations...')"
+          class="flex-1 bg-transparent text-xs font-normal text-foreground placeholder-muted-foreground outline-none min-w-0"
           @input="emit('update:searchQuery', ($event.target as HTMLInputElement).value)"
         >
+        <button
+          v-if="searchQuery"
+          type="button"
+          class="text-muted-foreground hover:text-foreground transition-colors p-0.5"
+          @click="emit('update:searchQuery', '')"
+        >
+          <HugeiconsIcon :icon="Cancel01Icon" :size="13" />
+        </button>
       </div>
     </div>
 
-    <!-- ── Row 3: Platform Tabs ────────────────────────────────────── -->
+    <!-- ── Row 3: Platform Filter Tabs ─────────────────────────────── -->
     <div 
-      class="flex items-center gap-1.5 flex-shrink-0 overflow-x-auto pb-1 no-scrollbar-tabs"
+      class="flex items-center gap-1.5 flex-shrink-0 overflow-x-auto px-1 pb-1 no-scrollbar-tabs"
       style="scrollbar-width: none; -ms-overflow-style: none;"
     >
       <button
         v-for="tab in providerTabs"
         :key="tab.id !== null ? tab.id : 'all'"
-        class="flex items-center gap-[4px] px-[12px] py-[6px] rounded-full text-[11px] font-medium whitespace-nowrap transition-all cursor-pointer flex-shrink-0 border border-transparent"
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex-shrink-0 border"
         :class="activeChannelId === tab.id
-          ? 'bg-primary text-primary-foreground shadow-sm'
-          : 'bg-muted/40 text-muted-foreground hover:bg-muted/80 hover:text-foreground border-border/40'"
+          ? 'bg-primary text-primary-foreground border-primary shadow-xs shadow-primary/25'
+          : 'bg-muted/30 text-muted-foreground hover:bg-muted/60 hover:text-foreground border-border/40'"
         @click="selectProvider(tab.id)"
       >
-        <HugeiconsIcon v-if="tab.id !== null" :icon="getProviderIcon(tab.label)" :size="14" class="flex-shrink-0" />
-        {{ tab.id === null ? t('conversations.all_channels', 'All') : tab.label }}
+        <HugeiconsIcon v-if="tab.id !== null" :icon="getProviderIcon(tab.label)" :size="13" class="shrink-0" />
+        <HugeiconsIcon v-else :icon="FilterIcon" :size="12" class="shrink-0 opacity-70" />
+        <span>{{ tab.id === null ? t('conversations.all_channels', 'All') : tab.label }}</span>
       </button>
     </div>
 
     <!-- ── Loading Skeleton ───────────────────────────────────────── -->
-    <div v-if="isLoading" class="flex flex-col flex-1 overflow-y-auto mt-2">
-      <div v-for="i in 6" :key="i" class="flex items-center gap-3 px-4 py-3 border-b border-border/50">
-        <!-- Avatar skeleton -->
-        <div class="w-[46px] h-[46px] rounded-full bg-muted/60 animate-pulse flex-shrink-0" />
-        <div class="flex flex-col flex-1 gap-2">
-          <!-- Name & Time skeleton -->
+    <div v-if="isLoading" class="flex flex-col flex-1 overflow-y-auto px-1 space-y-2 mt-1">
+      <div v-for="i in 6" :key="i" class="flex items-center gap-3 p-3 rounded-xl bg-card/40 border border-border/30">
+        <div class="w-11 h-11 rounded-full bg-muted/60 animate-pulse shrink-0" />
+        <div class="flex flex-col flex-1 gap-2 min-w-0">
           <div class="flex justify-between items-center w-full">
             <div class="h-3.5 bg-muted/60 rounded-full w-24 animate-pulse" />
-            <div class="h-2.5 bg-muted/60 rounded-full w-8 animate-pulse" />
+            <div class="h-2.5 bg-muted/50 rounded-full w-10 animate-pulse" />
           </div>
-          <!-- Message preview skeleton -->
-          <div class="h-3 bg-muted/40 rounded-full w-[85%] animate-pulse" />
+          <div class="h-3 bg-muted/40 rounded-full w-4/5 animate-pulse" />
         </div>
       </div>
     </div>
 
-    <!-- ── Ticket List ────────────────────────────────────────────── -->
-    <template v-else>
-      <ConversationInboxList
-        :conversations="conversations"
-        :selected-conversation-id="selectedConversationId"
-        :has-more="hasMore"
-        :is-fetching-more="isFetchingMore"
-        @select-conversation="emit('selectConversation', $event)"
-        @load-more="emit('loadMore')"
-      />
-    </template>
+    <!-- ── Conversation List ──────────────────────────────────────── -->
+    <ConversationInboxList
+      v-else
+      :conversations="conversations"
+      :selected-conversation-id="selectedConversationId"
+      :has-more="hasMore"
+      :is-fetching-more="isFetchingMore"
+      @select-conversation="emit('selectConversation', $event)"
+      @load-more="emit('loadMore')"
+    />
   </div>
 </template>
-
-<style scoped>
-.no-scrollbar-tabs::-webkit-scrollbar { 
-  display: none; 
-}
-</style>

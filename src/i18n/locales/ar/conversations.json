@@ -43,5 +43,19 @@
   "ai_assistant": "مساعد الذكاء الاصطناعي",
   "staff_agent": "موظف الدعم",
   "customer": "العميل",
-  "copy_message": "نسخ الرسالة"
+  "copy_message": "نسخ الرسالة",
+  "take_over_to_reply": "تولّي المحادثة للرد",
+  "take_over_tooltip": "إيقاف الذكاء الاصطناعي مؤقتاً والرد يدوياً",
+  "resume_ai_tooltip": "استئناف ردود روبوت الذكاء الاصطناعي التلقائية",
+  "guest_dossier": "ملف النزيل",
+  "guest_profile": "الملف التعريفي للنزيل",
+  "conversation_info": "تفاصيل المحادثة",
+  "total_conversations": "إجمالي المحادثات",
+  "first_contact": "أول اتصال",
+  "hot_lead": "عميل مميز (Hot)",
+  "search_placeholder": "البحث في المحادثات...",
+  "active_now": "متصل الآن",
+  "copied_phone": "تم نسخ رقم الهاتف",
+  "copy_phone": "نسخ الهاتف",
+  "call_guest": "اتصال بالنزيل"
 }

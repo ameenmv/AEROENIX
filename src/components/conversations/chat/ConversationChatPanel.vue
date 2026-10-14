@@ -1,6 +1,12 @@
 <script setup lang="ts">
+import { BubbleChatIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { useI18n } from 'vue-i18n'
-import type { InboxMessageItem, ConversationStatusResponse, InboxConversationDetail } from '@/types/entities/conversation'
+import type {
+  ConversationStatusResponse,
+  InboxConversationDetail,
+  InboxMessageItem,
+} from '@/types/entities/conversation'
 import ConversationChatHeader from './ConversationChatHeader.vue'
 import ConversationChatInput from './ConversationChatInput.vue'
 import ConversationChatMessageList from './ConversationChatMessageList.vue'
@@ -33,25 +39,27 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div class="flex flex-col flex-1 min-w-0 h-full rounded-2xl overflow-hidden relative border border-border/50">
-    <!-- Empty state -->
-    <div v-if="!conversation" class="flex flex-col flex-1 overflow-hidden p-4 bg-white/50 dark:bg-card/60 border-[0.77px] border-white dark:border-border/20 backdrop-blur-[9px] items-center justify-center text-center">
-      <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
-        <MessageSquare class="w-10 h-10 text-primary" />
+  <div class="flex flex-col flex-1 min-w-0 h-full relative overflow-hidden bg-background/50">
+    <!-- Empty State -->
+    <div
+      v-if="!conversation"
+      class="flex flex-col flex-1 items-center justify-center p-8 text-center bg-card/40 backdrop-blur-md"
+    >
+      <div class="w-18 h-18 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5 text-primary shadow-xs">
+        <HugeiconsIcon :icon="BubbleChatIcon" :size="36" />
       </div>
-      <h2 class="text-2xl font-light text-foreground mb-3">
+      <h2 class="text-xl font-bold tracking-tight text-foreground mb-2">
         {{ t('conversations.welcome_title', 'Azul Conversations') }}
       </h2>
-      <p class="text-[14px] text-muted-foreground max-w-[400px]">
+      <p class="text-xs sm:text-sm text-muted-foreground max-w-sm leading-relaxed">
         {{ t('conversations.welcome_subtitle', 'Select a conversation from the inbox to start chatting and managing leads.') }}
       </p>
     </div>
 
+    <!-- Active Chat Panel -->
     <template v-else>
-      <!-- Chat background (similar to reference) -->
-      <div class="absolute inset-0 bg-muted/20 dark:bg-background pointer-events-none" />
-
-      <div class="relative z-10 flex flex-col flex-1 gap-2 overflow-hidden min-h-0 bg-card/40 backdrop-blur-[2px]">
+      <div class="flex flex-col flex-1 overflow-hidden min-h-0">
+        <!-- Header -->
         <ConversationChatHeader
           :conversation="conversation"
           :status="status"
@@ -67,46 +75,23 @@ const { t } = useI18n()
           @back="emit('back')"
         />
 
-        <!-- Loading skeleton -->
-        <div v-if="isLoading" class="flex flex-col flex-1 overflow-hidden gap-2">
-          <div class="flex flex-col flex-1 gap-4 px-4 py-4 overflow-hidden justify-end">
-            
-            <!-- Contact bubble (left) -->
-            <div class="flex flex-col items-start gap-1">
-              <div class="w-[70%] sm:w-[60%] rounded-[18px] rounded-tl-sm p-3 bg-card border border-border/50 shadow-sm animate-pulse">
-                <div class="h-3 w-full rounded-full bg-muted/60 mb-2" />
-                <div class="h-3 w-[80%] rounded-full bg-muted/60 mb-2" />
-                <div class="h-3 w-[40%] rounded-full bg-muted/60" />
-              </div>
-            </div>
-
-            <!-- Agent bubble (right) -->
-            <div class="flex flex-col items-end gap-1">
-              <div class="w-[60%] sm:w-[50%] rounded-[18px] rounded-tr-sm p-3 bg-primary/15 shadow-sm animate-pulse">
-                <div class="h-3 w-full rounded-full bg-primary/20 mb-2" />
-                <div class="h-3 w-[60%] rounded-full bg-primary/20" />
-              </div>
-            </div>
-
-            <!-- Contact bubble (left) -->
-            <div class="flex flex-col items-start gap-1">
-              <div class="w-[50%] sm:w-[40%] rounded-[18px] rounded-tl-sm p-3 bg-card border border-border/50 shadow-sm animate-pulse">
-                <div class="h-3 w-full rounded-full bg-muted/60" />
-              </div>
-            </div>
-
-            <!-- Agent bubble (right) -->
-            <div class="flex flex-col items-end gap-1">
-              <div class="w-[75%] sm:w-[65%] rounded-[18px] rounded-tr-sm p-3 bg-primary/15 shadow-sm animate-pulse">
-                <div class="h-3 w-full rounded-full bg-primary/20 mb-2" />
-                <div class="h-3 w-full rounded-full bg-primary/20 mb-2" />
-                <div class="h-3 w-[70%] rounded-full bg-primary/20" />
-              </div>
-            </div>
-            
+        <!-- Loading Skeleton -->
+        <div v-if="isLoading" class="flex flex-col flex-1 justify-end p-6 space-y-4">
+          <div class="flex items-start gap-2 max-w-[60%]">
+            <div class="w-full h-16 rounded-2xl rounded-tl-sm bg-muted/40 animate-pulse border border-border/40" />
+          </div>
+          <div class="flex items-end justify-end gap-2 ml-auto max-w-[55%]">
+            <div class="w-full h-12 rounded-2xl rounded-tr-sm bg-primary/15 animate-pulse" />
+          </div>
+          <div class="flex items-start gap-2 max-w-[45%]">
+            <div class="w-full h-10 rounded-2xl rounded-tl-sm bg-muted/40 animate-pulse border border-border/40" />
+          </div>
+          <div class="flex items-end justify-end gap-2 ml-auto max-w-[65%]">
+            <div class="w-full h-14 rounded-2xl rounded-tr-sm bg-primary/15 animate-pulse" />
           </div>
         </div>
 
+        <!-- Chat Stream & Input -->
         <template v-else>
           <ConversationChatMessageList
             :messages="messages"
@@ -120,6 +105,7 @@ const { t } = useI18n()
             :is-locked="status?.is_ai_paused === false" 
             @update:new-message="emit('update:newMessage', $event)"
             @send-message="emit('sendMessage')"
+            @take-over="emit('toggleHandoff')"
           />
         </template>
       </div>
