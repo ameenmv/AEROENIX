@@ -12,9 +12,18 @@ export interface BookingPagination {
   total_pages: number
 }
 
+export interface BookingStats {
+  total: number
+  confirmed: number
+  pending: number
+  rejected: number
+  total_revenue: number
+}
+
 export interface BookingListResult {
   data: Booking[]
   pagination: BookingPagination
+  stats?: BookingStats
 }
 
 export const bookingsService = {
@@ -40,6 +49,7 @@ export const bookingsService = {
         current_page: params.page || 1,
         total_pages: 0,
       },
+      stats: data.stats,
     }
   },
 

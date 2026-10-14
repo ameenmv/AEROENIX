@@ -49,6 +49,7 @@ declare module 'vue' {
     BinIcon: typeof import('./components/icons/BinIcon.vue')['default']
     BlankLayout: typeof import('./components/layout/BlankLayout.vue')['default']
     BodyguardSupervisorMaleIcon: typeof import('./components/icons/BodyguardSupervisorMaleIcon.vue')['default']
+    BookingStatusBadge: typeof import('./components/admin/bookings/BookingStatusBadge.vue')['default']
     Breadcrumb: typeof import('./components/uic/breadcrumb/Breadcrumb.vue')['default']
     BreadcrumbEllipsis: typeof import('./components/uic/breadcrumb/BreadcrumbEllipsis.vue')['default']
     BreadcrumbItem: typeof import('./components/uic/breadcrumb/BreadcrumbItem.vue')['default']
