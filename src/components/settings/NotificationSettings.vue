@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import type { NotificationCategory, UserNotificationSettings } from '@/types/entities/platformNotification'
-import { Bell, ChevronDown, Mail, Volume2 } from 'lucide-vue-next'
+import {
+  Mail01Icon,
+  Notification03Icon,
+} from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
+import { ChevronDown, Volume2 } from 'lucide-vue-next'
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
@@ -112,47 +117,49 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="space-y-6 max-w-[720px]">
+  <div class="space-y-8 max-w-[760px] mx-auto select-none">
 
     <!-- Loading Skeleton -->
     <template v-if="!store.settings">
       <div class="space-y-4">
-        <div v-for="i in 3" :key="i" class="flex items-center gap-3 p-3 rounded-lg border border-border/40">
-          <Skeleton class="w-9 h-9 rounded-lg" />
-          <div class="flex-1 space-y-1.5">
-            <Skeleton class="h-3.5 w-28" />
-            <Skeleton class="h-2.5 w-48" />
+        <div v-for="i in 3" :key="i" class="flex items-center gap-4 p-4 rounded-2xl border border-border/40 bg-card/40">
+          <Skeleton class="w-10 h-10 rounded-xl" />
+          <div class="flex-1 space-y-2">
+            <Skeleton class="h-4 w-32" />
+            <Skeleton class="h-3 w-52" />
           </div>
-          <Skeleton class="w-8 h-[18px] rounded-full" />
+          <Skeleton class="w-9 h-5 rounded-full" />
         </div>
       </div>
     </template>
 
     <template v-else>
 
-      <!-- Delivery Methods -->
-      <div>
-        <h3 class="text-sm font-semibold text-foreground mb-1">
-          {{ t('settings.delivery_methods', 'Delivery Methods') }}
-        </h3>
-        <p class="text-xs text-muted-foreground mb-4">
-          {{ t('settings.notification_preferences_desc', 'Choose which notifications you want to receive and how.') }}
-        </p>
+      <!-- ── Delivery Methods ─────────────────────────────────────────── -->
+      <div class="space-y-4">
+        <div>
+          <h3 class="text-base font-bold text-foreground">
+            {{ t('settings.delivery_methods', 'Delivery Methods') }}
+          </h3>
+          <p class="text-xs text-muted-foreground mt-0.5">
+            {{ t('settings.notification_preferences_desc', 'Choose which notifications you want to receive and how.') }}
+          </p>
+        </div>
 
         <div class="space-y-3">
-          <!-- In-App -->
+          <!-- In-App Notifications -->
           <div
-            class="flex items-center gap-3 p-3.5 rounded-lg border border-border/40 hover:border-border/70 transition-colors"
+            class="flex items-center gap-4 p-4 rounded-2xl border border-border/40 bg-muted/20 hover:border-border/70 transition-all shadow-xs"
             :class="{ 'opacity-60 pointer-events-none': savingKey === 'in_app_notifications' }"
           >
             <div
-              class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors"
-              :class="store.settings?.in_app_notifications ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'"
+              class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+              :class="store.settings?.in_app_notifications ? 'bg-primary/15 text-primary border border-primary/25' : 'bg-muted/40 text-muted-foreground border border-border/40'"
             >
-              <Bell :size="16" />
+              <HugeiconsIcon :icon="Notification03Icon" :size="20" />
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-foreground">
+              <p class="text-sm font-bold text-foreground">
                 {{ t('settings.in_app', 'In-App Notifications') }}
               </p>
               <p class="text-xs text-muted-foreground mt-0.5">
@@ -175,19 +182,19 @@ onMounted(() => {
             />
           </div>
 
-          <!-- Email -->
+          <!-- Email Notifications -->
           <div
-            class="flex items-center gap-3 p-3.5 rounded-lg border border-border/40 hover:border-border/70 transition-colors"
+            class="flex items-center gap-4 p-4 rounded-2xl border border-border/40 bg-muted/20 hover:border-border/70 transition-all shadow-xs"
             :class="{ 'opacity-60 pointer-events-none': savingKey === 'email_notifications' }"
           >
             <div
-              class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors"
-              :class="store.settings?.email_notifications ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'"
+              class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+              :class="store.settings?.email_notifications ? 'bg-primary/15 text-primary border border-primary/25' : 'bg-muted/40 text-muted-foreground border border-border/40'"
             >
-              <Mail :size="16" />
+              <HugeiconsIcon :icon="Mail01Icon" :size="20" />
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-foreground">
+              <p class="text-sm font-bold text-foreground">
                 {{ t('settings.email_notifications', 'Email Notifications') }}
               </p>
               <p class="text-xs text-muted-foreground mt-0.5">
@@ -209,19 +216,19 @@ onMounted(() => {
             />
           </div>
 
-          <!-- Sound -->
+          <!-- Sound Alerts -->
           <div
-            class="flex items-center gap-3 p-3.5 rounded-lg border border-border/40 hover:border-border/70 transition-colors"
+            class="flex items-center gap-4 p-4 rounded-2xl border border-border/40 bg-muted/20 hover:border-border/70 transition-all shadow-xs"
             :class="{ 'opacity-60 pointer-events-none': savingKey === 'sound_enabled' }"
           >
             <div
-              class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors"
-              :class="store.settings?.sound_enabled ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'"
+              class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+              :class="store.settings?.sound_enabled ? 'bg-primary/15 text-primary border border-primary/25' : 'bg-muted/40 text-muted-foreground border border-border/40'"
             >
-              <Volume2 :size="16" />
+              <Volume2 :size="18" />
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-foreground">
+              <p class="text-sm font-bold text-foreground">
                 {{ t('settings.sound', 'Sound Alerts') }}
               </p>
               <p class="text-xs text-muted-foreground mt-0.5">
@@ -245,40 +252,42 @@ onMounted(() => {
         </div>
       </div>
 
-      <Separator />
+      <Separator class="my-6 border-border/40" />
 
-      <!-- Notification Categories -->
-      <div>
-        <h3 class="text-sm font-semibold text-foreground mb-1">
-          {{ t('settings.notification_categories', 'Notification Categories') }}
-        </h3>
-        <p class="text-xs text-muted-foreground mb-4">
-          {{ t('settings.categories_desc', 'Toggle entire categories or fine-tune individual notification types.') }}
-        </p>
+      <!-- ── Notification Categories ──────────────────────────────────── -->
+      <div class="space-y-4">
+        <div>
+          <h3 class="text-base font-bold text-foreground">
+            {{ t('settings.notification_categories', 'Notification Categories') }}
+          </h3>
+          <p class="text-xs text-muted-foreground mt-0.5">
+            {{ t('settings.categories_desc', 'Toggle entire categories or fine-tune individual notification types.') }}
+          </p>
+        </div>
 
-        <div class="space-y-3">
+        <div class="space-y-3.5">
           <div
             v-for="cat in categoriesList"
             :key="cat.key"
-            class="rounded-lg border border-border/40 overflow-hidden hover:border-border/70 transition-colors"
+            class="rounded-2xl border border-border/40 bg-muted/20 overflow-hidden hover:border-border/70 transition-all shadow-xs"
           >
             <!-- Category header -->
             <div
-              class="flex items-center gap-3 p-3.5"
+              class="flex items-center gap-4 p-4"
               :class="{ 'opacity-60 pointer-events-none': savingKey === cat.settingKey }"
             >
               <div
-                class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                :style="{ backgroundColor: cat.color + '18' }"
+                class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border"
+                :style="{ backgroundColor: cat.color + '15', borderColor: cat.color + '30' }"
               >
                 <span
-                  class="w-2.5 h-2.5 rounded-full"
+                  class="w-3 h-3 rounded-full"
                   :style="{ background: cat.color }"
                 />
               </div>
 
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-foreground">
+                <p class="text-sm font-bold text-foreground">
                   {{ isArabic() ? cat.labelAr : cat.label }}
                 </p>
                 <p class="text-xs text-muted-foreground mt-0.5 line-clamp-1">
@@ -308,26 +317,26 @@ onMounted(() => {
                   type="button"
                   variant="ghost"
                   size="sm"
-                  class="w-full justify-start gap-1.5 h-7 px-3.5 text-[11px] font-semibold text-primary rounded-none border-t border-border/30 hover:bg-muted/30"
+                  class="w-full justify-start gap-1.5 h-8 px-4 text-xs font-bold text-primary rounded-none border-t border-border/30 hover:bg-muted/30"
                 >
-                  <ChevronDown :size="12" class="transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
+                  <ChevronDown :size="13" class="transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
                   {{ t('common.show_types', `Show ${NOTIFICATION_TYPES[cat.key].length} types`) }}
                 </Button>
               </CollapsibleTrigger>
 
               <CollapsibleContent>
-                <div class="border-t border-border/30">
+                <div class="border-t border-border/30 divide-y divide-border/20">
                   <div
                     v-for="typeItem in NOTIFICATION_TYPES[cat.key]"
                     :key="typeItem.type"
-                    class="flex items-center gap-3 px-4 py-2.5 ps-12 hover:bg-muted/20 transition-colors"
+                    class="flex items-center gap-3 px-5 py-3 ps-14 hover:bg-muted/20 transition-colors"
                     :class="{ 'opacity-60 pointer-events-none': savingKey === `type_${typeItem.type}` }"
                   >
                     <div class="flex-1 min-w-0">
-                      <p class="text-xs font-medium text-foreground">
+                      <p class="text-xs font-semibold text-foreground">
                         {{ isArabic() ? typeItem.nameAr : typeItem.name }}
                       </p>
-                      <p class="text-[10px] text-muted-foreground mt-0.5">
+                      <p class="text-[11px] text-muted-foreground mt-0.5">
                         {{ typeItem.description }}
                       </p>
                     </div>
@@ -341,7 +350,7 @@ onMounted(() => {
                     </svg>
                     <SettingsToggle
                       v-else
-                      class="scale-[0.85]"
+                      class="scale-90"
                       :checked="!isTypeDisabled(typeItem.type) && getCategoryEnabled(cat.key)"
                       @update:checked="(val) => handleTypeToggle(typeItem.type, val)"
                     />

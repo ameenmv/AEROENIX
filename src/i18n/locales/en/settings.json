@@ -32,5 +32,12 @@
   "email_notifications": "Email Notifications",
   "email_desc": "Receive email alerts for important events",
   "sound": "Sound Alerts",
-  "sound_desc": "Play a sound when new notifications arrive"
+  "sound_desc": "Play a sound when new notifications arrive",
+  "profile_security": "Profile & Security",
+  "notifications_alerts": "Notifications & Alerts",
+  "security_credentials": "Security & Password",
+  "personal_info": "Personal Information",
+  "password_hint": "Use 8 or more characters with a mix of letters and numbers",
+  "copied": "Copied to clipboard",
+  "all_hotels": "All Properties"
 }

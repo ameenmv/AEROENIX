@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import {
+  Notification03Icon,
   Settings01Icon,
+  UserIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { Bell, User } from 'lucide-vue-next'
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
@@ -36,67 +37,68 @@ function switchTab(tab: 'profile' | 'notifications') {
 </script>
 
 <template>
-  <div class="p-6 text-foreground min-h-[calc(100vh-(--spacing(16)))] bg-background">
-    <div class="max-w-[900px] mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+  <div class="p-4 sm:p-7 text-foreground min-h-[calc(100vh-(--spacing(16)))] bg-background select-none">
+    <div class="max-w-4xl mx-auto space-y-7 animate-in fade-in duration-300">
 
-      <!-- Page Header -->
+      <!-- ── Page Header ────────────────────────────────────────────────── -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div class="flex items-start gap-3">
-          <div class="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
-            <HugeiconsIcon :icon="Settings01Icon" :size="20" class="text-primary" />
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent border border-primary/25 flex items-center justify-center shrink-0 text-primary shadow-xs">
+            <HugeiconsIcon :icon="Settings01Icon" :size="24" />
           </div>
           <div>
-            <h1 class="text-2xl font-bold tracking-tight">
-              {{ t('settings.title', 'Settings') }}
-            </h1>
-            <p class="text-muted-foreground mt-0.5 text-sm">
+            <div class="flex items-center gap-2.5">
+              <h1 class="text-2xl font-bold tracking-tight text-foreground">
+                {{ t('settings.title', 'Settings') }}
+              </h1>
+              <span
+                v-if="store.profile?.role"
+                class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-primary" />
+                {{ store.profile.role.name }}
+              </span>
+            </div>
+            <p class="text-muted-foreground mt-0.5 text-xs sm:text-sm">
               {{ t('settings.subtitle', 'Manage your account preferences, profile, and notification settings.') }}
             </p>
           </div>
         </div>
-      </div>
 
-      <!-- Unified Card: Tabs + Content -->
-      <Card class="border-border/40 overflow-hidden !py-0 !gap-0">
-        <!-- Tab Bar -->
-        <div class="flex border-b border-border">
+        <!-- Luxury Segmented Tab Switcher -->
+        <div class="flex items-center gap-1.5 p-1 rounded-2xl bg-card/80 border border-border/50 backdrop-blur-md shadow-xs">
           <button
-            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors relative"
+            type="button"
+            class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border"
             :class="activeTab === 'profile'
-              ? 'text-primary'
-              : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'"
+              ? 'bg-primary text-primary-foreground border-primary shadow-xs shadow-primary/25'
+              : 'bg-transparent text-muted-foreground hover:text-foreground border-transparent hover:bg-muted/30'"
             @click="switchTab('profile')"
           >
-            <User :size="15" />
-            {{ t('settings.profile', 'Profile') }}
-            <span
-              v-if="activeTab === 'profile'"
-              class="absolute bottom-0 inset-x-4 h-[2px] bg-primary rounded-t-full"
-            />
+            <HugeiconsIcon :icon="UserIcon" :size="16" />
+            <span>{{ t('settings.profile_security', 'Profile & Security') }}</span>
           </button>
+
           <button
-            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors relative"
+            type="button"
+            class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border"
             :class="activeTab === 'notifications'
-              ? 'text-primary'
-              : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'"
+              ? 'bg-primary text-primary-foreground border-primary shadow-xs shadow-primary/25'
+              : 'bg-transparent text-muted-foreground hover:text-foreground border-transparent hover:bg-muted/30'"
             @click="switchTab('notifications')"
           >
-            <Bell :size="15" />
-            {{ t('settings.notifications', 'Notifications') }}
-            <span
-              v-if="activeTab === 'notifications'"
-              class="absolute bottom-0 inset-x-4 h-[2px] bg-primary rounded-t-full"
-            />
+            <HugeiconsIcon :icon="Notification03Icon" :size="16" />
+            <span>{{ t('settings.notifications_alerts', 'Notifications & Alerts') }}</span>
           </button>
         </div>
+      </div>
 
-        <!-- Content -->
-        <div class="p-6">
-          <Transition name="tab-fade" mode="out-in">
-            <ProfileSettings v-if="activeTab === 'profile'" key="profile" />
-            <NotificationSettings v-else key="notifications" />
-          </Transition>
-        </div>
+      <!-- ── Tab Content Card ───────────────────────────────────────────── -->
+      <Card class="rounded-2xl border-border/50 bg-card/70 backdrop-blur-md shadow-xs overflow-hidden p-6 sm:p-8">
+        <Transition name="tab-fade" mode="out-in">
+          <ProfileSettings v-if="activeTab === 'profile'" key="profile" />
+          <NotificationSettings v-else key="notifications" />
+        </Transition>
       </Card>
     </div>
   </div>
