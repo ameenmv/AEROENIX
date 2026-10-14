@@ -6,5 +6,12 @@
   "back": "رجوع",
   "view": "عرض",
   "remove": "إزالة",
+  "previous": "السابق",
+  "next": "التالي",
+  "cancel": "إلغاء",
+  "save": "حفظ",
+  "create_new": "إنشاء جديد",
+  "continue": "متابعة",
+  "submit": "إرسال",
   "title": "الإجراءات"
 }

@@ -36,5 +36,12 @@
   "copied": "Copied to clipboard",
   "collapse_sidebar": "Collapse sidebar",
   "expand_sidebar": "Expand sidebar",
-  "guest_details": "Guest Details"
+  "guest_details": "Guest Details",
+  "in_progress": "In Progress",
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "ai_assistant": "AI Assistant",
+  "staff_agent": "Staff Agent",
+  "customer": "Customer",
+  "copy_message": "Copy message"
 }

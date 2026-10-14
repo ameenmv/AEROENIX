@@ -36,5 +36,12 @@
   "copied": "تم النسخ إلى الحافظة",
   "collapse_sidebar": "طي القائمة الجانبية",
   "expand_sidebar": "توسيع القائمة الجانبية",
-  "guest_details": "تفاصيل النزيل"
+  "guest_details": "تفاصيل النزيل",
+  "in_progress": "قيد المعالجة",
+  "today": "اليوم",
+  "yesterday": "أمس",
+  "ai_assistant": "مساعد الذكاء الاصطناعي",
+  "staff_agent": "موظف الدعم",
+  "customer": "العميل",
+  "copy_message": "نسخ الرسالة"
 }

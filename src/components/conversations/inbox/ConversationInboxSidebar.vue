@@ -81,7 +81,7 @@ function selectProvider(id: number | null) {
         @click="selectProvider(tab.id)"
       >
         <HugeiconsIcon v-if="tab.id !== null" :icon="getProviderIcon(tab.label)" :size="14" class="flex-shrink-0" />
-        {{ tab.label }}
+        {{ tab.id === null ? t('conversations.all_channels', 'All') : tab.label }}
       </button>
     </div>
 

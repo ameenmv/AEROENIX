@@ -79,7 +79,7 @@ function getProviderColorClass(channelBadgeName: string | null | undefined) {
           <div class="flex items-center gap-1.5 mt-0.5">
             <!-- Dynamic Status Badge (In Progress) -->
             <div class="px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-[9px] sm:text-[10px] font-bold text-amber-500 shrink-0 leading-tight">
-              In Progress
+              {{ t('conversations.in_progress', 'In Progress') }}
             </div>
             <!-- Provider Icon -->
             <div class="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center p-[2px] shrink-0" :class="getProviderColorClass(conversation.channel_badge_name)">

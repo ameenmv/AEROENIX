@@ -1,0 +1,19 @@
+{
+  "title": "الإشعارات",
+  "subtitle": "إدارة الإشعارات وتنبيهات النظام",
+  "categories": {
+    "takeover": "تسليم المحادثة",
+    "conversation": "الأولوية",
+    "booking": "الحجوزات",
+    "payment": "المدفوعات",
+    "channel": "القنوات",
+    "team": "الفريق",
+    "system": "النظام"
+  },
+  "priorities": {
+    "urgent": "عاجل",
+    "high": "مرتفع",
+    "normal": "عادي",
+    "low": "منخفض"
+  }
+}

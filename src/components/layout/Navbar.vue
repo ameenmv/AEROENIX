@@ -230,7 +230,7 @@ function openProfileCtx(event: MouseEvent) {
               variant="ghost"
               size="icon"
               class="h-8 w-8 text-muted-foreground hover:text-foreground"
-              :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+              :aria-label="isDark ? t('common.light_mode', 'Light mode') : t('common.dark_mode', 'Dark mode')"
               @click="toggleDarkMode()"
               @contextmenu="openThemeCtx"
             >

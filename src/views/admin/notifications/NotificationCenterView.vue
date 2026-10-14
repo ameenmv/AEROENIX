@@ -37,16 +37,16 @@ const showDismissConfirm = ref(false)
 const dismissTarget = ref<PlatformNotification | null>(null)
 
 // Category tabs
-const categories: Array<{ key: string | null; label: string; icon: any; color: string }> = [
-  { key: null, label: 'All', icon: Bell, color: 'hsl(var(--foreground))' },
-  { key: 'takeover', label: 'Takeover', icon: UserCheck, color: '#3B82F6' },
-  { key: 'conversation', label: 'Priority', icon: MessageSquare, color: '#EF4444' },
-  { key: 'booking', label: 'Bookings', icon: Calendar, color: '#C5A869' },
-  { key: 'payment', label: 'Payments', icon: CreditCard, color: '#10B981' },
-  { key: 'channel', label: 'Channels', icon: Share2, color: '#8B5CF6' },
-  { key: 'team', label: 'Team', icon: Users, color: '#6366F1' },
-  { key: 'system', label: 'System', icon: AlertTriangle, color: '#F59E0B' },
-]
+const categories = computed<Array<{ key: string | null; label: string; icon: any; color: string }>>(() => [
+  { key: null, label: t('common.all', 'All'), icon: Bell, color: 'hsl(var(--foreground))' },
+  { key: 'takeover', label: t('notifications.categories.takeover', 'Takeover'), icon: UserCheck, color: '#3B82F6' },
+  { key: 'conversation', label: t('notifications.categories.conversation', 'Priority'), icon: MessageSquare, color: '#EF4444' },
+  { key: 'booking', label: t('notifications.categories.booking', 'Bookings'), icon: Calendar, color: '#C5A869' },
+  { key: 'payment', label: t('notifications.categories.payment', 'Payments'), icon: CreditCard, color: '#10B981' },
+  { key: 'channel', label: t('notifications.categories.channel', 'Channels'), icon: Share2, color: '#8B5CF6' },
+  { key: 'team', label: t('notifications.categories.team', 'Team'), icon: Users, color: '#6366F1' },
+  { key: 'system', label: t('notifications.categories.system', 'System'), icon: AlertTriangle, color: '#F59E0B' },
+])
 
 const categoryIcons: Record<string, any> = {
   takeover: UserCheck,

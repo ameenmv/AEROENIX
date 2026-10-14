@@ -31,7 +31,7 @@ import {
 import { dashboardService } from '@/services/dashboardService'
 import { hotelsService } from '@/services/hotelsService'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const router = useRouter()
 
 const selectedHotelId = ref<string>('all')
@@ -62,16 +62,43 @@ const channelDist = computed(() => {
   return Object.values(dist) as ChannelDistItem[]
 })
 
+const dayTranslations: Record<string, string> = {
+  Sat: 'السبت',
+  Sun: 'الأحد',
+  Mon: 'الإثنين',
+  Tue: 'الثلاثاء',
+  Wed: 'الأربعاء',
+  Thu: 'الخميس',
+  Fri: 'الجمعة',
+}
 
 // ── Chart config ─────────────────────────────────────────────────────────────
 const areaSeries = computed<ApexAxisChartSeries>(() => [
   {
-    name: 'Conversations',
+    name: t('dashboard.conversations', 'Conversations'),
     data: chartDays.value.map(d => d.count),
   },
 ])
 
-const areaCategories = computed(() => chartDays.value.map(d => d.day))
+const areaCategories = computed<string[]>(() =>
+  chartDays.value.map((d) => {
+    if (locale.value === 'ar' && d.day && dayTranslations[d.day]) {
+      return dayTranslations[d.day]!
+    }
+    return d.day || ''
+  }),
+)
+
+function getChannelDisplayName(name: string): string {
+  const key = (name || '').toLowerCase()
+  if (locale.value === 'ar') {
+    if (key.includes('whatsapp')) return 'واتساب'
+    if (key.includes('messenger') || key.includes('facebook')) return 'ماسنجر'
+    if (key.includes('instagram')) return 'انستغرام'
+    if (key.includes('chat')) return 'المحادثة المباشرة'
+  }
+  return name
+}
 
 const areaChartOptions = computed<ApexOptions>(() => ({
   colors: ['#38bdf8'],
@@ -246,7 +273,7 @@ function getIconForActivity(iconName: string) {
                 {{ kpis?.total_conversations?.formatted_value || '0' }}
               </p>
               <p class="text-sm text-muted-foreground mt-0.5 font-medium">
-                {{ kpis?.total_conversations?.label || t('dashboard.total_conversations', 'Total Conversations') }}
+                {{ t('dashboard.total_conversations', 'Total Conversations') }}
               </p>
             </template>
           </CardContent>
@@ -278,7 +305,7 @@ function getIconForActivity(iconName: string) {
                 {{ kpis?.active_leads?.formatted_value || '0' }}
               </p>
               <p class="text-sm text-muted-foreground mt-0.5 font-medium">
-                {{ kpis?.active_leads?.label || t('dashboard.active_leads', 'Active Leads') }}
+                {{ t('dashboard.active_leads', 'Active Leads') }}
               </p>
             </template>
           </CardContent>
@@ -315,7 +342,7 @@ function getIconForActivity(iconName: string) {
                 {{ kpis?.bookings_this_month?.formatted_value || '0' }}
               </p>
               <p class="text-sm text-muted-foreground mt-0.5 font-medium">
-                {{ kpis?.bookings_this_month?.label || t('dashboard.bookings_this_month', 'Bookings This Month') }}
+                {{ t('dashboard.bookings_this_month', 'Bookings This Month') }}
               </p>
             </template>
           </CardContent>
@@ -343,7 +370,7 @@ function getIconForActivity(iconName: string) {
                     {{ formatNumber(kpis?.hotels_and_users?.hotels_count) }}
                   </p>
                   <p class="text-xs text-muted-foreground font-medium mt-0.5">
-                    {{ kpis?.hotels_and_users?.label_hotels || t('dashboard.total_hotels', 'Total Hotels') }}
+                    {{ t('dashboard.total_hotels', 'Total Hotels') }}
                   </p>
                 </div>
                 <div class="h-8 w-px bg-border/50" />
@@ -352,12 +379,12 @@ function getIconForActivity(iconName: string) {
                     {{ formatNumber(kpis?.hotels_and_users?.users_count) }}
                   </p>
                   <p class="text-xs text-muted-foreground font-medium mt-0.5">
-                    {{ kpis?.hotels_and_users?.label_users || t('dashboard.total_users', 'Total Users') }}
+                    {{ t('dashboard.total_users', 'Total Users') }}
                   </p>
                 </div>
               </div>
               <p class="text-sm text-muted-foreground mt-2 font-medium">
-                {{ kpis?.hotels_and_users?.title || t('dashboard.hotels_and_users', 'Hotels & Users') }}
+                {{ t('dashboard.hotels_and_users', 'Hotels & Users') }}
               </p>
             </template>
           </CardContent>
@@ -454,7 +481,7 @@ function getIconForActivity(iconName: string) {
                       <span class="text-2xl font-bold text-foreground">
                         {{ formatNumber(totalConversationsFromChannels) }}
                       </span>
-                      <span class="text-xs text-muted-foreground font-medium">Conversations</span>
+                      <span class="text-xs text-muted-foreground font-medium">{{ t('dashboard.conversations', 'Conversations') }}</span>
                     </div>
                   </div>
 
@@ -470,7 +497,7 @@ function getIconForActivity(iconName: string) {
                           class="w-2.5 h-2.5 rounded-full shrink-0"
                           :style="{ backgroundColor: channel.color }"
                         />
-                        <span class="text-sm font-medium text-foreground">{{ channel.name }}</span>
+                        <span class="text-sm font-medium text-foreground">{{ getChannelDisplayName(channel.name) }}</span>
                       </div>
                       <div class="flex items-center gap-3">
                         <span class="text-sm font-semibold text-muted-foreground">{{ channel.percentage }}%</span>

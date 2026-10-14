@@ -29,5 +29,28 @@
     "check_out_time": "Select time",
     "timezone": "Select timezone",
     "description": "Brief description of the hotel"
+  },
+  "overview": "Overview",
+  "rooms_tab": "Rooms & Rates",
+  "wizard": {
+    "subtitle": "Set up a new property and invite its first admin.",
+    "step1": {
+      "title": "Basic Info",
+      "desc": "General details",
+      "heading": "Basic Information",
+      "subheading": "Enter the primary details for this hotel."
+    },
+    "step2": {
+      "title": "Operations",
+      "desc": "Times & Timezone",
+      "heading": "Operations Settings",
+      "subheading": "Configure operational hours and timezone."
+    },
+    "step3": {
+      "title": "Admin User",
+      "desc": "Invite the manager",
+      "heading": "Admin Invitation",
+      "subheading": "We will send an invitation email to set up the admin account."
+    }
   }
 }

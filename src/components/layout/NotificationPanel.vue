@@ -21,7 +21,7 @@ import {
   X,
 } from 'lucide-vue-next'
 
-import { nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { Button } from '@/components/uic/button'
@@ -61,15 +61,15 @@ onMounted(() => {
   nextTick(() => updateScrollArrows())
 })
 
-const categoryTabs: Array<{ key: string | null; label: string }> = [
-  { key: null, label: 'All' },
-  { key: 'takeover', label: 'Takeover' },
-  { key: 'booking', label: 'Bookings' },
-  { key: 'payment', label: 'Payments' },
-  { key: 'channel', label: 'Channels' },
-  { key: 'team', label: 'Team' },
-  { key: 'system', label: 'System' },
-]
+const categoryTabs = computed<Array<{ key: string | null; label: string }>>(() => [
+  { key: null, label: t('common.all', 'All') },
+  { key: 'takeover', label: t('notifications.categories.takeover', 'Takeover') },
+  { key: 'booking', label: t('notifications.categories.booking', 'Bookings') },
+  { key: 'payment', label: t('notifications.categories.payment', 'Payments') },
+  { key: 'channel', label: t('notifications.categories.channel', 'Channels') },
+  { key: 'team', label: t('notifications.categories.team', 'Team') },
+  { key: 'system', label: t('notifications.categories.system', 'System') },
+])
 
 const categoryIcons: Record<string, any> = {
   takeover: UserCheck,

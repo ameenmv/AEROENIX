@@ -6,5 +6,12 @@
   "back": "Back",
   "view": "View",
   "remove": "Remove",
+  "previous": "Previous",
+  "next": "Next",
+  "cancel": "Cancel",
+  "save": "Save",
+  "create_new": "Create New",
+  "continue": "Continue",
+  "submit": "Submit",
   "title": "Actions"
 }

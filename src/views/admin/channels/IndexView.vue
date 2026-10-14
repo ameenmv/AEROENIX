@@ -174,10 +174,10 @@ async function handleConnectFacebook() {
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 class="text-3xl font-bold tracking-tight">
-            {{ t('menu.channels', 'Channel Integrations') }}
+            {{ t('channels.title', 'Channel Integrations') }}
           </h1>
           <p class="text-muted-foreground mt-1 text-sm">
-            Connect your hotel messaging channels to automate customer communications with AI.
+            {{ t('channels.subtitle', 'Connect your hotel messaging channels to automate customer communications with AI.') }}
           </p>
         </div>
       </div>
@@ -193,7 +193,7 @@ async function handleConnectFacebook() {
           <div v-if="whatsappChannel" class="absolute top-0 right-0 p-4">
             <Badge variant="default" class="bg-emerald-500 hover:bg-emerald-600 gap-1">
               <HugeiconsIcon :icon="CheckmarkBadge01Icon" :size="14" />
-              Connected
+              {{ t('channels.connected', 'Connected') }}
             </Badge>
           </div>
           <CardHeader>
@@ -202,23 +202,23 @@ async function handleConnectFacebook() {
             </div>
             <CardTitle class="text-xl font-bold">WhatsApp Business</CardTitle>
             <CardDescription class="mt-2 text-sm leading-relaxed">
-              Connect Meta WhatsApp Cloud API for automated booking inquiries, guest support, and automated follow-ups.
+              {{ t('channels.whatsapp_desc', 'Connect Meta WhatsApp Cloud API for automated booking inquiries, guest support, and automated follow-ups.') }}
             </CardDescription>
           </CardHeader>
           <CardContent class="pt-4 border-t border-border/40 space-y-4">
             <div class="flex items-center justify-between text-xs">
-              <span class="text-muted-foreground font-medium">Provider:</span>
+              <span class="text-muted-foreground font-medium">{{ t('channels.provider', 'Provider') }}:</span>
               <span class="font-semibold text-foreground">Meta Cloud API</span>
             </div>
             
             <template v-if="whatsappChannel">
               <div class="rounded-lg bg-muted/30 p-3 space-y-2 border border-border/40">
                 <div class="flex justify-between items-center text-sm">
-                  <span class="text-muted-foreground">Account</span>
+                  <span class="text-muted-foreground">{{ t('channels.account', 'Account') }}</span>
                   <span class="font-medium text-foreground truncate max-w-[120px]" :title="whatsappChannel.name">{{ whatsappChannel.name }}</span>
                 </div>
                 <div class="flex justify-between items-center text-sm">
-                  <span class="text-muted-foreground">Number</span>
+                  <span class="text-muted-foreground">{{ t('channels.number', 'Number') }}</span>
                   <a v-if="whatsappChannel.channel_url || whatsappChannel.link" :href="(whatsappChannel.channel_url || whatsappChannel.link) || undefined" target="_blank" class="font-medium text-primary hover:underline">
                     {{ whatsappChannel.username }}
                   </a>
@@ -233,7 +233,7 @@ async function handleConnectFacebook() {
                 @click="openDisconnectDialog(whatsappChannel)"
               >
                 <HugeiconsIcon :icon="Delete02Icon" :size="18" />
-                <span>Disconnect</span>
+                <span>{{ t('channels.disconnect', 'Disconnect') }}</span>
               </Button>
             </template>
             <template v-else>
@@ -244,7 +244,7 @@ async function handleConnectFacebook() {
                   @click="handleConnectWhatsApp"
                 >
                   <HugeiconsIcon :icon="Link01Icon" :size="18" />
-                  <span>Connect WhatsApp</span>
+                  <span>{{ t('channels.connect_whatsapp', 'Connect WhatsApp') }}</span>
                 </Button>
               </div>
             </template>
@@ -256,7 +256,7 @@ async function handleConnectFacebook() {
           <div v-if="instagramChannel" class="absolute top-0 right-0 p-4">
             <Badge variant="default" class="bg-pink-500 hover:bg-pink-600 gap-1">
               <HugeiconsIcon :icon="CheckmarkBadge01Icon" :size="14" />
-              Connected
+              {{ t('channels.connected', 'Connected') }}
             </Badge>
           </div>
           <CardHeader>
@@ -265,19 +265,19 @@ async function handleConnectFacebook() {
             </div>
             <CardTitle class="text-xl font-bold">Instagram Direct</CardTitle>
             <CardDescription class="mt-2 text-sm leading-relaxed">
-              Connect your Instagram Professional or Business account to respond to DMs, story mentions, and leads automatically.
+              {{ t('channels.instagram_desc', 'Connect your Instagram Professional or Business account to respond to DMs, story mentions, and leads automatically.') }}
             </CardDescription>
           </CardHeader>
           <CardContent class="pt-4 border-t border-border/40 space-y-4">
             <div class="flex items-center justify-between text-xs">
-              <span class="text-muted-foreground font-medium">Provider:</span>
+              <span class="text-muted-foreground font-medium">{{ t('channels.provider', 'Provider') }}:</span>
               <span class="font-semibold text-foreground">Instagram Graph API</span>
             </div>
             
             <template v-if="instagramChannel">
               <div class="rounded-lg bg-muted/30 p-3 space-y-2 border border-border/40">
                 <div class="flex justify-between items-center text-sm">
-                  <span class="text-muted-foreground">Account</span>
+                  <span class="text-muted-foreground">{{ t('channels.account', 'Account') }}</span>
                   <a v-if="instagramChannel.channel_url || instagramChannel.link" :href="(instagramChannel.channel_url || instagramChannel.link) || undefined" target="_blank" class="font-medium text-primary hover:underline truncate max-w-[120px]" :title="instagramChannel.name">
                     @{{ instagramChannel.username || instagramChannel.name }}
                   </a>
@@ -292,7 +292,7 @@ async function handleConnectFacebook() {
                 @click="openDisconnectDialog(instagramChannel)"
               >
                 <HugeiconsIcon :icon="Delete02Icon" :size="18" />
-                <span>Disconnect</span>
+                <span>{{ t('channels.disconnect', 'Disconnect') }}</span>
               </Button>
             </template>
             <template v-else>
@@ -303,7 +303,7 @@ async function handleConnectFacebook() {
                   @click="handleConnectInstagram"
                 >
                   <HugeiconsIcon :icon="Link01Icon" :size="18" />
-                  <span>Connect Instagram</span>
+                  <span>{{ t('channels.connect_instagram', 'Connect Instagram') }}</span>
                 </Button>
               </div>
             </template>
@@ -315,7 +315,7 @@ async function handleConnectFacebook() {
           <div v-if="facebookChannel" class="absolute top-0 right-0 p-4">
             <Badge variant="default" class="bg-blue-500 hover:bg-blue-600 gap-1">
               <HugeiconsIcon :icon="CheckmarkBadge01Icon" :size="14" />
-              Connected
+              {{ t('channels.connected', 'Connected') }}
             </Badge>
           </div>
           <CardHeader>
@@ -324,19 +324,19 @@ async function handleConnectFacebook() {
             </div>
             <CardTitle class="text-xl font-bold">Facebook Messenger</CardTitle>
             <CardDescription class="mt-2 text-sm leading-relaxed">
-              Connect your Facebook Hotel Page Messenger to respond to incoming guest queries and booking questions 24/7.
+              {{ t('channels.facebook_desc', 'Connect your Facebook Hotel Page Messenger to respond to incoming guest queries and booking questions 24/7.') }}
             </CardDescription>
           </CardHeader>
           <CardContent class="pt-4 border-t border-border/40 space-y-4">
             <div class="flex items-center justify-between text-xs">
-              <span class="text-muted-foreground font-medium">Provider:</span>
+              <span class="text-muted-foreground font-medium">{{ t('channels.provider', 'Provider') }}:</span>
               <span class="font-semibold text-foreground">Meta Messenger API</span>
             </div>
             
             <template v-if="facebookChannel">
               <div class="rounded-lg bg-muted/30 p-3 space-y-2 border border-border/40">
                 <div class="flex justify-between items-center text-sm">
-                  <span class="text-muted-foreground">Account</span>
+                  <span class="text-muted-foreground">{{ t('channels.account', 'Account') }}</span>
                   <a v-if="facebookChannel.channel_url || facebookChannel.link" :href="(facebookChannel.channel_url || facebookChannel.link) || undefined" target="_blank" class="font-medium text-primary hover:underline truncate max-w-[120px]" :title="facebookChannel.name">
                     {{ facebookChannel.name }}
                   </a>
@@ -351,7 +351,7 @@ async function handleConnectFacebook() {
                 @click="openDisconnectDialog(facebookChannel)"
               >
                 <HugeiconsIcon :icon="Delete02Icon" :size="18" />
-                <span>Disconnect</span>
+                <span>{{ t('channels.disconnect', 'Disconnect') }}</span>
               </Button>
             </template>
             <template v-else>
@@ -362,7 +362,7 @@ async function handleConnectFacebook() {
                   @click="handleConnectFacebook"
                 >
                   <HugeiconsIcon :icon="Link01Icon" :size="18" />
-                  <span>Connect Messenger</span>
+                  <span>{{ t('channels.connect_facebook', 'Connect Messenger') }}</span>
                 </Button>
               </div>
             </template>
@@ -391,9 +391,9 @@ async function handleConnectFacebook() {
     <AlertDialog :open="isDisconnectDialogOpen" @update:open="val => { if (!isDisconnecting) isDisconnectDialogOpen = val }">
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Disconnect Channel</AlertDialogTitle>
+          <AlertDialogTitle>{{ t('channels.disconnect_title', 'Disconnect Channel') }}</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to disconnect this channel? You will no longer be able to automate messages for this channel.
+            {{ t('channels.disconnect_desc', 'Are you sure you want to disconnect this channel? You will no longer be able to automate messages for this channel.') }}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -402,7 +402,7 @@ async function handleConnectFacebook() {
           </AlertDialogCancel>
           <Button variant="destructive" :disabled="isDisconnecting" @click="confirmDisconnect">
             <span v-if="isDisconnecting" class="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
-            <span>Disconnect</span>
+            <span>{{ isDisconnecting ? t('channels.disconnecting', 'Disconnecting...') : t('channels.disconnect', 'Disconnect') }}</span>
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

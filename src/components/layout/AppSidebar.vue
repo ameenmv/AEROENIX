@@ -197,7 +197,7 @@ onMounted(() => {
                 >
                   <RouterLink :to="`${adminPrefix}${item.to?.replace('/admin', '')}`">
                     <HugeiconsIcon v-if="item.icon" :icon="item.icon" :size="20" class="size-5 shrink-0" />
-                    <span class="ml-3 font-medium group-data-[collapsible=icon]:hidden whitespace-nowrap overflow-hidden transition-all duration-100">{{ t(item.label) }}</span>
+                    <span class="ms-3 font-medium group-data-[collapsible=icon]:hidden whitespace-nowrap overflow-hidden transition-all duration-100">{{ t(item.label) }}</span>
                   </RouterLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -219,7 +219,7 @@ onMounted(() => {
                       :is-active="item.children && item.children.some((child) => isActive(child.to))"
                     >
                       <HugeiconsIcon v-if="item.icon" :icon="item.icon" :size="20" class="size-5 shrink-0" />
-                      <span class="ml-3 font-medium group-data-[collapsible=icon]:hidden whitespace-nowrap overflow-hidden transition-all duration-100">{{ t(item.label) }}</span>
+                      <span class="ms-3 font-medium group-data-[collapsible=icon]:hidden whitespace-nowrap overflow-hidden transition-all duration-100">{{ t(item.label) }}</span>
                       <HugeiconsIcon
                         :icon="ArrowDown01Icon"
                         :size="16"
@@ -291,7 +291,7 @@ onMounted(() => {
             @click="handleLogout"
           >
             <HugeiconsIcon :icon="Logout02Icon" :size="20" class="size-5 shrink-0" />
-            <span class="ml-3 font-medium group-data-[collapsible=icon]:hidden whitespace-nowrap overflow-hidden transition-all duration-100">{{ t('menu.logout') }}</span>
+            <span class="ms-3 font-medium group-data-[collapsible=icon]:hidden whitespace-nowrap overflow-hidden transition-all duration-100">{{ t('menu.logout') }}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

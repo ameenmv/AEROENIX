@@ -3,6 +3,7 @@ import { SparklesIcon, UserGroupIcon, Copy01Icon, Tick02Icon } from '@hugeicons/
 import { CheckCheck } from 'lucide-vue-next'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { ArrowDown } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
 import type { InboxMessageItem, ConversationStatusResponse } from '@/types/entities/conversation'
 
 const props = defineProps<{
@@ -11,23 +12,24 @@ const props = defineProps<{
   chatTextScale?: number
 }>()
 
+const { t, locale } = useI18n()
 const listRef = ref<HTMLElement | null>(null)
 const showScrollFab = ref(false)
 
 // ── Date Grouping ────────────────────────────────────────────────────────────
 function extractDateLabel(dateStr?: string | null): string {
-  if (!dateStr) return 'Today'
+  if (!dateStr) return t('conversations.today', 'Today')
   const date = new Date(dateStr)
-  if (Number.isNaN(date.getTime())) return 'Today'
+  if (Number.isNaN(date.getTime())) return t('conversations.today', 'Today')
 
   const today = new Date()
-  if (date.toDateString() === today.toDateString()) return 'Today'
+  if (date.toDateString() === today.toDateString()) return t('conversations.today', 'Today')
   
   const yesterday = new Date(today)
   yesterday.setDate(yesterday.getDate() - 1)
-  if (date.toDateString() === yesterday.toDateString()) return 'Yesterday'
+  if (date.toDateString() === yesterday.toDateString()) return t('conversations.yesterday', 'Yesterday')
 
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  return date.toLocaleDateString(locale.value === 'ar' ? 'ar-EG' : 'en-US', { month: 'short', day: 'numeric' })
 }
 
 const groupedMessages = computed(() => {
@@ -131,12 +133,12 @@ function copyToClipboard(id: number, text: string) {
           <!-- Sender Info & Time -->
           <span class="text-[11px] text-muted-foreground mb-1.5 px-1 flex items-center gap-1.5 font-medium">
             <span v-if="msg.sender_type === 'ai'" class="text-purple-500 dark:text-purple-400 font-bold flex items-center gap-1">
-              <HugeiconsIcon :icon="SparklesIcon" :size="12" /> AI Assistant
+              <HugeiconsIcon :icon="SparklesIcon" :size="12" /> {{ t('conversations.ai_assistant', 'AI Assistant') }}
             </span>
             <span v-else-if="msg.sender_type === 'staff'" class="text-blue-600 dark:text-blue-400 font-bold flex items-center gap-1">
-              <HugeiconsIcon :icon="UserGroupIcon" :size="12" /> Staff Agent
+              <HugeiconsIcon :icon="UserGroupIcon" :size="12" /> {{ t('conversations.staff_agent', 'Staff Agent') }}
             </span>
-            <span v-else class="font-bold text-foreground/80">Customer</span>
+            <span v-else class="font-bold text-foreground/80">{{ t('conversations.customer', 'Customer') }}</span>
             <span class="opacity-80">• {{ msg.time }}</span>
 
             <!-- Status Ticks (for Outbound) -->
@@ -183,7 +185,7 @@ function copyToClipboard(id: number, text: string) {
               class="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full hover:bg-muted/50 text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
               :class="{ '!opacity-100 text-emerald-500': copiedMsgId === msg.id }"
               @click="copyToClipboard(msg.id, msg.text)"
-              :title="copiedMsgId === msg.id ? 'Copied' : 'Copy message'"
+              :title="copiedMsgId === msg.id ? t('conversations.copied', 'Copied') : t('conversations.copy_message', 'Copy message')"
             >
               <HugeiconsIcon :icon="copiedMsgId === msg.id ? Tick02Icon : Copy01Icon" :size="16" />
             </button>

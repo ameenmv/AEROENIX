@@ -1,0 +1,22 @@
+{
+  "title": "قنوات التواصل",
+  "subtitle": "قم بربط قنوات المراسلة الخاصة بفندقك لأتمتة التواصل مع العملاء بواسطة الذكاء الاصطناعي.",
+  "connected": "متصل",
+  "provider": "المزوّد",
+  "account": "الحساب",
+  "number": "الرقم",
+  "disconnect": "إلغاء الربط",
+  "connect_whatsapp": "ربط واتساب",
+  "connect_instagram": "ربط إنستغرام",
+  "connect_facebook": "ربط فيسبوك",
+  "disconnect_title": "إلغاء ربط القناة؟",
+  "disconnect_desc": "هل أنت متأكد من رغبتك في إلغاء ربط هذه القناة؟ لن يتمكن الذكاء الاصطناعي من استقبال أو إرسال الرسائل عبرها بعد الآن.",
+  "disconnecting": "جاري إلغاء الربط...",
+  "disconnect_success": "تم إلغاء ربط القناة بنجاح.",
+  "disconnect_error": "فشل في إلغاء ربط القناة.",
+  "connect_success": "تم ربط القناة بنجاح!",
+  "connect_error": "فشل في إنشاء رابط الربط.",
+  "whatsapp_desc": "ربط Meta WhatsApp Cloud API للاستفسارات الآلية عن الحجوزات والدعم الفني والمتابعة التلقائية.",
+  "instagram_desc": "ربط Instagram Professional لإدارة الرسائل المباشرة وأسئلة النزلاء على إنستغرام تلقائياً.",
+  "facebook_desc": "ربط صفحة Facebook لإدارة رسائل Messenger والرد التلقائي على الضيوف."
+}

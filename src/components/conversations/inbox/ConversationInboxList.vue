@@ -106,7 +106,7 @@ function getProviderColorClass(channelBadgeName: string | null | undefined) {
               {{ conv.channel_badge_name }}
             </span>
           </div>
-          <span class="text-[12px] font-normal text-muted-foreground flex-shrink-0 ml-1">
+          <span class="text-[12px] font-normal text-muted-foreground flex-shrink-0 ms-1">
             {{ formatTime(conv.time) }}
           </span>
         </div>

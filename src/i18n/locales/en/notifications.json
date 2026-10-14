@@ -1,0 +1,19 @@
+{
+  "title": "Notifications",
+  "subtitle": "Manage notifications and system alerts",
+  "categories": {
+    "takeover": "Takeover",
+    "conversation": "Priority",
+    "booking": "Bookings",
+    "payment": "Payments",
+    "channel": "Channels",
+    "team": "Team",
+    "system": "System"
+  },
+  "priorities": {
+    "urgent": "Urgent",
+    "high": "High",
+    "normal": "Normal",
+    "low": "Low"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "title": "AI Training Knowledge",
+  "subtitle": "Review how staff answers customer questions. The AI uses this data to train and respond automatically in the future.",
+  "search": "Search questions or answers...",
+  "customer_question": "Customer Question",
+  "staff_answer": "Staff Answer",
+  "no_results": "No Results Found",
+  "no_results_desc": "We couldn't find any question or answer matching your search.",
+  "empty_title": "No Knowledge Data Yet",
+  "empty_desc": "Once staff members start replying to customers, the question-answer pairs will appear here for the AI to learn from."
+}

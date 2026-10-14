@@ -1,0 +1,22 @@
+{
+  "title": "Channel Integrations",
+  "subtitle": "Connect your hotel messaging channels to automate customer communications with AI.",
+  "connected": "Connected",
+  "provider": "Provider",
+  "account": "Account",
+  "number": "Number",
+  "disconnect": "Disconnect",
+  "connect_whatsapp": "Connect WhatsApp",
+  "connect_instagram": "Connect Instagram",
+  "connect_facebook": "Connect Facebook",
+  "disconnect_title": "Disconnect Channel?",
+  "disconnect_desc": "Are you sure you want to disconnect this channel? The AI bot will no longer be able to receive or send messages through it.",
+  "disconnecting": "Disconnecting...",
+  "disconnect_success": "Channel disconnected successfully.",
+  "disconnect_error": "Failed to disconnect channel.",
+  "connect_success": "Channel connected successfully!",
+  "connect_error": "Failed to generate connection link.",
+  "whatsapp_desc": "Connect Meta WhatsApp Cloud API for automated booking inquiries, guest support, and automated follow-ups.",
+  "instagram_desc": "Connect Instagram Professional to automate direct messages and guest inquiries on Instagram.",
+  "facebook_desc": "Connect your Facebook Page to manage Messenger communications and auto-reply to guests."
+}
