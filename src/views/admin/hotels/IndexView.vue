@@ -140,7 +140,7 @@ function handleDelete(hotel: Hotel) {
           </div>
         </template>
         <template #actions="{ row }">
-          <div class="flex items-center justify-end">
+          <div class="flex items-center justify-center">
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
                 <Button size="sm" variant="ghost" class="h-8 w-8 p-0">

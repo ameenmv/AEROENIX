@@ -118,7 +118,7 @@ function confirmDelete() {
           </div>
         </template>
         <template #actions="{ row }">
-          <div class="w-full flex justify-end">
+          <div class="w-full flex justify-center">
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
                 <Button variant="ghost" size="icon" class="h-8 w-8 rounded-lg hover:bg-muted">

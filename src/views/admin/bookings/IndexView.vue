@@ -159,7 +159,7 @@ const getStatusColor = (status: string) => {
           </div>
         </template>
         <template #actions="{ row }">
-          <div class="w-full flex justify-end">
+          <div class="w-full flex justify-center">
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
                 <Button variant="ghost" size="icon" class="h-8 w-8 text-muted-foreground hover:text-foreground">
