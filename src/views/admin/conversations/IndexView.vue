@@ -2,7 +2,7 @@
 import { SparklesIcon, UserGroupIcon, BubbleChatIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { Radio } from 'lucide-vue-next'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/uic/button'
@@ -32,8 +32,8 @@ import { getEcho } from '@/services/echo'
 const { t } = useI18n()
 
 // ── Resizable Layout State (3 columns) ──────────────────────────────────────
-const leftWidth = ref(Number(localStorage.getItem('conversations_left_width')) || 320)
-const rightWidth = ref(Number(localStorage.getItem('conversations_right_width')) || 320)
+const leftWidth = ref(Number(localStorage.getItem('conversations_left_width')) || 290)
+const rightWidth = ref(Number(localStorage.getItem('conversations_right_width')) || 300)
 
 let isDraggingLeft = false
 let isDraggingRight = false
@@ -59,14 +59,14 @@ function onDrag(e: MouseEvent) {
   if (isDraggingLeft && containerRef.value) {
     const rect = containerRef.value.getBoundingClientRect()
     const newWidth = e.clientX - rect.left
-    if (newWidth >= 250 && newWidth <= 500) {
+    if (newWidth >= 240 && newWidth <= 450) {
       leftWidth.value = newWidth
       localStorage.setItem('conversations_left_width', newWidth.toString())
     }
   } else if (isDraggingRight && containerRef.value) {
     const rect = containerRef.value.getBoundingClientRect()
     const newWidth = rect.right - e.clientX
-    if (newWidth >= 250 && newWidth <= 500) {
+    if (newWidth >= 240 && newWidth <= 450) {
       rightWidth.value = newWidth
       localStorage.setItem('conversations_right_width', newWidth.toString())
     }
@@ -88,6 +88,13 @@ const isPropertiesVisible = ref(true)
 const showMobileProperties = ref(false)
 const chatTextScale = ref(1)
 
+const isPropertiesOpen = computed(() => {
+  if (typeof window !== 'undefined' && window.innerWidth < 1536) {
+    return showMobileProperties.value
+  }
+  return isPropertiesVisible.value
+})
+
 function toggleFullscreen() {
   if (!containerRef.value) return
   
@@ -108,8 +115,8 @@ if (typeof window !== 'undefined') {
 }
 
 function toggleProperties() {
-  // On desktop (xl+), toggle inline column; on smaller devices, open sheet
-  if (typeof window !== 'undefined' && window.innerWidth < 1280) {
+  // On wide desktop (2xl+ / 1536px+), toggle inline column; on smaller screens (< 1536px), open sheet drawer
+  if (typeof window !== 'undefined' && window.innerWidth < 1536) {
     showMobileProperties.value = !showMobileProperties.value
   } else {
     isPropertiesVisible.value = !isPropertiesVisible.value
@@ -357,7 +364,7 @@ onUnmounted(() => {
           :is-sending="isSendingMessage"
           :chat-text-scale="chatTextScale"
           :is-fullscreen="isChatExpanded"
-          :is-properties-visible="isPropertiesVisible"
+          :is-properties-visible="isPropertiesOpen"
           @update:new-message="newMessage = $event"
           @send-message="sendMessage"
           @toggle-handoff="requestHandoffToggle"
@@ -374,17 +381,17 @@ onUnmounted(() => {
       <div
         v-if="selectedConversationId"
         v-show="isPropertiesVisible"
-        class="hidden xl:block w-[4px] h-full cursor-col-resize transition-colors z-10 flex-shrink-0 bg-transparent hover:bg-primary/20"
+        class="hidden 2xl:block w-[4px] h-full cursor-col-resize transition-colors z-10 flex-shrink-0 bg-transparent hover:bg-primary/20"
         @mousedown.prevent="startDragRight"
-        @dblclick.prevent="rightWidth = 320"
+        @dblclick.prevent="rightWidth = 300"
       />
 
-      <!-- Right: Properties Sidebar (Desktop xl+) -->
+      <!-- Right: Properties Sidebar (Desktop 2xl+) -->
       <div 
         v-if="selectedConversationId" 
         v-show="isPropertiesVisible" 
         :style="{ width: `${rightWidth}px` }" 
-        class="hidden xl:block flex-shrink-0 h-full border-l border-border/50 transition-all duration-300"
+        class="hidden 2xl:block flex-shrink-0 h-full border-l border-border/50 transition-all duration-300"
       >
         <ConversationPropertiesSidebar
           v-if="activeConversation"

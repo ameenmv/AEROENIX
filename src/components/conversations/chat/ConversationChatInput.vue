@@ -88,7 +88,7 @@ function handleEmojiSelect(emoji: any) {
 
       <!-- Send Button -->
       <Button
-        class="gap-2 rounded-full h-12 px-6 bg-primary text-primary-foreground shadow-md hover:shadow-lg transition-all text-sm font-semibold shrink-0"
+        class="gap-1.5 sm:gap-2 rounded-full h-11 sm:h-12 px-4 sm:px-6 bg-primary text-primary-foreground shadow-md hover:shadow-lg transition-all text-sm font-semibold shrink-0"
         :disabled="!newMessage.trim() || isSending || isLocked"
         @click="handleSend"
       >
