@@ -54,7 +54,6 @@ const columns = [
   { key: 'dates', label: 'bookings.dates', className: 'font-semibold' },
   { key: 'total', label: 'bookings.total', className: 'font-semibold text-right' },
   { key: 'status', label: 'bookings.status', className: 'font-semibold text-center w-[130px]' },
-  { key: 'actions', label: 'common.actions', className: 'w-[80px] text-center' },
 ]
 
 const statusFilter = ref<string | null>(null)

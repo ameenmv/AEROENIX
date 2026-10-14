@@ -94,7 +94,6 @@ const columns = [
   { key: 'rooms_count', label: 'hotels.rooms_tab', className: 'font-semibold text-center w-[130px]' },
   { key: 'staff_count', label: 'hotels.fields.staff_count', className: 'font-semibold text-center w-[120px]' },
   { key: 'status', label: 'hotels.fields.status', className: 'font-semibold text-center w-[120px]' },
-  { key: 'actions', label: 'common.actions', className: 'w-[80px] text-center' },
 ]
 
 function selectStatus(status: string | null) {
