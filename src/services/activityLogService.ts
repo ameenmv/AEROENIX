@@ -19,12 +19,18 @@ const ENDPOINT = '/platform/activity-logs'
 
 export interface ActivityLogItem {
   id: string
+  user_id?: number | string | null
   user_name: string
-  description: string
   action: string
+  description: string
+  icon: string
+  hotel_id?: number | string | null
+  hotel_name?: string | null
+  subject_type?: string | null
+  subject_id?: number | string | null
+  properties?: Record<string, any> | null
   time_ago: string
   timestamp: string
-  icon: string
 }
 
 export interface ActivityLogPagination {
@@ -41,6 +47,7 @@ export interface ActivityLogPagination {
 
 export interface ActivityLogListParams {
   hotel_id?: number | string
+  action?: string
   search?: string
   per_page?: number
   page?: number
