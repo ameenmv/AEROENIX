@@ -4,6 +4,17 @@
 
 export type KnowledgeStatus = 'active' | 'inactive'
 
+export interface KnowledgeHotel {
+  id: number
+  name: string
+  slug?: string
+  status?: string
+  country?: string
+  currency?: string
+  phone?: string
+  [key: string]: unknown
+}
+
 export interface KnowledgeEntry {
   id: number
   hotel_id: number
@@ -13,6 +24,9 @@ export interface KnowledgeEntry {
   metadata: Record<string, unknown> | null
   status: KnowledgeStatus
   priority: number
+  qdrant_knowledge_id?: string | null
+  synced_to_ai?: boolean
+  hotel?: KnowledgeHotel | null
   created_at: string | null
   updated_at: string | null
 }

@@ -25,6 +25,15 @@ registerModule({
       },
     },
     {
+      path: 'admin/knowledge/:id',
+      name: 'admin-knowledge-show',
+      component: () => import('@/views/admin/knowledge/ShowView.vue'),
+      meta: {
+        breadcrumbKey: 'knowledge.view_title',
+        title: 'View Knowledge Entry',
+      },
+    },
+    {
       path: 'admin/knowledge/:id/edit',
       name: 'admin-knowledge-edit',
       component: () => import('@/views/admin/knowledge/EditView.vue'),

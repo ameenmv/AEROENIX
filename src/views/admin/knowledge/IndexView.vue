@@ -13,6 +13,7 @@ import {
   CheckmarkBadge01Icon,
   Cancel01Icon,
   FilterIcon,
+  ViewIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
@@ -399,7 +400,7 @@ function goToPage(page: number) {
                   </span>
                   <h3
                     class="text-[15px] font-semibold text-foreground leading-snug cursor-pointer hover:text-primary transition-colors flex-1"
-                    @click="router.push({ name: 'admin-knowledge-edit', params: { id: entry.id } })"
+                    @click="router.push({ name: 'admin-knowledge-show', params: { id: entry.id } })"
                   >
                     {{ entry.title }}
                   </h3>
@@ -438,6 +439,12 @@ function goToPage(page: number) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" class="w-48">
+                  <DropdownMenuItem
+                    @click="router.push({ name: 'admin-knowledge-show', params: { id: entry.id } })"
+                  >
+                    <HugeiconsIcon :icon="ViewIcon" :size="14" class="mr-2" />
+                    {{ t('actions.view', 'View') }}
+                  </DropdownMenuItem>
                   <DropdownMenuItem
                     @click="router.push({ name: 'admin-knowledge-edit', params: { id: entry.id } })"
                   >
