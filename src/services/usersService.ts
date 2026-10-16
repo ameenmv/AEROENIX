@@ -57,8 +57,6 @@ export const usersService = {
     limit?: number
     search?: string
     hotel_id?: number
-    status?: string
-    role?: string
   } = {}): Promise<UserListResult> {
     const response = await api.get<ApiSuccessResponse<any>>(ENDPOINT, {
       params: {
@@ -66,8 +64,6 @@ export const usersService = {
         limit: params.limit,
         search: params.search,
         hotel_id: params.hotel_id,
-        status: params.status,
-        role: params.role,
       },
     })
 

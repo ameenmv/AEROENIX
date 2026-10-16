@@ -43,8 +43,6 @@ const queryClient = useQueryClient()
 const { confirmState, confirm, cancel } = useConfirm()
 
 const activeTab = ref('users')
-const userFilter = ref<'all' | 'active' | 'suspended' | 'admins'>('all')
-const allUsers = ref<User[]>([])
 const invitations = ref<HotelInvitation[]>([])
 
 const userColumns = [
@@ -68,12 +66,12 @@ const table = useTable<User>({
   fetchFn: async (params: any) => {
     try {
       const result = await usersService.list({
-        limit: 100,
+        page: params.page,
+        limit: params.limit || params.perPage,
         search: params.search,
       })
-      allUsers.value = result.users
       invitations.value = result.invitations
-      return { data: result.users, total: result.users.length }
+      return { data: result.users, total: result.pagination.total }
     }
     catch {
       return { data: [], total: 0 }
@@ -83,38 +81,13 @@ const table = useTable<User>({
 
 // KPI Metrics
 const computedStats = computed(() => {
-  const users = allUsers.value
-  const total = users.length
+  const users = (table.items.value || []) as User[]
+  const total = table.totalItems.value || users.length
   const active = users.filter(u => u.status === 'active').length
-  const suspended = users.filter(u => u.status === 'suspended').length
   const pending_invitations = invitations.value.length
   const hotel_admins = users.filter(u => u.role?.name?.toLowerCase().includes('admin')).length
-  return { total, active, suspended, pending_invitations, hotel_admins }
+  return { total, active, pending_invitations, hotel_admins }
 })
-
-const filteredUsers = computed(() => {
-  let list = allUsers.value
-  if (userFilter.value === 'active') {
-    list = list.filter(u => u.status === 'active')
-  }
-  else if (userFilter.value === 'suspended') {
-    list = list.filter(u => u.status === 'suspended')
-  }
-  else if (userFilter.value === 'admins') {
-    list = list.filter(u => u.role?.name?.toLowerCase().includes('admin'))
-  }
-  return list
-})
-
-function selectFilter(filter: 'all' | 'active' | 'suspended' | 'admins' | 'invitations') {
-  if (filter === 'invitations') {
-    activeTab.value = 'invitations'
-  }
-  else {
-    activeTab.value = 'users'
-    userFilter.value = filter
-  }
-}
 
 function getInitials(name?: string): string {
   if (!name) return 'U'
@@ -236,8 +209,8 @@ function u(row: any): User {
       <!-- Total Users -->
       <div
         class="group relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-card/90 to-card/40 p-4 backdrop-blur-xl transition-all duration-300 hover:border-blue-500/40 hover:shadow-[0_8px_30px_rgba(59,130,246,0.12)] cursor-pointer"
-        :class="{ 'ring-2 ring-blue-500/50 border-blue-500/50': activeTab === 'users' && userFilter === 'all' }"
-        @click="selectFilter('all')"
+        :class="{ 'ring-2 ring-blue-500/50 border-blue-500/50': activeTab === 'users' }"
+        @click="activeTab = 'users'"
       >
         <div class="flex items-center justify-between">
           <span class="text-xs font-medium text-muted-foreground">{{ t('users.kpi_total', 'Total Users') }}</span>
@@ -255,9 +228,7 @@ function u(row: any): User {
 
       <!-- Active Users -->
       <div
-        class="group relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-card/90 to-card/40 p-4 backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_8px_30px_rgba(16,185,129,0.12)] cursor-pointer"
-        :class="{ 'ring-2 ring-emerald-500/50 border-emerald-500/50': activeTab === 'users' && userFilter === 'active' }"
-        @click="selectFilter('active')"
+        class="group relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-card/90 to-card/40 p-4 backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_8px_30px_rgba(16,185,129,0.12)]"
       >
         <div class="flex items-center justify-between">
           <span class="text-xs font-medium text-muted-foreground">{{ t('users.kpi_active', 'Active Users') }}</span>
@@ -277,7 +248,7 @@ function u(row: any): User {
       <div
         class="group relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-card/90 to-card/40 p-4 backdrop-blur-xl transition-all duration-300 hover:border-amber-500/40 hover:shadow-[0_8px_30px_rgba(245,158,11,0.12)] cursor-pointer"
         :class="{ 'ring-2 ring-amber-500/50 border-amber-500/50': activeTab === 'invitations' }"
-        @click="selectFilter('invitations')"
+        @click="activeTab = 'invitations'"
       >
         <div class="flex items-center justify-between">
           <span class="text-xs font-medium text-muted-foreground">{{ t('users.kpi_invitations', 'Pending Invites') }}</span>
@@ -293,11 +264,9 @@ function u(row: any): User {
         </div>
       </div>
 
-      <!-- Hotel Admins -->
+      <!-- Hotel Managers -->
       <div
-        class="group relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-card/90 to-card/40 p-4 backdrop-blur-xl transition-all duration-300 hover:border-purple-500/40 hover:shadow-[0_8px_30px_rgba(168,85,247,0.12)] cursor-pointer"
-        :class="{ 'ring-2 ring-purple-500/50 border-purple-500/50': activeTab === 'users' && userFilter === 'admins' }"
-        @click="selectFilter('admins')"
+        class="group relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-card/90 to-card/40 p-4 backdrop-blur-xl transition-all duration-300 hover:border-purple-500/40 hover:shadow-[0_8px_30px_rgba(168,85,247,0.12)]"
       >
         <div class="flex items-center justify-between">
           <span class="text-xs font-medium text-muted-foreground">{{ t('users.kpi_admins', 'Hotel Admins') }}</span>
@@ -314,102 +283,51 @@ function u(row: any): User {
       </div>
     </div>
 
-    <!-- Tabs Navigation & Quick Filters -->
+    <!-- Tabs Navigation -->
     <Tabs v-model="activeTab" class="w-full">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <TabsList class="p-1 rounded-xl bg-muted/40 border border-border/50 w-fit backdrop-blur-md">
-          <TabsTrigger
-            value="users"
-            class="gap-2 text-xs px-4 py-2 rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm font-medium"
-          >
-            <HugeiconsIcon :icon="UserGroupIcon" :size="15" />
-            <span>{{ t('users.tabs.users', 'Users') }}</span>
-            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-muted/80 text-muted-foreground">{{ computedStats.total }}</span>
-          </TabsTrigger>
-
-          <TabsTrigger
-            value="invitations"
-            class="gap-2 text-xs px-4 py-2 rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm font-medium"
-          >
-            <HugeiconsIcon :icon="MailSend01Icon" :size="15" />
-            <span>{{ t('users.tabs.invitations', 'Pending Invitations') }}</span>
-            <span
-              v-if="computedStats.pending_invitations > 0"
-              class="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 font-semibold"
-            >
-              {{ computedStats.pending_invitations }}
-            </span>
-          </TabsTrigger>
-        </TabsList>
-
-        <!-- Quick Filter Pills for Users Tab -->
-        <div
-          v-if="activeTab === 'users'"
-          class="flex items-center gap-1.5 p-1 rounded-xl bg-muted/40 border border-border/50 w-fit backdrop-blur-md overflow-x-auto max-w-full"
+      <TabsList class="p-1 rounded-xl bg-muted/40 border border-border/50 w-fit backdrop-blur-md">
+        <TabsTrigger
+          value="users"
+          class="gap-2 text-xs px-4 py-2 rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm font-medium"
         >
-          <button
-            type="button"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 select-none whitespace-nowrap cursor-pointer"
-            :class="userFilter === 'all'
-              ? 'bg-background text-foreground shadow-sm border border-border/50 font-semibold'
-              : 'text-muted-foreground hover:text-foreground'"
-            @click="userFilter = 'all'"
-          >
-            <span>{{ t('users.filters.all', 'All Users') }}</span>
-            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-muted/80 text-muted-foreground">{{ computedStats.total }}</span>
-          </button>
+          <HugeiconsIcon :icon="UserGroupIcon" :size="15" />
+          <span>{{ t('users.tabs.users', 'Users') }}</span>
+          <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-muted/80 text-muted-foreground">{{ computedStats.total }}</span>
+        </TabsTrigger>
 
-          <button
-            type="button"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 select-none whitespace-nowrap cursor-pointer"
-            :class="userFilter === 'active'
-              ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-semibold'
-              : 'text-muted-foreground hover:text-emerald-400'"
-            @click="userFilter = 'active'"
+        <TabsTrigger
+          value="invitations"
+          class="gap-2 text-xs px-4 py-2 rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm font-medium"
+        >
+          <HugeiconsIcon :icon="MailSend01Icon" :size="15" />
+          <span>{{ t('users.tabs.invitations', 'Pending Invitations') }}</span>
+          <span
+            v-if="invitations.length > 0"
+            class="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 font-semibold"
           >
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            <span>{{ t('users.filters.active', 'Active') }}</span>
-            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300">{{ computedStats.active }}</span>
-          </button>
-
-          <button
-            type="button"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 select-none whitespace-nowrap cursor-pointer"
-            :class="userFilter === 'suspended'
-              ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30 font-semibold'
-              : 'text-muted-foreground hover:text-rose-400'"
-            @click="userFilter = 'suspended'"
-          >
-            <span class="h-1.5 w-1.5 rounded-full bg-rose-400" />
-            <span>{{ t('users.filters.suspended', 'Suspended') }}</span>
-            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-rose-500/20 text-rose-300">{{ computedStats.suspended }}</span>
-          </button>
-
-          <button
-            type="button"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 select-none whitespace-nowrap cursor-pointer"
-            :class="userFilter === 'admins'
-              ? 'bg-purple-500/15 text-purple-400 border border-purple-500/30 font-semibold'
-              : 'text-muted-foreground hover:text-purple-400'"
-            @click="userFilter = 'admins'"
-          >
-            <span class="h-1.5 w-1.5 rounded-full bg-purple-400" />
-            <span>{{ t('users.filters.hotel_admins', 'Hotel Admins') }}</span>
-            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-purple-500/20 text-purple-300">{{ computedStats.hotel_admins }}</span>
-          </button>
-        </div>
-      </div>
+            {{ invitations.length }}
+          </span>
+        </TabsTrigger>
+      </TabsList>
 
       <!-- Users Tab Content -->
       <TabsContent value="users" class="mt-4 focus-visible:outline-none focus-visible:ring-0">
         <DataTable
-          :data="filteredUsers as any"
+          :data="table.items.value as any"
           :columns="userColumns"
           :loading="table.loading.value"
+          :total-items="table.totalItems.value"
+          :page="table.page.value"
+          :per-page="table.perPage.value"
+          server-side
           searchable
           modern-search
           transparent-container
           separated-records
+          @update:page="table.goToPage"
+          @update:per-page="table.setPerPage"
+          @update:search="table.setSearchQuery"
+          @sort="table.setSorting"
         >
           <!-- Name Column -->
           <template #name="{ row }">

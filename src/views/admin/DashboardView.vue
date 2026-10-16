@@ -238,7 +238,10 @@ function getIconForActivity(iconName: string) {
             <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
               {{ t('dashboard.overview_title', 'Dashboard Overview') }}
             </h1>
-            
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              {{ t('dashboard.live_overview', 'Live System') }}
+            </span>
           </div>
           <p class="text-muted-foreground mt-1 text-xs sm:text-sm">
             {{ t('dashboard.overview_subtitle', 'Here is what is happening with Azul today.') }}
