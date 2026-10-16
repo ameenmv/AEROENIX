@@ -3,7 +3,7 @@ import { registerModule } from '@/router/modules'
 registerModule({
   name: 'knowledge',
   path: 'admin/knowledge',
-  // permissionKey: 'knowledge',
+  permission: ['faq.edit', 'faq.approve'],
   order: 44, // Before staff-qna (45)
   routes: [
     {

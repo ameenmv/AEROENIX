@@ -3,7 +3,7 @@ import { registerModule } from '@/router/modules'
 registerModule({
   name: 'bookings',
   path: 'admin/bookings',
-  // permissionKey: 'bookings',
+  permission: 'bookings.view',
   order: 40, // after hotels
   routes: [
     {

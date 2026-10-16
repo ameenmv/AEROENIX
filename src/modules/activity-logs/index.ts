@@ -5,6 +5,7 @@ registerModule({
   name: 'activity-logs',
   path: 'admin/activity-logs',
   icon: Notification03Icon,
+  permission: 'logs.view',
   order: 45,
   routes: [
     {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {
@@ -19,7 +19,9 @@ import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 
 import { bookingsService, type BookingStats } from '@/services/bookingsService'
+import { hotelsService } from '@/services/hotelsService'
 import type { Booking } from '@/types/entities/booking'
+import type { Hotel } from '@/types/hotel'
 import { useTable } from '@/composables/shared/useTable'
 
 import BookingStatusBadge from '@/components/admin/bookings/BookingStatusBadge.vue'
@@ -41,6 +43,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/uic/alert-dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/uic/select'
 import { Textarea } from '@/components/uic/textarea'
 import { Label } from '@/components/uic/label'
 
@@ -57,12 +66,24 @@ const columns = [
 ]
 
 const statusFilter = ref<string | null>(null)
+const selectedHotelId = ref<string>('all')
+const hotels = ref<Hotel[]>([])
+
 const stats = ref<BookingStats>({
   total: 0,
   confirmed: 0,
   pending: 0,
   rejected: 0,
   total_revenue: 0,
+})
+
+onMounted(async () => {
+  try {
+    const res = await hotelsService.list({ limit: 100 })
+    hotels.value = res.data || []
+  } catch {
+    hotels.value = []
+  }
 })
 
 const table = useTable({
@@ -74,6 +95,7 @@ const table = useTable({
         limit: params.limit || params.perPage,
         search: params.search,
         status: statusFilter.value || undefined,
+        hotel_id: selectedHotelId.value === 'all' ? undefined : Number(selectedHotelId.value),
       })
       if (result.stats) {
         stats.value = result.stats
@@ -85,7 +107,7 @@ const table = useTable({
     }
   },
   defaultPerPage: 10,
-  watchKeys: [statusFilter],
+  watchKeys: [statusFilter, selectedHotelId],
 })
 
 // Fallback counts if backend stats not loaded yet
@@ -197,6 +219,22 @@ async function handleReject() {
             {{ t('bookings.subtitle', 'Manage all hotel bookings and reservations.') }}
           </p>
         </div>
+      </div>
+
+      <!-- Hotel Filter -->
+      <div v-if="hotels.length > 0" class="flex items-center gap-2 self-start sm:self-auto">
+        <Select v-model="selectedHotelId">
+          <SelectTrigger class="w-[180px] h-9 text-xs bg-card border-border/40 rounded-xl gap-2 shadow-xs">
+            <HugeiconsIcon :icon="Building04Icon" :size="14" class="text-muted-foreground shrink-0" />
+            <SelectValue :placeholder="t('dashboard.all_hotels', 'All Hotels')" />
+          </SelectTrigger>
+          <SelectContent class="rounded-xl border-border/40 shadow-lg">
+            <SelectItem value="all">{{ t('dashboard.all_hotels', 'All Hotels') }}</SelectItem>
+            <SelectItem v-for="h in hotels" :key="h.id" :value="String(h.id)">
+              {{ h.name }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
 

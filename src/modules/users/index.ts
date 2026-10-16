@@ -5,7 +5,7 @@ registerModule({
   name: 'users',
   path: 'admin/users',
   icon: UserGroupIcon,
-  // permissionKey: 'users', // Uncomment when backend permissions are ready
+  permission: ['users.manage', 'View Users', 'Manage Users'],
   order: 20,
   routes: [
     {

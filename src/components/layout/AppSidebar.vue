@@ -53,25 +53,27 @@ const openMenus = ref<Record<string, boolean>>({})
 function isActive(to?: string) {
   if (!to)
     return false
+  if (route.name === 'admin-forbidden' || route.path.includes('/forbidden'))
+    return false
   const fullPath = `${adminPrefix.value}${to.replace('/admin', '')}`
   return route.path === fullPath || route.path.startsWith(`${fullPath}/`)
 }
 
 const permissionStore = usePermissionStore()
 
-function isVisible(permission?: string) {
+function isVisible(permission?: string | string[]) {
   if (!permission)
     return true
-  if (permissionStore.permissions.length === 0)
-    return false
+  if (permissionStore.hasPermission('*'))
+    return true
+  if (Array.isArray(permission)) {
+    return permissionStore.hasAnyPermission(permission)
+  }
   return permissionStore.hasPermission(permission)
 }
 
 function isItemVisible(item: NavItem) {
-  if (!isVisible(item.permission))
-    return false
-
-  return true
+  return isVisible(item.permission)
 }
 
 const isCollapsed = computed(() => state.value === 'collapsed')

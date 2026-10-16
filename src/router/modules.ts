@@ -5,24 +5,33 @@ export interface ModuleConfig {
   path: string
   icon?: any
   order?: number
-  permissionKey?: string
+  permissionKey?: string | string[]
+  permission?: string | string[]
   routes: RouteRecordRaw[]
 }
+
 const modules: Record<string, ModuleConfig> = {}
+
 export function registerModule(config: ModuleConfig) {
-  if (config.permissionKey) {
+  const perm = config.permission || (config.permissionKey
+    ? (Array.isArray(config.permissionKey) ? config.permissionKey : `${config.permissionKey}.view`)
+    : undefined)
+
+  if (perm) {
     config.routes.forEach((route) => {
       route.meta = route.meta || {}
       if (!route.meta.permission) {
-        route.meta.permission = `${config.permissionKey}.view`
+        route.meta.permission = perm
       }
     })
   }
   modules[config.name] = config
 }
+
 export function getModules() {
   return Object.values(modules).sort((a, b) => (a.order || 99) - (b.order || 99))
 }
+
 export function getModuleRoutes() {
   return getModules().flatMap(m => m.routes)
 }

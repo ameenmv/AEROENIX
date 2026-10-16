@@ -5,6 +5,7 @@ registerModule({
   name: 'settings',
   path: 'admin/settings',
   icon: Settings01Icon,
+  permission: ['settings.manage', 'hotel.manage'],
   routes: [
     {
       path: 'admin/settings',

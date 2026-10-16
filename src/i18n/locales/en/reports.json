@@ -1,0 +1,31 @@
+{
+  "title": "Reports & Analytics",
+  "subtitle": "Performance insights, lead conversion funnels, and customer data exports.",
+  "all_hotels": "All Hotels",
+  "export_csv": "Export CSV",
+  "exporting": "Generating Export...",
+  "export_success": "Report exported successfully as CSV!",
+  "export_error": "Failed to download report export.",
+  "lead_funnel": "Lead Funnel",
+  "lead_funnel_period": "This Month",
+  "lead_funnel_desc": "Guest journey progression from initial conversation to confirmed booking",
+  "kpis": {
+    "avg_response_time": "Avg Response Time",
+    "avg_response_time_desc": "Average AI chatbot latency",
+    "guest_satisfaction": "Guest Satisfaction",
+    "bot_mistakes": "Bot Mistakes",
+    "handover_rate": "Handover Rate"
+  },
+  "stages": {
+    "total_conversations": "Total Conversations",
+    "leads_generated": "Leads Generated",
+    "bookings_created": "Bookings Created",
+    "confirmed": "Confirmed Bookings"
+  },
+  "conversion_labels": {
+    "conv_to_leads": "{rate}% of conversations became qualified leads",
+    "leads_to_bookings": "{rate}% of leads initiated a booking",
+    "bookings_to_confirmed": "{rate}% of bookings confirmed by staff"
+  },
+  "trend_from": "from {prev}"
+}

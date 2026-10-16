@@ -5,6 +5,7 @@ registerModule({
   name: 'conversations',
   path: 'admin/conversations',
   icon: Comment01Icon,
+  permission: 'inbox.view',
   order: 35,
   routes: [
     {

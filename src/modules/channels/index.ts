@@ -5,6 +5,7 @@ registerModule({
   name: 'channels',
   path: 'admin/channels',
   icon: Share01Icon,
+  permission: ['settings.manage', 'hotel.manage'],
   order: 40,
   routes: [
     {

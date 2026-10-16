@@ -11,6 +11,7 @@ import {
   WhatsappIcon,
   Delete02Icon,
   CheckmarkBadge01Icon,
+  Building04Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/uic/button'
@@ -24,8 +25,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/uic/alert-dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/uic/select'
 import { channelsService } from '@/services/channelsService'
+import { hotelsService } from '@/services/hotelsService'
 import type { Channel } from '@/types/entities/channel'
+import type { Hotel } from '@/types/hotel'
 import { Badge } from '@/components/uic/badge'
 import { Skeleton } from '@/components/uic/skeleton'
 
@@ -35,10 +45,21 @@ const queryClient = useQueryClient()
 const isConnectingWhatsApp = ref(false)
 const isConnectingInstagram = ref(false)
 const isConnectingFacebook = ref(false)
+const selectedHotelId = ref<string>('all')
+
+const { data: hotelsData } = useQuery({
+  queryKey: ['hotels-list'],
+  queryFn: () => hotelsService.list({ limit: 100 }),
+  staleTime: 5 * 60 * 1000,
+})
+const hotels = computed<Hotel[]>(() => hotelsData.value?.data || [])
 
 const { data: channels, isLoading } = useQuery<Channel[]>({
-  queryKey: ['channels'],
-  queryFn: () => channelsService.getAll()
+  queryKey: ['channels', selectedHotelId],
+  queryFn: () =>
+    channelsService.getAll(
+      selectedHotelId.value === 'all' ? undefined : Number(selectedHotelId.value)
+    ),
 })
 
 const whatsappChannel = computed(() => channels.value?.find(c => c.provider === 'whatsapp_business'))
@@ -117,7 +138,8 @@ onBeforeUnmount(() => {
 async function handleConnectWhatsApp() {
   isConnectingWhatsApp.value = true
   try {
-    const data = await channelsService.getWhatsAppAuthUrl()
+    const hotelId = selectedHotelId.value === 'all' ? undefined : Number(selectedHotelId.value)
+    const data = await channelsService.getWhatsAppAuthUrl(hotelId)
     const targetUrl = data?.url || data?.auth_url
     if (targetUrl) {
       openOAuthPopup(targetUrl)
@@ -134,7 +156,8 @@ async function handleConnectWhatsApp() {
 async function handleConnectInstagram() {
   isConnectingInstagram.value = true
   try {
-    const data = await channelsService.getInstagramAuthUrl()
+    const hotelId = selectedHotelId.value === 'all' ? undefined : Number(selectedHotelId.value)
+    const data = await channelsService.getInstagramAuthUrl(hotelId)
     const targetUrl = data?.url || data?.auth_url
     if (targetUrl) {
       openOAuthPopup(targetUrl)
@@ -151,7 +174,8 @@ async function handleConnectInstagram() {
 async function handleConnectFacebook() {
   isConnectingFacebook.value = true
   try {
-    const data = await channelsService.getFacebookAuthUrl()
+    const hotelId = selectedHotelId.value === 'all' ? undefined : Number(selectedHotelId.value)
+    const data = await channelsService.getFacebookAuthUrl(hotelId)
     const targetUrl = data?.url || data?.auth_url
     if (targetUrl) {
       openOAuthPopup(targetUrl)
@@ -179,6 +203,22 @@ async function handleConnectFacebook() {
           <p class="text-muted-foreground mt-1 text-sm">
             {{ t('channels.subtitle', 'Connect your hotel messaging channels to automate customer communications with AI.') }}
           </p>
+        </div>
+
+        <!-- Hotel Filter -->
+        <div v-if="hotels.length > 0" class="flex items-center gap-2 self-start sm:self-auto">
+          <Select v-model="selectedHotelId">
+            <SelectTrigger class="w-[180px] h-9 text-xs bg-card border-border/40 rounded-xl gap-2 shadow-xs">
+              <HugeiconsIcon :icon="Building04Icon" :size="14" class="text-muted-foreground shrink-0" />
+              <SelectValue :placeholder="t('dashboard.all_hotels', 'All Hotels')" />
+            </SelectTrigger>
+            <SelectContent class="rounded-xl border-border/40 shadow-lg">
+              <SelectItem value="all">{{ t('dashboard.all_hotels', 'All Hotels') }}</SelectItem>
+              <SelectItem v-for="h in hotels" :key="h.id" :value="String(h.id)">
+                {{ h.name }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

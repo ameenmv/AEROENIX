@@ -30,6 +30,23 @@ export const searchablePagesConfig: SearchablePageConfig[] = [
     keywords: ['dashboard', 'home', 'overview', 'الرئيسية', 'لوحة'],
   },
 
+  {
+    id: 'admin-leads',
+    titleKey: 'menu.leads',
+    descriptionKey: 'command.desc_leads',
+    path: '/admin/leads',
+    categoryKey: 'command.category_main',
+    keywords: ['leads', 'kanban', 'hot', 'warm', 'cold', 'عملاء', 'مهتمون', 'تصنيف'],
+  },
+  {
+    id: 'admin-reports',
+    titleKey: 'menu.reports',
+    descriptionKey: 'command.desc_reports',
+    path: '/admin/reports',
+    categoryKey: 'command.category_main',
+    keywords: ['reports', 'analytics', 'funnel', 'export', 'csv', 'تقارير', 'تحليلات', 'مسار'],
+  },
+
   // ── Access & Organization ───────────────────────────────────────────────
   {
     id: 'admin-users',

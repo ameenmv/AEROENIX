@@ -4,14 +4,17 @@
   "navigation": "Navigation",
   "profile": "Profile",
   "settings": "Settings",
+  "settings_profile": "Settings & Profile",
   "users": "Users",
   "hotels": "Hotels",
   "roles": "Roles & Permissions",
   "channels": "Channels",
   "conversations": "Inbox & Conversations",
+  "leads": "Leads",
   "activity_logs": "Activity Logs",
   "bookings": "Bookings",
   "booking_details": "Booking Details",
+  "reports": "Reports & Analytics",
   "staff_qna": "Staff Q&A",
   "knowledge": "Knowledge Base"
 }

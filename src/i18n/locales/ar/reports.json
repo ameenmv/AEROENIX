@@ -1,0 +1,31 @@
+{
+  "title": "التقارير والتحليلات",
+  "subtitle": "مؤشرات الأداء، مسار تحويل النزلاء، وتصدير بيانات الحجوزات والعملاء.",
+  "all_hotels": "جميع الفنادق",
+  "export_csv": "تصدير كـ CSV",
+  "exporting": "جاري تجهيز التقرير...",
+  "export_success": "تم تصدير التقرير بنجاح بصيغة CSV!",
+  "export_error": "حدث خطأ أثناء تحميل ملف التقرير.",
+  "lead_funnel": "مسار تحويل العملاء",
+  "lead_funnel_period": "هذا الشهر",
+  "lead_funnel_desc": "تدرج رحلة النزيل من المحادثة الأولى وحتى تأكيد الحجز النهائي",
+  "kpis": {
+    "avg_response_time": "متوسط وقت الرد",
+    "avg_response_time_desc": "معدل سرعة استجابة البوت",
+    "guest_satisfaction": "رضا النزلاء",
+    "bot_mistakes": "أخطاء البوت",
+    "handover_rate": "معدل التحويل للموظف"
+  },
+  "stages": {
+    "total_conversations": "إجمالي المحادثات",
+    "leads_generated": "العملاء المهتمون",
+    "bookings_created": "طلبات الحجز المنشأة",
+    "confirmed": "الحجوزات المؤكدة"
+  },
+  "conversion_labels": {
+    "conv_to_leads": "{rate}% من المحادثات تحولت إلى عملاء مهتمين",
+    "leads_to_bookings": "{rate}% من العملاء بدأوا إجراءات الحجز",
+    "bookings_to_confirmed": "{rate}% من طلبات الحجز تم تأكيدها بواسطة الفريق"
+  },
+  "trend_from": "مقارنة بـ {prev}"
+}

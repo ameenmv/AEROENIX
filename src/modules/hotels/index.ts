@@ -5,7 +5,7 @@ registerModule({
   name: 'hotels',
   path: 'admin/hotels',
   icon: Building04Icon,
-  // permissionKey: 'hotels', // Uncomment when backend permissions are ready
+  permission: ['hotel.manage', 'Manage Hotels'],
   order: 30,
   routes: [
     {

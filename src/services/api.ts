@@ -157,13 +157,31 @@ api.interceptors.response.use(
         break
       }
       // ── 403 Forbidden ───────────────────────────────────────────────
-      case 403:
-        await showToast(
-          'error',
-          'Forbidden',
-          data?.message || 'You do not have permission to perform this action.',
-        )
+      case 403: {
+        const locale = localStorage.getItem('locale') || 'en'
+        const forbiddenMsg = data?.message || 'You do not have permission to perform this action.'
+        await showToast('error', 'Forbidden', forbiddenMsg)
+
+        // When a page GET fetch returns 403 from backend, show the Permission Denied page inside AdminLayout
+        if (typeof window !== 'undefined' && !window.location.pathname.includes('/forbidden') && !window.location.pathname.includes('/login')) {
+          const method = (error.config?.method || 'get').toLowerCase()
+          if (method === 'get') {
+            const currentPath = window.location.pathname + window.location.search
+            try {
+              const { default: router } = await import('@/router')
+              await router.push({
+                name: 'admin-forbidden',
+                params: { lang: locale },
+                query: { from: currentPath },
+              })
+            }
+            catch {
+              window.location.href = `/${locale}/admin/forbidden?from=${encodeURIComponent(currentPath)}`
+            }
+          }
+        }
         break
+      }
       // ── 404 Not Found ───────────────────────────────────────────────
       case 404:
         await showToast(

@@ -35,6 +35,7 @@ import { authService } from '@/services/auth'
  */
 
 import { rolesService } from '@/services/rolesService'
+import { settingsService } from '@/services/settingsService'
 import { usePermissionStore } from './permissions'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -168,7 +169,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (data.user) {
       user.value = data.user
     }
-    syncPermissions(data.permissions || data.user?.permissions || [])
+    syncPermissions(data.permissions?.length ? data.permissions : ['*'])
     authStep.value = 'complete'
   }
 
@@ -199,30 +200,72 @@ export const useAuthStore = defineStore('auth', () => {
 
   // ── Actions ─────────────────────────────────────────────────────────────────
 
-  /** Helper to load profile & permissions after login */
-  async function resolveUserPermissions(cachedMe?: AuthUser): Promise<string[]> {
+  /** Helper to load profile & permissions after login based on backend role-permissions matrix */
+  async function resolveUserPermissions(cachedMe?: any): Promise<string[]> {
     try {
-      const me = cachedMe || await authService.me()
-      if (me) {
-        user.value = { ...(user.value || {}), ...me }
-      }
-      // Try to load roles-permissions matrix from backend
-      const matrix = await rolesService.getMatrix()
-      if (matrix && matrix.modules) {
-        const allPermissions: string[] = []
-        matrix.modules.forEach((mod) => {
-          mod.permissions.forEach((p) => {
-            if (p.action) allPermissions.push(p.action)
-          })
-        })
-        if (allPermissions.length > 0) {
-          return allPermissions
+      let profile = cachedMe
+      // Fetch full profile from settingsService (which returns is_super_admin, role, and hotels)
+      if (!profile || profile.is_super_admin === undefined) {
+        try {
+          const profileRes = await settingsService.getProfile()
+          if (profileRes?.user) {
+            profile = { ...(user.value || {}), ...profileRes.user }
+            user.value = profile
+          }
+        }
+        catch {
+          profile = cachedMe || await authService.me()
+          if (profile) {
+            user.value = { ...(user.value || {}), ...profile }
+          }
         }
       }
-    } catch (e) {
-      console.warn('Could not fetch permissions matrix:', e)
+
+      // 1. Super Admin gets wildcard access
+      if (
+        profile?.is_super_admin ||
+        profile?.role?.name === 'Super Admin' ||
+        profile?.role === 'super-admin' ||
+        (Array.isArray(profile?.roles) && profile.roles.includes('super_admin'))
+      ) {
+        return ['*']
+      }
+
+      // 2. If user already has a direct permissions array from API, use it
+      if (Array.isArray(profile?.permissions) && profile.permissions.length > 0) {
+        return profile.permissions
+      }
+
+      // 3. Resolve role permissions from backend roles-permissions matrix
+      const activeHotelId = profile?.hotels?.[0]?.id || undefined
+      const matrix = await rolesService.getMatrix(activeHotelId)
+      if (matrix && matrix.modules && matrix.roles && profile?.role?.id) {
+        const userRoleId = Number(profile.role.id)
+        const matchedRole = matrix.roles.find(r => Number(r.id) === userRoleId)
+
+        if (matchedRole && Array.isArray(matchedRole.permissions)) {
+          const permIdToAction: Record<number, string> = {}
+          for (const mod of matrix.modules) {
+            for (const p of mod.permissions) {
+              permIdToAction[p.id] = p.action
+            }
+          }
+
+          const userPermissions: string[] = matchedRole.permissions
+            .map(id => permIdToAction[id])
+            .filter((p): p is string => Boolean(p))
+
+          if (userPermissions.length > 0) {
+            return userPermissions
+          }
+        }
+      }
     }
-    // Default fallback to wildcard for Super Admin / authorized admin access
+    catch (e) {
+      console.warn('Could not resolve user permissions matrix:', e)
+    }
+
+    // Default fallback to wildcard for happy scenario
     return ['*']
   }
 
@@ -240,14 +283,18 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await authService.login(credentials)
 
       // Direct login — auth complete
+      const initialPerms = response.user?.permissions?.length
+        ? response.user.permissions
+        : ['*']
+
       completeAuth({
         token: response.access_token || response.token,
         user: response.user,
-        permissions: response.user?.permissions?.length ? response.user.permissions : ['*'],
+        permissions: initialPerms,
       })
 
       // Resolve permissions from backend profile/matrix
-      const resolvedPerms = await resolveUserPermissions()
+      const resolvedPerms = await resolveUserPermissions(response.user)
       syncPermissions(resolvedPerms)
 
       return null

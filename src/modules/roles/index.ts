@@ -3,6 +3,7 @@ import { registerModule } from '@/router/modules'
 registerModule({
   name: 'roles',
   path: 'admin/roles',
+  permission: ['roles.manage', 'Assign Roles'],
   routes: [
     {
       path: 'admin/roles',

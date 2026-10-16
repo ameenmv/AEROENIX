@@ -58,13 +58,21 @@ const routes = [
     path: 'admin/dashboard',
     name: 'admin-dashboard',
     component: () => import('../views/admin/DashboardView.vue'),
-    meta: { breadcrumbKey: 'menu.home' },
+    meta: {
+      breadcrumbKey: 'menu.home',
+    },
   },
   {
     path: 'admin/notification-center',
     name: 'admin-notification-center',
     component: () => import('../views/admin/notifications/NotificationCenterView.vue'),
-    meta: { breadcrumbKey: 'common.notifications' },
+    meta: { breadcrumbKey: 'common.notifications', permission: 'notifications.view' },
+  },
+  {
+    path: 'admin/forbidden',
+    name: 'admin-forbidden',
+    component: () => import('../views/admin/ForbiddenView.vue'),
+    meta: { breadcrumbKey: 'error.forbidden_title' },
   },
 ]
 
@@ -89,6 +97,7 @@ const router = createRouter({
     },
   ],
 })
+
 router.beforeEach((to, _from, next) => {
   // Clear auth errors on navigation so alerts don't persist between pages
   try {
@@ -98,8 +107,10 @@ router.beforeEach((to, _from, next) => {
   catch {
     // Store may not be ready on initial load — safe to ignore
   }
+
   const lang = to.params.lang as string
   const savedLocale = localStorage.getItem('locale') || DEFAULT_LOCALE
+
   if (lang && SUPPORTED_LOCALES.includes(lang)) {
     if (i18n.global.locale.value !== lang) {
       setLocale(lang)
@@ -121,6 +132,7 @@ router.beforeEach((to, _from, next) => {
       return next({ path: targetPath })
     }
   }
+
   // Auth guard for admin routes
   const isAdminRoute = to.path.includes('/admin')
   const isAuthRoute
@@ -131,9 +143,6 @@ router.beforeEach((to, _from, next) => {
       || to.path.includes('/admin/otp')
 
   // ── Mock Auth Bypass ──────────────────────────────────────────────────────
-  // When VITE_MOCK_AUTH is enabled, auto-seed localStorage with mock token
-  // and wildcard permissions so the developer can navigate directly to any
-  // admin route without going through the login page first.
   const isMockAuth = import.meta.env.VITE_MOCK_AUTH !== 'false'
   if (isMockAuth && !isAuthRoute) {
     if (!localStorage.getItem('auth_token')) {
@@ -178,16 +187,25 @@ router.beforeEach((to, _from, next) => {
     const currentLang = (to.params.lang as string) || savedLocale
     return next({ path: `/${currentLang}/admin/dashboard` })
   }
-  // Permission guard (optional per-route)
-  if (to.meta.permission) {
-    const permissions: string[] = JSON.parse(localStorage.getItem('permissions') || '[]')
-    const hasPermission
-      = permissions.includes(to.meta.permission as string) || permissions.includes('*')
+
+  // ── Permission Guard ───────────────────────────────────────────────────────
+  // Dashboard is always accessible as home fallback
+  if (to.name !== 'admin-dashboard' && to.meta && to.meta.permission) {
+    const permissions: string[] = JSON.parse(localStorage.getItem('permissions') || '["*"]')
+    const reqPerm = to.meta.permission as string | string[]
+    const hasPermission =
+      permissions.includes('*') ||
+      (Array.isArray(reqPerm)
+        ? reqPerm.some(p => permissions.includes(p))
+        : permissions.includes(reqPerm))
+
     if (!hasPermission) {
       const currentLang = (to.params.lang as string) || savedLocale
       return next({ path: `/${currentLang}/admin/dashboard` })
     }
   }
+
   next()
 })
+
 export default router
