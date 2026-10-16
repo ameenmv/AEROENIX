@@ -74,11 +74,11 @@ async function copyAnswer() {
     </div>
 
     <!-- Chat Simulation Container -->
-    <div class="relative space-y-4 rounded-xl border border-border/40 bg-background/50 p-4">
+    <div class="relative space-y-4 rounded-xl border border-border/40 bg-background/50 p-4 overflow-hidden">
       <!-- 1. Guest Message (Question) -->
-      <div class="flex items-start gap-2.5 justify-end">
-        <div class="max-w-[85%] rounded-2xl rounded-tr-xs bg-primary/15 border border-primary/25 px-4 py-2.5 text-xs text-foreground shadow-xs">
-          <p class="font-medium leading-relaxed">
+      <div class="flex items-start gap-2.5 justify-end min-w-0 w-full">
+        <div class="max-w-[85%] min-w-0 rounded-2xl rounded-tr-xs bg-primary/15 border border-primary/25 px-4 py-2.5 text-xs text-foreground shadow-xs break-words [overflow-wrap:anywhere]">
+          <p class="font-medium leading-relaxed break-words [overflow-wrap:anywhere] whitespace-pre-wrap">
             {{ title.trim() || t('knowledge.preview_sample_q', 'How can this help the guest?') }}
           </p>
           <span class="mt-1 block text-right text-[10px] text-primary/70">
@@ -91,11 +91,11 @@ async function copyAnswer() {
       </div>
 
       <!-- 2. AI Bot Response (Answer) -->
-      <div class="flex items-start gap-2.5">
+      <div class="flex items-start gap-2.5 min-w-0 w-full">
         <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary shadow-xs">
           <Sparkles class="h-3.5 w-3.5" />
         </div>
-        <div class="group/msg relative max-w-[88%] rounded-2xl rounded-tl-xs border border-border/50 bg-card/90 px-4 py-3 text-xs text-foreground shadow-xs">
+        <div class="group/msg relative max-w-[88%] min-w-0 rounded-2xl rounded-tl-xs border border-border/50 bg-card/90 px-4 py-3 text-xs text-foreground shadow-xs break-words [overflow-wrap:anywhere]">
           <!-- Copy quick button -->
           <button
             v-if="content.trim()"
@@ -108,18 +108,18 @@ async function copyAnswer() {
             <Copy v-else class="h-3 w-3" />
           </button>
 
-          <p class="whitespace-pre-line leading-relaxed text-foreground/90">
+          <p class="whitespace-pre-wrap leading-relaxed text-foreground/90 break-words [overflow-wrap:anywhere]">
             {{ content.trim() || t('knowledge.preview_sample_a', 'Type the content/answer on the left to preview how Azul AI delivers it to guests.') }}
           </p>
 
           <!-- AI Confidence & Meta strip -->
-          <div class="mt-2.5 flex flex-wrap items-center gap-2 border-t border-border/30 pt-2 text-[10.5px] text-muted-foreground">
-            <span class="inline-flex items-center gap-1 font-semibold text-primary/90">
+          <div class="mt-2.5 flex flex-wrap items-center gap-2 border-t border-border/30 pt-2 text-[10.5px] text-muted-foreground min-w-0">
+            <span class="inline-flex items-center gap-1 font-semibold text-primary/90 shrink-0">
               <Bot class="h-3 w-3" />
               Azul AI Concierge
             </span>
             <span>•</span>
-            <span class="capitalize text-muted-foreground/80">{{ category }}</span>
+            <span class="capitalize text-muted-foreground/80 shrink-0">{{ category }}</span>
             <span v-if="hotelName">•</span>
             <span v-if="hotelName" class="text-muted-foreground/80 truncate max-w-[120px]">{{ hotelName }}</span>
           </div>

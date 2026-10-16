@@ -14,6 +14,7 @@ export interface Channel {
   hotel_id?: number | null
   user_id?: number | null
   provider: ChannelProvider
+  provider_label?: string | null
   external_account_id?: string | null
   username?: string | null
   name: string

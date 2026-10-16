@@ -10,7 +10,6 @@ import {
   Lightbulb,
   Save,
   Sliders,
-  Sparkles,
   Tag,
 } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
@@ -151,10 +150,7 @@ const wordCount = computed(() => {
             <h1 class="text-2xl font-bold tracking-tight text-foreground">
               {{ t('knowledge.create_title', 'Add Knowledge Entry') }}
             </h1>
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-primary/10 text-primary border border-primary/20">
-              <Sparkles class="w-2.5 h-2.5" />
-              AI Ready
-            </span>
+            
           </div>
           <p class="text-xs sm:text-sm text-muted-foreground mt-0.5">
             {{ t('knowledge.create_subtitle', 'Add a question, policy, or information for the AI to use when answering guests.') }}

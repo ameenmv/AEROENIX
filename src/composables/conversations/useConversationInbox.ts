@@ -5,6 +5,16 @@ import { channelsService } from '@/services/channelsService'
 import type { InboxConversationItem } from '@/types/entities/conversation'
 import type { Channel } from '@/types/entities/channel'
 
+export interface ProviderTab {
+  id: number | null
+  label: string
+  provider?: string | null
+  provider_label?: string | null
+  profile_picture_url?: string | null
+  username?: string | null
+  icon?: string | null
+}
+
 export function useConversationInbox() {
   const route = useRoute()
   const router = useRouter()
@@ -40,14 +50,19 @@ export function useConversationInbox() {
     }
   })
 
-  const providerTabs = computed(() => {
-    const tabs: Array<{ id: number | null, label: string, icon?: string | null }> = [
-      { id: null, label: 'All', icon: null },
+  const providerTabs = computed<ProviderTab[]>(() => {
+    const tabs: ProviderTab[] = [
+      { id: null, label: 'All', provider: null, icon: null },
     ]
     channels.value.forEach(channel => {
       tabs.push({
         id: channel.id,
-        label: channel.name,
+        label: channel.name || channel.username || channel.provider_label || `Channel ${channel.id}`,
+        provider: channel.provider,
+        provider_label: channel.provider_label,
+        profile_picture_url: channel.profile_picture_url,
+        username: channel.username,
+        icon: null,
       })
     })
     return tabs
