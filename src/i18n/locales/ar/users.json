@@ -26,6 +26,12 @@
     "users": "المستخدمين",
     "invitations": "الدعوات المعلقة"
   },
+  "filters": {
+    "all": "جميع المستخدمين",
+    "active": "النشطين",
+    "suspended": "المعلقين",
+    "hotel_admins": "مدراء الفنادق"
+  },
   "status": {
     "invited": "مدعو"
   },

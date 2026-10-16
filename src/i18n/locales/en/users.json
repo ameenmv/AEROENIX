@@ -26,6 +26,12 @@
     "users": "Users",
     "invitations": "Pending Invitations"
   },
+  "filters": {
+    "all": "All Users",
+    "active": "Active",
+    "suspended": "Suspended",
+    "hotel_admins": "Hotel Admins"
+  },
   "status": {
     "invited": "Invited"
   },

@@ -252,10 +252,7 @@ function goToPage(page: number) {
               {{ t('knowledge.title', 'Knowledge Base') }}
             </h1>
             <!-- AI Live Beacon -->
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
-              <Sparkles class="w-3 h-3 text-emerald-400" />
-              <span>{{ t('knowledge.ai_synced', 'AI Knowledge Engine') }}</span>
-            </span>
+            
           </div>
           <p class="text-xs sm:text-sm text-muted-foreground mt-1 max-w-2xl leading-relaxed">
             {{ t('knowledge.subtitle', 'Manage FAQ entries and hotel policies that the AI chatbot uses to answer guest questions automatically.') }}
