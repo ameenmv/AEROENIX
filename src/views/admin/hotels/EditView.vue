@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { ArrowLeft01Icon, Building04Icon, Location01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/uic/button'
+import { Skeleton } from '@/components/uic/skeleton'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useForm } from '@/composables/shared/useForm'
@@ -112,8 +113,9 @@ watch(
         </div>
       </div>
 
+      <Skeleton v-if="isLoading" class="h-6 w-16 rounded-full" />
       <span
-        v-if="item"
+        v-else-if="item"
         class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider border select-none"
         :class="item.status === 'active'
           ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-400'
@@ -127,8 +129,32 @@ watch(
       </span>
     </div>
 
-    <div v-if="isLoading" class="py-12 flex justify-center">
-      <div class="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent" />
+    <!-- Loading Skeleton -->
+    <div v-if="isLoading" class="space-y-6 animate-in fade-in duration-300">
+      <div class="rounded-2xl border border-border/60 bg-card/60 p-5 backdrop-blur-xl flex items-center gap-3.5">
+        <Skeleton class="h-12 w-12 rounded-xl" />
+        <div class="space-y-2">
+          <Skeleton class="h-5 w-48 rounded-md" />
+          <Skeleton class="h-3.5 w-64 rounded-md" />
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-border/60 bg-card/60 p-6 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div v-for="i in 6" :key="i" class="space-y-2">
+            <Skeleton class="h-4 w-24 rounded-md" />
+            <Skeleton class="h-10 w-full rounded-xl" />
+          </div>
+        </div>
+        <div class="space-y-2">
+          <Skeleton class="h-4 w-24 rounded-md" />
+          <Skeleton class="h-24 w-full rounded-xl" />
+        </div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-border/50">
+          <Skeleton class="h-9 w-20 rounded-xl" />
+          <Skeleton class="h-9 w-28 rounded-xl" />
+        </div>
+      </div>
     </div>
 
     <template v-else-if="item">

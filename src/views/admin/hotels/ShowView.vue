@@ -20,6 +20,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useDetails } from '@/composables/shared/useDetails'
 import { hotelsService } from '@/services/hotelsService'
 import { Button } from '@/components/uic/button'
+import { Skeleton } from '@/components/uic/skeleton'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/uic/tabs'
 import RoomList from './components/RoomList.vue'
 
@@ -51,24 +52,33 @@ const defaultTab = computed(() => (route.query.tab as string) || 'overview')
         </Button>
         <div>
           <div class="flex items-center gap-2.5">
-            <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
-              {{ item?.name || t('hotels.title', 'Hotel Details') }}
-            </h1>
-            <span
-              v-if="item"
-              class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider border select-none"
-              :class="item.status === 'active'
-                ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-400'
-                : 'border-amber-500/25 bg-amber-500/10 text-amber-400'"
-            >
+            <template v-if="loading">
+              <Skeleton class="h-7 w-48 rounded-lg" />
+              <Skeleton class="h-5 w-16 rounded-full" />
+            </template>
+            <template v-else>
+              <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+                {{ item?.name || t('hotels.title', 'Hotel Details') }}
+              </h1>
               <span
-                class="h-1.5 w-1.5 rounded-full me-1.5 shrink-0"
-                :class="item.status === 'active' ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]' : 'bg-amber-400'"
-              />
-              {{ item.status }}
-            </span>
+                v-if="item"
+                class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider border select-none"
+                :class="item.status === 'active'
+                  ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-400'
+                  : 'border-amber-500/25 bg-amber-500/10 text-amber-400'"
+              >
+                <span
+                  class="h-1.5 w-1.5 rounded-full me-1.5 shrink-0"
+                  :class="item.status === 'active' ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]' : 'bg-amber-400'"
+                />
+                {{ item.status }}
+              </span>
+            </template>
           </div>
-          <p v-if="item?.address" class="text-xs text-muted-foreground mt-0.5 flex items-center gap-1.5">
+          <div v-if="loading" class="mt-1.5">
+            <Skeleton class="h-3.5 w-56 rounded-md" />
+          </div>
+          <p v-else-if="item?.address" class="text-xs text-muted-foreground mt-0.5 flex items-center gap-1.5">
             <HugeiconsIcon :icon="Location01Icon" :size="13" class="shrink-0 text-muted-foreground" />
             <span>{{ item.address }}</span>
           </p>
@@ -76,8 +86,9 @@ const defaultTab = computed(() => (route.query.tab as string) || 'overview')
       </div>
 
       <div class="flex items-center gap-2">
+        <Skeleton v-if="loading" class="h-8 w-24 rounded-xl" />
         <Button
-          v-if="item"
+          v-else-if="item"
           variant="outline"
           size="sm"
           class="gap-1.5 rounded-xl border-border/60 hover:bg-muted/80 text-xs"
@@ -89,10 +100,49 @@ const defaultTab = computed(() => (route.query.tab as string) || 'overview')
       </div>
     </div>
 
-    <!-- Loading -->
-    <div v-if="loading" class="py-20 flex flex-col items-center gap-3">
-      <div class="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent" />
-      <span class="text-xs text-muted-foreground">{{ t('common.loading', 'Loading...') }}</span>
+    <!-- Loading Skeleton View -->
+    <div v-if="loading" class="space-y-6 animate-in fade-in duration-300">
+      <!-- 4 Quick Glance KPI Ribbon Skeletons -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <div
+          v-for="i in 4"
+          :key="i"
+          class="rounded-2xl border border-border/60 bg-gradient-to-b from-card/90 to-card/40 p-4 backdrop-blur-xl space-y-2.5"
+        >
+          <Skeleton class="h-4 w-20 rounded-md" />
+          <Skeleton class="h-7 w-16 rounded-lg" />
+          <Skeleton class="h-3 w-28 rounded-md" />
+        </div>
+      </div>
+
+      <!-- Tabs and Main Content Skeletons -->
+      <div class="space-y-4">
+        <Skeleton class="h-10 w-72 rounded-xl" />
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 space-y-6">
+            <div class="rounded-2xl border border-border/60 bg-card/60 p-6 space-y-4">
+              <Skeleton class="h-5 w-36 rounded-md" />
+              <Skeleton class="h-4 w-full rounded-md" />
+              <Skeleton class="h-4 w-4/5 rounded-md" />
+              <Skeleton class="h-4 w-2/3 rounded-md" />
+            </div>
+            <div class="rounded-2xl border border-border/60 bg-card/60 p-6 space-y-4">
+              <Skeleton class="h-5 w-40 rounded-md" />
+              <div class="grid grid-cols-2 gap-4">
+                <Skeleton class="h-12 w-full rounded-xl" />
+                <Skeleton class="h-12 w-full rounded-xl" />
+              </div>
+            </div>
+          </div>
+          <div class="lg:col-span-1 space-y-6">
+            <div class="rounded-2xl border border-border/60 bg-card/60 p-6 space-y-4">
+              <Skeleton class="h-5 w-32 rounded-md" />
+              <Skeleton class="h-10 w-full rounded-xl" />
+              <Skeleton class="h-10 w-full rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <template v-else-if="item">

@@ -145,6 +145,9 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       __MOCK_ENABLED__: JSON.stringify(mode !== 'production'),
+      __VUE_I18N_LEGACY_API__: JSON.stringify(false),
+      __VUE_I18N_FULL_INSTALL__: JSON.stringify(false),
+      __INTLIFY_PROD_DEVTOOLS__: JSON.stringify(false),
     },
     build: {
       chunkSizeWarningLimit: 800,
