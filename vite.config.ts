@@ -150,7 +150,25 @@ export default defineConfig(({ mode }) => {
       __INTLIFY_PROD_DEVTOOLS__: JSON.stringify(false),
     },
     build: {
-      chunkSizeWarningLimit: 800,
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (
+                id.includes('vue') ||
+                id.includes('@vue') ||
+                id.includes('vue-router') ||
+                id.includes('vue-i18n') ||
+                id.includes('@intlify') ||
+                id.includes('pinia')
+              ) {
+                return 'vue-vendor'
+              }
+            }
+          },
+        },
+      },
     },
     server: {
       host: '0.0.0.0',
