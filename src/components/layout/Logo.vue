@@ -7,7 +7,7 @@ const props = withDefaults(
     size?: 'sm' | 'md' | 'lg' | number
     /** Whether to animate the logo on mount */
     animated?: boolean
-    /** Show only the icon for collapsed sidebar */
+    /** Show only the icon (emblem) for collapsed sidebar */
     iconOnly?: boolean
     /** Variant: default or white */
     variant?: 'default' | 'white'
@@ -32,16 +32,34 @@ onMounted(() => {
   }
 })
 
+// Use emblem alone when collapsed, and full vertical logo (emblem + AZUL underneath) when expanded
+const logoSrc = computed(() => {
+  return props.iconOnly ? '/logo-emblem.png' : '/logo-sidebar.png'
+})
+
 const sizeClass = computed(() => {
   if (typeof props.size === 'number') return ''
+  if (props.iconOnly) {
+    switch (props.size) {
+      case 'sm':
+        return 'h-6 w-auto'
+      case 'lg':
+        return 'h-9 w-auto'
+      case 'md':
+      default:
+        return 'h-7 w-auto'
+    }
+  }
+
+  // Expanded vertical logo (emblem + text)
   switch (props.size) {
     case 'sm':
-      return props.iconOnly ? 'h-6 w-auto' : 'h-6 w-auto'
+      return 'h-10 w-auto'
     case 'lg':
-      return props.iconOnly ? 'h-10 w-auto' : 'h-12 w-auto'
+      return 'h-20 w-auto'
     case 'md':
     default:
-      return props.iconOnly ? 'h-7 w-auto' : 'h-8 w-auto'
+      return 'h-14 sm:h-16 w-auto'
   }
 })
 
@@ -59,9 +77,9 @@ const customStyle = computed(() => {
     :class="{ 'neop-logo--animated': animated, 'neop-logo--visible': mounted }"
   >
     <img
-      src="/logo-emblem.png"
-      alt="Azul Logo"
-      class="object-contain transition-all duration-300 hover:scale-105 drop-shadow-[0_2px_10px_rgba(180,139,89,0.25)]"
+      :src="logoSrc"
+      alt="Azul Hospitality"
+      class="object-contain transition-all duration-300 hover:scale-[1.03] drop-shadow-[0_2px_12px_rgba(180,139,89,0.22)]"
       :class="sizeClass"
       :style="customStyle"
       loading="eager"
@@ -73,7 +91,7 @@ const customStyle = computed(() => {
 /* Base state: hidden until mounted */
 .neop-logo--animated img {
   opacity: 0;
-  transform: scale(0.92);
+  transform: scale(0.94);
   transition:
     opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);

@@ -1,24 +1,15 @@
 import os
 from PIL import Image
 
-def process_logo(src_path: str, output_dir: str):
-    os.makedirs(output_dir, exist_ok=True)
-    img = Image.open(src_path).convert('RGB')
-    w, h = img.size
-
-    # 1. Bounding box for emblem
-    # Emblem rows roughly 160 to 308, cols 215 to 425
-    emblem_box = (215, 160, 425, 310)
-    crop = img.crop(emblem_box)
-    cw, ch = crop.size
-
+def remove_black_background(crop_img: Image.Image) -> Image.Image:
+    cw, ch = crop_img.size
     rgba = Image.new('RGBA', (cw, ch), (0, 0, 0, 0))
     SOLID_LUM = 95.0
     BLACK_THRESH = 3.0
 
     for y in range(ch):
         for x in range(cw):
-            r, g, b = crop.getpixel((x, y))
+            r, g, b = crop_img.getpixel((x, y))
             lum = 0.299 * r + 0.587 * g + 0.114 * b
             if lum <= BLACK_THRESH:
                 rgba.putpixel((x, y), (0, 0, 0, 0))
@@ -34,52 +25,74 @@ def process_logo(src_path: str, output_dir: str):
                 unpre_b = min(255, int(round(b / alpha)))
                 rgba.putpixel((x, y), (unpre_r, unpre_g, unpre_b, int(round(alpha * 255))))
 
-    # 2. Get exact tight bounding box of visible content
-    tight_bbox = rgba.getbbox()
-    tight_emblem = rgba.crop(tight_bbox)
+    return rgba
+
+def process_logo(src_path: str, output_dir: str):
+    os.makedirs(output_dir, exist_ok=True)
+    img = Image.open(src_path).convert('RGB')
+    w, h = img.size
+
+    # 1. Emblem only
+    emblem_box = (215, 160, 425, 310)
+    crop_emblem = img.crop(emblem_box)
+    emblem_rgba = remove_black_background(crop_emblem)
+    tight_bbox = emblem_rgba.getbbox()
+    tight_emblem = emblem_rgba.crop(tight_bbox)
     ew, eh = tight_emblem.size
-    print(f'Tight emblem size: {ew}x{eh}')
-
-    # Save tight emblem
     tight_emblem.save(os.path.join(output_dir, 'logo-emblem.png'))
+    print(f'Saved logo-emblem.png: {ew}x{eh}')
 
-    # 3. Create high-resolution master square (512x512) with pleasant padding
-    def create_padded_square(size: int, padding_ratio: float = 0.12) -> Image.Image:
+    # 2. Vertical full branding (Emblem + AZUL + HOSPITALITY, like the original)
+    full_box = (175, 160, 455, 425)
+    crop_full = img.crop(full_box)
+    full_rgba = remove_black_background(crop_full)
+    full_tight = full_rgba.crop(full_rgba.getbbox())
+    full_tight.save(os.path.join(output_dir, 'logo-sidebar.png'), optimize=True)
+    full_tight.save(os.path.join(output_dir, 'logo-vertical.png'), optimize=True)
+    full_tight.save(os.path.join(output_dir, 'full-logo.png'), optimize=True)
+    print(f'Saved logo-sidebar.png / logo-vertical.png: {full_tight.size}')
+
+    # 3. Emblem + AZUL text (without hospitality)
+    azul_box = (175, 160, 455, 395)
+    crop_azul = img.crop(azul_box)
+    azul_rgba = remove_black_background(crop_azul)
+    azul_tight = azul_rgba.crop(azul_rgba.getbbox())
+    azul_tight.save(os.path.join(output_dir, 'logo-azul.png'), optimize=True)
+    print(f'Saved logo-azul.png: {azul_tight.size}')
+
+    # 4. Master square (512x512) and PWA icons
+    def create_padded_square(base_img: Image.Image, size: int, padding_ratio: float = 0.10) -> Image.Image:
+        bw, bh = base_img.size
         target = Image.new('RGBA', (size, size), (0, 0, 0, 0))
         max_dim = int(size * (1 - padding_ratio * 2))
-        
-        # Scale emblem keeping aspect ratio
-        scale = min(max_dim / ew, max_dim / eh)
-        new_w = int(round(ew * scale))
-        new_h = int(round(eh * scale))
-        
-        scaled = tight_emblem.resize((new_w, new_h), Image.Resampling.LANCZOS)
+        scale = min(max_dim / bw, max_dim / bh)
+        new_w = int(round(bw * scale))
+        new_h = int(round(bh * scale))
+        scaled = base_img.resize((new_w, new_h), Image.Resampling.LANCZOS)
         offset_x = (size - new_w) // 2
         offset_y = (size - new_h) // 2
-        
         target.paste(scaled, (offset_x, offset_y), scaled)
         return target
 
-    # 4. Generate all required logo variants
-    logo_512 = create_padded_square(512, padding_ratio=0.10)
+    logo_512 = create_padded_square(full_tight, 512, padding_ratio=0.08)
     logo_512.save(os.path.join(output_dir, 'logo.png'), optimize=True)
     logo_512.save(os.path.join(output_dir, 'pwa-512x512.png'), optimize=True)
 
-    logo_256 = create_padded_square(256, padding_ratio=0.10)
+    logo_256 = create_padded_square(full_tight, 256, padding_ratio=0.08)
     logo_256.save(os.path.join(output_dir, 'simple-logo.png'), optimize=True)
 
-    logo_192 = create_padded_square(192, padding_ratio=0.10)
+    logo_192 = create_padded_square(full_tight, 192, padding_ratio=0.08)
     logo_192.save(os.path.join(output_dir, 'pwa-192x192.png'), optimize=True)
 
-    logo_180 = create_padded_square(180, padding_ratio=0.10)
+    logo_180 = create_padded_square(full_tight, 180, padding_ratio=0.08)
     logo_180.save(os.path.join(output_dir, 'apple-touch-icon-180x180.png'), optimize=True)
 
-    logo_64 = create_padded_square(64, padding_ratio=0.06)
-    logo_64.save(os.path.join(output_dir, 'favicon.png'), optimize=True)
+    # Favicon: using the crisp emblem mark for small sizes
+    favicon_64 = create_padded_square(tight_emblem, 64, padding_ratio=0.04)
+    favicon_64.save(os.path.join(output_dir, 'favicon.png'), optimize=True)
 
-    # Also save in public/favicon.ico (multi-size ico)
-    logo_32 = create_padded_square(32, padding_ratio=0.04)
-    logo_32.save(os.path.join(output_dir, 'favicon-32.png'), optimize=True)
+    favicon_32 = create_padded_square(tight_emblem, 32, padding_ratio=0.02)
+    favicon_32.save(os.path.join(output_dir, 'favicon-32.png'), optimize=True)
 
     print('Successfully generated all logo assets!')
 
