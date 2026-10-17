@@ -131,7 +131,6 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-        'vue-i18n': 'vue-i18n/dist/vue-i18n.runtime.esm-bundler.js',
       },
     },
     test: {
@@ -147,7 +146,7 @@ export default defineConfig(({ mode }) => {
     define: {
       __MOCK_ENABLED__: JSON.stringify(mode !== 'production'),
       __VUE_I18N_LEGACY_API__: JSON.stringify(false),
-      __VUE_I18N_FULL_INSTALL__: JSON.stringify(true),
+      __VUE_I18N_FULL_INSTALL__: JSON.stringify(false),
       __INTLIFY_PROD_DEVTOOLS__: JSON.stringify(false),
     },
     build: {
