@@ -134,7 +134,7 @@ async function handleExportCsv() {
             </SelectContent>
           </Select>
 
-          <!-- Export CSV Button -->
+          <!-- Export Excel Button -->
           <Button
             :disabled="isExporting"
             class="h-10 rounded-xl px-4 gap-2 font-semibold shadow-xs"
@@ -146,7 +146,7 @@ async function handleExportCsv() {
               :class="{ 'animate-spin': isExporting }"
             />
             <span>
-              {{ isExporting ? t('reports.exporting', 'Generating Export...') : t('reports.export_csv', 'Export CSV') }}
+              {{ isExporting ? t('reports.exporting', 'Generating Export...') : t('reports.export_csv', 'Export Excel') }}
             </span>
           </Button>
         </div>
