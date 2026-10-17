@@ -1,0 +1,30 @@
+name: CI Quality Gate
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  verify:
+    name: Build & Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile || bun install
+
+      - name: Type Check (vue-tsc)
+        run: bun x vue-tsc -b
+
+      - name: Build Production Bundle
+        run: bun x vite build
